@@ -70,7 +70,7 @@ export const settings = signal({
 // This computed signal returns the messages of the current chat.
 // If no messages exist (or the array is empty), it returns a default welcome message.
 export const messages = computed<Message[]>(() => {
-  const key = "bude-chat-" + chatSuffix.value;
+  const key = `bude-chat-${chatSuffix.value}`;
   const msgs = chats.value[key];
   if (!msgs || msgs.length < 1) {
     return [

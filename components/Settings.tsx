@@ -1,7 +1,7 @@
 import { useSignal, useComputed } from "@preact/signals";
 import { settingsContent } from "../internalization/content.ts";
 import BasicSettings from "./settings/BasicSettings.tsx";
-import ConfigurationSelector from "./settings/ConfigurationSelector.tsx";
+import ConfigurationSelector from "../islands/settings/ConfigurationSelector.tsx";
 import TokenUsage from "./settings/TokenUsage.tsx";
 import { settings } from "./chat/store.ts";
 
@@ -15,9 +15,8 @@ export default function Settings({
   const newSettings = useSignal({
     ...settings.value,
   });
-  const showAdvanced = useSignal(false);
+  const showAdvanced = useSignal(true);
   const activeTab = useSignal("general");
-  const selectedProvider = useSignal<string | null>(null);
   const showPassword = useSignal(false);
 
   const providerConfigs = {
@@ -142,11 +141,6 @@ export default function Settings({
 
   function handleTogglePasswordVisibility() {
     showPassword.value = !showPassword.value;
-  }
-
-  function handleProviderSelect(provider: string) {
-    selectedProvider.value = provider;
-    // Apply provider-specific settings as needed
   }
 
   function handleChange(e: any) {
@@ -288,46 +282,10 @@ export default function Settings({
           
           {/* Existing settings form, but with better styling */}
           <form onSubmit={handleSubmit} className="space-y-4" data-tour="settings-form">
-            {/* Universal Provider Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select your AI Provider
-              </label>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {Object.keys(providerConfigs).map((provider) => (
-                  <button
-                    key={provider}
-                    type="button"
-                    onClick={() => handleProviderSelect(provider)}
-                    className={`${
-                      selectedProvider.value === provider
-                        ? "bg-indigo-100 border-indigo-500 text-indigo-800"
-                        : "bg-white hover:bg-gray-50 border-gray-300 text-gray-800"
-                    } border-2 rounded-lg p-3 flex flex-col items-center justify-center transition-colors`}
-                    data-tour={`provider-${provider}`}
-                  >
-                    <span className="text-lg mb-1">
-                      {getProviderIcon(provider)}
-                    </span>
-                    <span className="font-medium">
-                      {getProviderName(provider)}
-                    </span>
-                    <div className="mt-2 flex space-x-1">
-                      {providerConfigs[provider as keyof typeof providerConfigs].capabilities.map(cap => (
-                        <span key={cap} title={getCapabilityExplanation(cap).title} className="inline-block text-xs">
-                          {getCapabilityExplanation(cap).icon}
-                        </span>
-                      ))}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-            
             {/* Universal API Key input with copy-paste guidance */}
             <div className="mb-6" data-tour="api-key-input">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {selectedProvider.value ? `${getProviderName(selectedProvider.value)} API Key` : "Universal API Key"}
+                Universal API Key
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <input
@@ -359,7 +317,7 @@ export default function Settings({
                 </div>
               </div>
               <p className="mt-1 text-sm text-gray-500">
-                {selectedProvider.value ? `Copy your API key from ${getProviderName(selectedProvider.value)} dashboard and paste it here.` : "Enter your AI provider API key here."}
+                Enter your AI provider API key here.
               </p>
             </div>
             
@@ -427,39 +385,8 @@ export default function Settings({
                 Customize how the AI responds by providing specific instructions.
               </p>
             </div>
-            
-            {/* Submit and Cancel buttons */}
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                data-tour="save-settings"
-              >
-                Save Settings
-              </button>
-            </div>
-          </form>
 
-          {/* Advanced Settings Toggle Button */}
-          <button
-            type="button"
-            onClick={() => showAdvanced.value = !showAdvanced.value}
-            className="text-sm text-blue-500 hover:text-blue-600"
-          >
-            {showAdvanced.value
-              ? settingsContent[lang].lessSettings
-              : settingsContent[lang].advancedSettings}
-          </button>
-
-          {/* Advanced Settings */}
-          {showAdvanced.value && (
+            {/* Advanced Settings - Now always visible */}
             <div className="space-y-4 mt-4">
               <h3 className="text-lg font-medium text-gray-800 mb-3">Advanced Settings</h3>
               <ConfigurationSelector
@@ -511,19 +438,25 @@ export default function Settings({
                 title={settingsContent[lang].vlmTitle}
               />
             </div>
-          )}
-
-          {/* Save Settings Button */}
-          <button
-            type="button"
-            onClick={() => {
-              settings.value = { ...newSettings.value };
-              onClose();
-            }}
-            className="w-full px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {settingsContent[lang].save}
-          </button>
+            
+            {/* Submit and Cancel buttons */}
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                data-tour="save-settings"
+              >
+                Save Settings
+              </button>
+            </div>
+          </form>
         </>
       )}
 
@@ -538,15 +471,15 @@ export default function Settings({
 function getProviderIcon(provider: string) {
   const icons = {
     openai: "🤖",
-    anthropic: "🧠",
+    anthropic: "👤",
     googleai: "🔍",
     groq: "⚡",
+    hyprlab: "🧪",
     sambanova: "🌟",
-    fish: "🐟",
+    fish: "🎵",
     deepgram: "🎤",
-    hyprlab: "⚛️",
   };
-  return icons[provider as keyof typeof icons] || "🔑";
+  return icons[provider as keyof typeof icons] || "🤖";
 }
 
 function getProviderName(provider: string) {
@@ -555,10 +488,10 @@ function getProviderName(provider: string) {
     anthropic: "Anthropic",
     googleai: "Google AI",
     groq: "Groq",
+    hyprlab: "Hypr Lab",
     sambanova: "SambaNova",
     fish: "Fish Audio",
     deepgram: "Deepgram",
-    hyprlab: "Hypr Lab",
   };
   return names[provider as keyof typeof names] || provider;
 }

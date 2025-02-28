@@ -2,7 +2,6 @@ import { PageProps } from "$fresh/server.ts";
 import FloatingChat from "../../components/chat/FloatingChat.tsx";
 import { useSignal } from "@preact/signals";
 import { IS_BROWSER } from "$fresh/runtime.ts";
-import { useEffect } from "preact/hooks";
 import { addMessage } from "../../components/chat/store.ts";
 import { startStream } from "../../components/chat/stream.ts";
 

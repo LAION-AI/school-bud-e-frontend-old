@@ -9,9 +9,10 @@ const SafeListTodoIcon = (props: LucideProps): VNode => <ListTodo {...props} />;
 
 interface TestsSectionProps {
   isCollapsed: boolean;
+  highlight?: boolean;
 }
 
-export default function TestsSection({ isCollapsed }: TestsSectionProps) {
+export default function TestsSection({ isCollapsed, highlight }: TestsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
 
@@ -44,6 +45,12 @@ export default function TestsSection({ isCollapsed }: TestsSectionProps) {
       onRouteMatch={(match) => setCurrentPath(match?.[0] || "")}
       variant={sectionVariant}
     >
+      <a
+        href="/tests"
+        class={getLinkClasses("/tests")}
+      >
+        All Tests
+      </a>
       <a
         href="/tests/generate"
         class={getLinkClasses("/tests/generate")}

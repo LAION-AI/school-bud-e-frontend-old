@@ -1,5 +1,5 @@
 import { Redis } from "npm:ioredis";
-import type { SavedGame, SavedGamesData } from "../../../types/formats.ts";
+import type { SavedGamesData } from "../../../types/formats.ts";
 
 class KvStorage {
   private redisClient: Redis | null = null;

@@ -62,8 +62,13 @@ export interface GraphJson extends BaseFormat {
   type: 'graph';
   items: Array<{
     item: string;
-    childItems?: string;
-    connections?: string;
+    childItems?: string[];
+    connections?: Array<{
+      from: string;
+      to: string;
+    }>;
+    position?: { x: number; y: number };
+    image?: string;
   }>;
   name?: string;
 }
@@ -98,8 +103,22 @@ export interface FlashcardsJson extends BaseFormat {
   }>;
 }
 
+// Test JSON format
+export interface TestJson extends BaseFormat {
+  type: 'test';
+  name: string;
+  content: string;
+  questions: Array<{
+    id: string;
+    type: 'multiple_choice' | 'true_false' | 'short_answer';
+    question: string;
+    options?: string[];
+    correctAnswer: string | string[];
+  }>;
+}
+
 // Union type of all supported formats
-export type SupportedFormat = GraphJson | WebResultJson | FlashcardsJson | GameJson;
+export type SupportedFormat = GraphJson | WebResultJson | FlashcardsJson | GameJson | TestJson;
 
 // Format templates and metadata
 export const formatTemplates = {
@@ -161,16 +180,14 @@ json\`\`\``,
     requirements:[]
   },
   game: {
-    template: `\`\`\`json
-{ "type": "game", "content": { "topic": "string", "description": "string", "explanation": "string", "code": "string" } }
-\`\`\``,
+    template: '```json\n{ "type": "game", "content": { "topic": "string", "description": "string", "explanation": "string", "code": "string" } }\n```',
     description: 'For game content it\'s important to write the json type',
     requirements: [
       'Game must use Phaser.js and JavaScript but written in the JSON format.',
       'The json must not have any comments or linebreaks.',
       'Parent should be the div with id="phaser-game"',
       'Do not use HTML.',
-      `If you need assets you can use these small pixel art images and scale them up: /games/background.png, /games/currency.png, /games/dropzone.png /games/option_correct.png /games/option_wrong.png`,
+      'If you need assets you can use these small pixel art images and scale them up: /games/background.png, /games/currency.png, /games/dropzone.png /games/option_correct.png /games/option_wrong.png',
       'Should call the global function gameScore(gameName, points) if a user scored some points, it is essential to user experience',
       'Remove text when displaying right/wrong outputs',
       'Position game within container, not at end of body',
@@ -181,6 +198,17 @@ json\`\`\``,
       height: 600,
       backgroundColor: '#fff'
     }
+  },
+  test: {
+    template: '```json\n{\n  "type": "test",\n  "name": "string",\n  "content": "string",\n  "questions": [\n    {\n      "id": "string",\n      "type": "multiple_choice | true_false | short_answer",\n      "question": "string",\n      "options": ["string"],\n      "correctAnswer": "string" or ["string"]\n    }\n  ]\n}\n```',
+    description: 'For test content it\'s important to write the test type',
+    requirements: [
+      'Each question must have a unique id',
+      'Question types must be one of: multiple_choice, true_false, short_answer',
+      'Multiple choice questions must include options array',
+      'True/false questions should have "True" or "False" as correctAnswer',
+      'correctAnswer can be a string or an array of strings (for multiple correct answers)'
+    ],
   }
 };
 
@@ -199,6 +227,10 @@ export const isFlashcardsJson = (format: BaseFormat): format is FlashcardsJson =
 
 export const isGameJson = (format: BaseFormat): format is GameJson => {
   return format.type === 'game';
+};
+
+export const isTestJson = (format: BaseFormat): format is TestJson => {
+  return format.type === 'test';
 };
 
 // SavedGame interface for Deno KV storage

@@ -1,6 +1,4 @@
-import Header from "../islands/Header.tsx";
 import VideoNovelIsland from "../islands/VideoNovelIsland.tsx";
-import FloatingChat from "../components/chat/FloatingChat.tsx";
 
 export default function VideoNovel(req: Request) {
   const url = new URL(req.url);

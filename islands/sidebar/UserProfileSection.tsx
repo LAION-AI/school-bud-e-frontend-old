@@ -68,6 +68,7 @@ export default function UserProfileSection({
 					class="p-2 rounded hover:bg-blue-100 transition-colors"
 					aria-label="Open settings page"
 					title={lang === "de" ? "Einstellungen öffnen" : "Open settings"}
+					data-tour="open-settings-button"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

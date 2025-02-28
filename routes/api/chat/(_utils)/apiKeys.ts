@@ -57,7 +57,7 @@ export async function getApiKeys(params: ApiKeysParams): Promise<{ api_url: stri
     api_model = "";
   }
 
-  if (universalApiKey !== "" && universalApiKey.startsWith("sbe-")) {
+  if (universalApiKey?.startsWith("sbe-")) {
     api_url = llmApiUrl !== "" ? llmApiUrl : API_URL;
     api_key = llmApiKey !== "" ? llmApiKey : API_KEY;
     api_model = llmApiModel !== "" ? llmApiModel : API_MODEL;
@@ -69,7 +69,7 @@ export async function getApiKeys(params: ApiKeysParams): Promise<{ api_url: stri
     if (isCorrectionInLastMessage) {
       api_model = vlmCorrectionModel !== "" ? vlmCorrectionModel : API_IMAGE_CORRECTION_MODEL;
     }
-  } else if (universalShopApiKey !== "") {
+  } else if (universalShopApiKey) {
     type CastMessage = { role: string; content: string | (string | { type: "image_url"; image_url: { url: string; detail: string }; preview: string })[] };
     const castMessages = messages as unknown as CastMessage[];
     const { endpoint, apiKey, model } = await deductInputTokens(castMessages, universalShopApiKey);

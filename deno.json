@@ -2,7 +2,6 @@
   "imports": {
     "$std/": "https://deno.land/std@0.216.0/",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
-    "reactflow": "npm:reactflow@11.11.4",
     "lucide-preact": "npm:lucide-preact@^0.475.0",
     "preact": "https://esm.sh/preact@10.22.0",
     "preact/": "https://esm.sh/preact@10.22.0/",
@@ -12,7 +11,9 @@
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
     "tiktoken": "npm:tiktoken@^1.0.20",
-    "shepherd.js": "npm:shepherd.js@14.5.0"
+    "shepherd.js": "npm:shepherd.js@14.5.0",
+    "cytoscape": "npm:cytoscape@3.28.1",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
   },
   "tasks": {
     "test": "deno test -A",

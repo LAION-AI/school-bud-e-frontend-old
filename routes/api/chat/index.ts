@@ -221,7 +221,8 @@ ${value.requirements.join("\n")}`
               } else if (line === "data: [DONE]") {
                 console.log("Closing controller!");
                 controller.close();
-                if (universalShopApiKey !== "") {
+                console.log("universalShopApiKey", universalShopApiKey);
+                if (universalShopApiKey) {
                   deductOutputTokens(entireResponse, universalShopApiKey);
                 }
               }

@@ -4,6 +4,7 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $_layout from "./routes/_layout.tsx";
 import * as $about from "./routes/about.tsx";
 import * as $api_audio_button from "./routes/api/audio-button.ts";
 import * as $api_bildungsplan from "./routes/api/bildungsplan.ts";
@@ -29,6 +30,8 @@ import * as $profile from "./routes/profile.tsx";
 import * as $settings from "./routes/settings.tsx";
 import * as $tests_check from "./routes/tests/check.tsx";
 import * as $tests_generate from "./routes/tests/generate.tsx";
+import * as $tests_index from "./routes/tests/index.tsx";
+import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
 import * as $video_novel from "./routes/video-novel.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
@@ -45,6 +48,7 @@ import * as $PresentationGeneratorIsland from "./islands/PresentationGeneratorIs
 import * as $RelatedArticles from "./islands/RelatedArticles.tsx";
 import * as $RightSidebar from "./islands/RightSidebar.tsx";
 import * as $StoryEditor from "./islands/StoryEditor.tsx";
+import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
 import * as $VideoNovelIsland from "./islands/VideoNovelIsland.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
@@ -53,6 +57,7 @@ import * as $core_TourProgress from "./islands/core/TourProgress.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
 import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
 import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
+import * as $settings_ConfigurationSelector from "./islands/settings/ConfigurationSelector.tsx";
 import * as $sidebar_ChatList from "./islands/sidebar/ChatList.tsx";
 import * as $sidebar_CollapsibleSection from "./islands/sidebar/CollapsibleSection.tsx";
 import * as $sidebar_GamesSection from "./islands/sidebar/GamesSection.tsx";
@@ -65,12 +70,15 @@ import * as $sidebar_UserProfileSection from "./islands/sidebar/UserProfileSecti
 import * as $sidebar_VideoNovelLink from "./islands/sidebar/VideoNovelLink.tsx";
 import * as $sidebar_index from "./islands/sidebar/index.tsx";
 import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions.tsx";
+import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
+import * as $tests_islands_TestsListIsland from "./routes/tests/(_islands)/TestsListIsland.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/_layout.tsx": $_layout,
     "./routes/about.tsx": $about,
     "./routes/api/audio-button.ts": $api_audio_button,
     "./routes/api/bildungsplan.ts": $api_bildungsplan,
@@ -96,6 +104,8 @@ const manifest = {
     "./routes/settings.tsx": $settings,
     "./routes/tests/check.tsx": $tests_check,
     "./routes/tests/generate.tsx": $tests_generate,
+    "./routes/tests/index.tsx": $tests_index,
+    "./routes/tests/view/[id].tsx": $tests_view_id_,
     "./routes/video-novel.tsx": $video_novel,
   },
   islands: {
@@ -114,6 +124,7 @@ const manifest = {
     "./islands/RelatedArticles.tsx": $RelatedArticles,
     "./islands/RightSidebar.tsx": $RightSidebar,
     "./islands/StoryEditor.tsx": $StoryEditor,
+    "./islands/TourGuideInitializer.tsx": $TourGuideInitializer,
     "./islands/UserProfile.tsx": $UserProfile,
     "./islands/VideoNovelIsland.tsx": $VideoNovelIsland,
     "./islands/WindowManager.tsx": $WindowManager,
@@ -125,6 +136,8 @@ const manifest = {
       $core_buttons_ImageUploadButton,
     "./islands/core/buttons/VoiceRecordButton.tsx":
       $core_buttons_VoiceRecordButton,
+    "./islands/settings/ConfigurationSelector.tsx":
+      $settings_ConfigurationSelector,
     "./islands/sidebar/ChatList.tsx": $sidebar_ChatList,
     "./islands/sidebar/CollapsibleSection.tsx": $sidebar_CollapsibleSection,
     "./islands/sidebar/GamesSection.tsx": $sidebar_GamesSection,
@@ -137,6 +150,10 @@ const manifest = {
     "./islands/sidebar/VideoNovelLink.tsx": $sidebar_VideoNovelLink,
     "./islands/sidebar/index.tsx": $sidebar_index,
     "./routes/chat/(_islands)/ChatActions.tsx": $chat_islands_ChatActions,
+    "./routes/tests/(_islands)/TestViewIsland.tsx":
+      $tests_islands_TestViewIsland,
+    "./routes/tests/(_islands)/TestsListIsland.tsx":
+      $tests_islands_TestsListIsland,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

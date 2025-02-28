@@ -1,6 +1,7 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { graphs } from "../components/graph/store.ts";
+import type { ComponentChildren } from "preact";
 
 export default function GraphList() {
   const isClient = useSignal(false);
@@ -9,11 +10,15 @@ export default function GraphList() {
     isClient.value = true;
   }, []);
 
+  const handleGoToGraph = (id: string) => {
+    window.location.href = `/graph/${id}`;
+  };
+
   // Don't render anything during SSR
   if (!isClient.value) {
     return (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="col-span-full text-center py-8 text-gray-500">
+      <div class="container mx-auto px-6 py-8 max-w-4xl">
+        <div class="text-center py-8 text-gray-500">
           Loading graphs...
         </div>
       </div>
@@ -23,23 +28,91 @@ export default function GraphList() {
   const graphEntries = Array.from(graphs.value.entries());
 
   return (
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="container mx-auto px-6 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold mb-6">Your Knowledge Graphs</h1>
+
       {graphEntries.length > 0 ? (
-        graphEntries.map(([id, graph]) => (
-          <a
-            key={id}
-            href={`/graph/${id}`}
-            class="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
-          >
-            <h2 class="text-xl font-semibold mb-2">{graph.name || "Untitled Graph"}</h2>
-            <p class="text-gray-600">
-              {graph.items.length} {graph.items.length === 1 ? "node" : "nodes"}
-            </p>
-          </a>
-        ))
+        <div class="space-y-3">
+          {graphEntries.map(([id, graph]) => (
+            <div
+              key={id}
+              class="group border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
+              onClick={() => handleGoToGraph(id)}
+              role="button"
+              aria-label={`View graph: ${graph.name || "Untitled Graph"}`}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleGoToGraph(id);
+                }
+              }}
+            >
+              <div class="flex-1 min-w-0 mr-4">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 class="text-lg font-bold text-gray-800 group-hover:text-blue-700">
+                    {graph.name || "Untitled Graph"}
+                  </h2>
+                  <span class="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded-full">
+                    {graph.items.length} {graph.items.length === 1 ? "node" : "nodes"}
+                  </span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-x-4 text-xs text-gray-500 mt-1">
+                  <div class="flex items-center" title="Nodes">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>{graph.items.length} nodes</span>
+                  </div>
+                  
+                  <div class="flex items-center" title="Connections">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 6l6 6l-6 6"></path>
+                    </svg>
+                    <span>
+                      {graph.items.reduce((count, item) => {
+                        if (item.childItems) {
+                          return count + item.childItems.length;
+                        }
+                        return count;
+                      }, 0)} connections
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div 
+                class="flex-shrink-0 flex items-center justify-center opacity-80 group-hover:opacity-100 bg-blue-100 group-hover:bg-blue-600 p-2 rounded-full text-blue-600 group-hover:text-white transition-colors"
+                title="View Graph"
+                onClick={(e) => {
+                  // Prevent the click from triggering twice
+                  e.stopPropagation();
+                  handleGoToGraph(id);
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 6l6 6l-6 6"></path>
+                </svg>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
-        <div class="col-span-full text-center py-8 text-gray-500">
-          No graphs found. Create a new graph to get started.
+        <div class="text-center py-8 border border-dashed border-gray-300 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-gray-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <p class="text-lg text-gray-700 mb-2">No graphs found</p>
+          <p class="text-gray-500 mb-4">Create a new graph to get started with your knowledge base</p>
+          <a 
+            href="/graph/new" 
+            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Create New Graph
+          </a>
         </div>
       )}
     </div>
