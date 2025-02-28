@@ -95,9 +95,36 @@ export default function CollapsibleSection({
     }
   };
 
+  // Run once on mount to check if this section should be active
   useEffect(() => {
-    updateActiveAndExpanded();
-  }, [baseRoute, routePattern, onRouteMatch, shouldBeExpanded, onToggle, hasInitialized]);
+    const checkActive = () => {
+      const path = globalThis.location?.pathname;
+      
+      let isCurrentlyActive = false;
+      let match: RegExpMatchArray | null = null;
+  
+      if (routePattern) {
+        match = path?.match(routePattern) || null;
+        isCurrentlyActive = Boolean(match);
+      } else {
+        isCurrentlyActive = Boolean(path?.startsWith(baseRoute));
+      }
+  
+      setIsActive(isCurrentlyActive);
+  
+      if (!hasInitialized && isCurrentlyActive && !shouldBeExpanded) {
+        setShouldBeExpanded(true);
+        onToggle();
+      }
+      setHasInitialized(true);
+  
+      if (onRouteMatch) {
+        onRouteMatch(match);
+      }
+    };
+    
+    checkActive();
+  }, [baseRoute, routePattern, onRouteMatch, onToggle, shouldBeExpanded, hasInitialized]);
 
   useEffect(() => {
     setShouldBeExpanded(propIsExpanded);
@@ -111,10 +138,27 @@ export default function CollapsibleSection({
   const buttonBaseClasses = "w-full px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2";
 
   return (
-    <div class="relative group" onMouseUp={updateActiveAndExpanded}>
+    <div class="relative group">
       <button
         type="button"
-        onClick={handleToggle}
+        onClick={(e) => {
+          handleToggle();
+          
+          // Only navigate if this is a direct click on the section header button
+          // and not already on the section's route
+          if (!shouldBeExpanded && !isCollapsed) {
+            const path = globalThis.location?.pathname;
+            // Only navigate if we're not already on a path that starts with the baseRoute
+            if (!path?.startsWith(baseRoute)) {
+              // Use preventDefault to avoid any default navigation
+              e.preventDefault();
+              // Use history.pushState instead of changing location.href to avoid page reload
+              globalThis.history?.pushState(null, "", baseRoute);
+              // Manually update the active state since we're not reloading the page
+              setIsActive(true);
+            }
+          }
+        }}
         aria-expanded={shouldBeExpanded}
         aria-controls={`${title.toLowerCase()}-content`}
         class={`${buttonBaseClasses} ${getButtonColorClasses(isActive, variant)}`}

@@ -18,6 +18,7 @@ export interface TestQuestion {
   question: string;
   options?: string[]; // For multiple choice
   correctAnswer: string | string[] | number; // String for text, array for multiple answers, number for option index
+  imageUrl?: string; // Base64 encoded image data
 }
 
 // Define the tests store

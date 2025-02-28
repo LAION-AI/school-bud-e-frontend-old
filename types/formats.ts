@@ -117,8 +117,20 @@ export interface TestJson extends BaseFormat {
   }>;
 }
 
+// Presentation JSON format
+export interface PresentationJson extends BaseFormat {
+  type: 'presentation';
+  title: string;
+  slides: Array<{
+    title: string;
+    content: string[];
+    imageUrl?: string;
+    notes?: string;
+  }>;
+}
+
 // Union type of all supported formats
-export type SupportedFormat = GraphJson | WebResultJson | FlashcardsJson | GameJson | TestJson;
+export type SupportedFormat = GraphJson | WebResultJson | FlashcardsJson | GameJson | TestJson | PresentationJson;
 
 // Format templates and metadata
 export const formatTemplates = {
@@ -209,7 +221,30 @@ json\`\`\``,
       'True/false questions should have "True" or "False" as correctAnswer',
       'correctAnswer can be a string or an array of strings (for multiple correct answers)'
     ],
-  }
+  },
+  presentation: {
+    template: `\`\`\`json
+{
+  "type": "presentation",
+  "title": "string",
+  "slides": [
+    {
+      "title": "string",
+      "content": ["string"],
+      "imageUrl": "string (optional)",
+      "notes": "string (optional)"
+    }
+  ]
+}
+\`\`\``,
+    description: 'For presentation content it\'s important to write the presentation type',
+    requirements: [
+      'Each slide should have a clear title',
+      'Content should be provided as an array of strings, each representing a bullet point or paragraph',
+      'Optional imageUrl can be included for slides that need visual elements',
+      'Optional notes can be included for presenter notes'
+    ],
+  },
 };
 
 // Type guard functions
@@ -231,6 +266,10 @@ export const isGameJson = (format: BaseFormat): format is GameJson => {
 
 export const isTestJson = (format: BaseFormat): format is TestJson => {
   return format.type === 'test';
+};
+
+export const isPresentationJson = (format: BaseFormat): format is PresentationJson => {
+  return format.type === 'presentation';
 };
 
 // SavedGame interface for Deno KV storage

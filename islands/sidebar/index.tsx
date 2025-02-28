@@ -34,15 +34,15 @@ export default function Sidebar({
 	const handleLinkClick = (e: MouseEvent) => {
 		const target = e.target as HTMLElement;
 		const anchor = target.closest('a');
-		if (anchor && anchor.getAttribute('href')) {
-			const href = anchor.getAttribute('href')!;
-			if (href.startsWith('/games')) {
+		if (anchor?.getAttribute('href')) {
+			const href = anchor.getAttribute('href');
+			if (href?.startsWith('/games')) {
 				setSelectedSection('games');
-			} else if (href.startsWith('/graphs')) {
+			} else if (href?.startsWith('/graphs')) {
 				setSelectedSection('graphs');
-			} else if (href.startsWith('/presentations')) {
+			} else if (href?.startsWith('/presentations')) {
 				setSelectedSection('presentations');
-			} else if (href.startsWith('/tests')) {
+			} else if (href?.startsWith('/tests')) {
 				setSelectedSection('tests');
 			} else {
 				setSelectedSection(null);
@@ -53,9 +53,25 @@ export default function Sidebar({
 	useEffect(() => {
 		const urlParams = new URLSearchParams(globalThis.location?.search);
 		urlParams.set("collapsed", `${isCollapsed}`);
-		const newUrl = `${globalThis.location.origin}${globalThis.location?.pathname}?${urlParams.toString()}`;
+		const newUrl = `${globalThis.location?.origin}${globalThis.location?.pathname}?${urlParams.toString()}`;
 		globalThis.history?.replaceState(null, "", newUrl);
 	}, [isCollapsed]);
+
+	// Set the initial selected section based on the current URL
+	useEffect(() => {
+		const path = globalThis.location?.pathname || '';
+		if (path.startsWith('/games')) {
+			setSelectedSection('games');
+		} else if (path.startsWith('/graphs')) {
+			setSelectedSection('graphs');
+		} else if (path.startsWith('/presentations')) {
+			setSelectedSection('presentations');
+		} else if (path.startsWith('/tests')) {
+			setSelectedSection('tests');
+		} else {
+			setSelectedSection(null);
+		}
+	}, []);
 
 	return (
 		<div
@@ -67,18 +83,24 @@ export default function Sidebar({
 			/>
 
 			<div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
-				<div class="p-3 space-y-3" onClick={handleLinkClick}>
+				<nav 
+					class="p-3 space-y-3" 
+					onClick={handleLinkClick}
+					onKeyDown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							handleLinkClick(e as unknown as MouseEvent);
+						}
+					}}
+				>
 					<GamesSection 
 						isCollapsed={isCollapsed}
 						highlight={selectedSection === 'games'}
 					/>
 					<GraphsSection 
 						isCollapsed={isCollapsed}
-						highlight={selectedSection === 'graphs'}
 					/>
 					<PresentationsSection 
 						isCollapsed={isCollapsed}
-						highlight={selectedSection === 'presentations'}
 					/>
 					<VideoNovelLink isCollapsed={isCollapsed} />
 					<TestsSection 
@@ -92,7 +114,7 @@ export default function Sidebar({
 						onDeleteChat={deleteChat}
 					/>
 					<TourProgressSidebarSection />
-				</div>
+				</nav>
 			</div>
 
 			<div class="p-3 pt-0">

@@ -52,12 +52,6 @@ export default function TestsSection({ isCollapsed, highlight }: TestsSectionPro
         All Tests
       </a>
       <a
-        href="/tests/generate"
-        class={getLinkClasses("/tests/generate")}
-      >
-        Generate Tests
-      </a>
-      <a
         href="/tests/check"
         class={getLinkClasses("/tests/check")}
       >

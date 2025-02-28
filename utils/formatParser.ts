@@ -1,4 +1,4 @@
-import type { SupportedFormat, BaseFormat, GraphJson, WebResultJson, FlashcardsJson, GameJson, TestJson } from '../types/formats.ts';
+import type { SupportedFormat, BaseFormat, GraphJson, WebResultJson, FlashcardsJson, GameJson, TestJson, PresentationJson } from '../types/formats.ts';
 
 /**
  * Result of format extraction
@@ -51,6 +51,13 @@ export function isGameJson(data: BaseFormat): data is GameJson {
  */
 export function isTestJson(data: BaseFormat): data is TestJson {
   return data.type === 'test' && Array.isArray((data as TestJson).questions);
+}
+
+/**
+ * Type guard for PresentationJson
+ */
+export function isPresentationJson(data: BaseFormat): data is PresentationJson {
+  return data.type === 'presentation' && Array.isArray((data as PresentationJson).slides);
 }
 
 /**
@@ -244,4 +251,46 @@ export function extractTestData(
   }
   
   return result;
+}
+
+/**
+ * Extract presentation data from a string
+ */
+export function extractPresentationData(
+  text: string,
+  options: FormatExtractionOptions = {}
+): PresentationJson | null {
+  try {
+    // First try the standard extraction method
+    const result = extractFormattedData<PresentationJson>(
+      text, 
+      { ...options, expectedType: 'presentation' }
+    );
+    
+    if (result.success && result.format) {
+      if (isPresentationJson(result.format)) {
+        return result.format;
+      }
+    }
+    
+    // If standard extraction fails, try to find JSON directly in the text
+    // This is useful for streaming responses where we might not have complete JSON with code blocks
+    const jsonMatch = text.match(/\{[\s\S]*"type"\s*:\s*"presentation"[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsedData = JSON.parse(jsonMatch[0]);
+        if (isPresentationJson(parsedData)) {
+          return parsedData;
+        }
+      } catch (e) {
+        // If parsing fails, we'll return null below
+        console.error("Failed to parse presentation JSON:", e);
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Error extracting presentation data:", error);
+    return null;
+  }
 } 

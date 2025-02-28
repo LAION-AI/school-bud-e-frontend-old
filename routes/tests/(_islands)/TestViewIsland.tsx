@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "preact/hooks";
+import { useEffect, useState, useCallback, useRef } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
 import { ArrowLeft, Trash2, Eye, type LucideProps } from "lucide-preact";
 import type { VNode } from "preact";
@@ -37,6 +37,9 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
   } | null>(null);
   const [checkingShortAnswers, setCheckingShortAnswers] = useState(false);
   const [revisitMode, setRevisitMode] = useState(false);
+  
+  // References for input elements to manage focus
+  const inputRefs = useRef<Record<string, HTMLInputElement | HTMLElement | null>>({});
   
   // Reference to store functions we need to use
   const [deleteTestFn, setDeleteTestFn] = useState<((id: string) => void) | null>(null);
@@ -90,7 +93,9 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             : '';
         
         // Update feedback based on the response
-        shortAnswerQuestions.forEach((question) => {
+        let additionalCorrect = 0;
+        
+        for (const question of shortAnswerQuestions) {
           const questionIndex = test?.questions.findIndex(q => q.id === question.id) || 0;
           const feedbackIndex = updatedFeedback.findIndex(f => f.questionIdx === questionIndex);
           
@@ -115,11 +120,19 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 answerCorrectness.includes('good job')
               ) {
                 updatedFeedback[feedbackIndex].isCorrect = true;
-                setScore(prev => ({...prev, correct: prev.correct + 1}));
+                additionalCorrect++;
               }
             }
           }
-        });
+        }
+        
+        // Update the score with the additional correct answers
+        if (additionalCorrect > 0) {
+          setScore(prev => ({
+            ...prev, 
+            correct: prev.correct + additionalCorrect
+          }));
+        }
         
         setSubmission({...submission, feedback: updatedFeedback});
       }
@@ -179,7 +192,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
     // Construct a prompt to evaluate the short answers
     let prompt = "I need you to evaluate some short answer test responses. For each question, I'll provide the correct answer and the student's response. Please tell me if each response is correct or not, and provide a brief explanation.";
     
-    shortAnswerQuestions.forEach((question) => {
+    for (const question of shortAnswerQuestions) {
       const questionIndex = test.questions.findIndex(q => q.id === question.id);
       const userAnswer = selectedAnswers[questionIndex.toString()] as string || "(No answer provided)";
       
@@ -187,7 +200,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
       prompt += `Correct answer: ${question.correctAnswer}\n`;
       prompt += `Student's answer: ${userAnswer}\n`;
       prompt += "Is this correct? Please explain why or why not in 1-2 sentences.";
-    });
+    }
     
     // Send to LLM for evaluation
     addMessage({ role: "user", content: prompt });
@@ -216,8 +229,16 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
         isCorrect = selectedOptions.length === correctOptions.length &&
           selectedOptions.every(option => correctOptions.includes(option));
       } else if (question.type === "true_false") {
-        // For true/false, direct comparison
-        isCorrect = userAnswer === question.correctAnswer;
+        // For true/false, direct comparison with language normalization
+        const normalizedUserAnswer = (userAnswer as string).toLowerCase();
+        const normalizedCorrectAnswer = (question.correctAnswer as string).toLowerCase();
+        
+        // Handle German/English equivalents
+        isCorrect = normalizedUserAnswer === normalizedCorrectAnswer ||
+                   (normalizedUserAnswer === "falsch" && normalizedCorrectAnswer === "false") ||
+                   (normalizedUserAnswer === "false" && normalizedCorrectAnswer === "falsch") ||
+                   (normalizedUserAnswer === "wahr" && normalizedCorrectAnswer === "true") ||
+                   (normalizedUserAnswer === "true" && normalizedCorrectAnswer === "wahr");
       } else if (question.type === "short_answer") {
         // For short answer, we'll use fuzzy matching initially but will validate with LLM later
         const normalizedUserAnswer = (userAnswer as string).toLowerCase().trim();
@@ -258,18 +279,61 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
     }
   };
 
+  // Handle keyboard events for the entire test form
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !showResults) {
+      e.preventDefault();
+      
+      if (currentQuestionIndex < (test?.questions.length || 0) - 1) {
+        // Move to next question on Enter
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        // Submit the test on Enter if on the last question
+        handleSubmit();
+      }
+    }
+  };
+
+  // Focus the appropriate input when changing questions
+  useEffect(() => {
+    if (!showResults && test) {
+      // Focus the first input of the current question
+      const currentQuestionRef = inputRefs.current[`question-${currentQuestionIndex}`];
+      if (currentQuestionRef) {
+        setTimeout(() => {
+          currentQuestionRef.focus();
+        }, 50);
+      }
+    }
+  }, [currentQuestionIndex, showResults, test]);
+
   const renderQuestion = (question: TestQuestion, index: number) => {
     const isCurrentQuestion = index === currentQuestionIndex;
     
     if (!isCurrentQuestion && !showResults) return null;
     
     return (
-      <div key={`question-${index}`} class={`mb-12 ${showResults ? 'block' : (isCurrentQuestion ? 'block' : 'hidden')}`}>
+      <div 
+        key={`question-${index}`} 
+        class={`mb-12 ${showResults ? 'block' : (isCurrentQuestion ? 'block' : 'hidden')}`}
+        onKeyDown={handleKeyDown}
+      >
         <h3 class="text-2xl font-semibold mb-6">Question {index + 1}: {question.question}</h3>
+        
+        {/* Display question image if available */}
+        {question.imageUrl && (
+          <div class="mb-6">
+            <img 
+              src={question.imageUrl} 
+              alt={`Question ${index + 1} visual`}
+              class="max-w-full rounded-lg border border-gray-200 max-h-64 mx-auto"
+            />
+          </div>
+        )}
         
         {question.type === "multiple_choice" && (
           <div class="space-y-4">
-            {question.options?.map((option) => {
+            {question.options?.map((option, optIndex) => {
               const isSelected = Array.isArray(selectedAnswers[index.toString()]) && 
                 (selectedAnswers[index.toString()] as string[]).includes(option);
               const isCorrect = showResults && Array.isArray(question.correctAnswer) 
@@ -292,6 +356,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                       disabled={showResults}
                       class="mr-4 h-5 w-5"
                       onChange={() => !showResults && handleAnswerSelect(index, option)}
+                      ref={optIndex === 0 ? (el) => { inputRefs.current[`question-${index}`] = el; } : null}
+                      tabIndex={isCurrentQuestion ? 0 : -1}
                     />
                     <span class="text-lg">{option}</span>
                     {showResults && isCorrect && <span class="ml-auto text-green-600 text-xl">✓</span>}
@@ -305,10 +371,30 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
         
         {question.type === "true_false" && (
           <div class="space-y-4">
-            {["True", "False"].map((option) => {
-              const isSelected = selectedAnswers[index.toString()] === option;
-              const isCorrect = showResults && question.correctAnswer === option;
+            {["True", "False"].map((option, optIndex) => {
+              // Normalize the selected answer and correct answer for comparison
+              const normalizedSelected = (selectedAnswers[index.toString()] as string || "").toLowerCase();
+              const normalizedOption = option.toLowerCase();
+              const normalizedCorrect = (question.correctAnswer as string || "").toLowerCase();
+              
+              // Check if selected, considering language equivalents
+              const isSelected = normalizedSelected === normalizedOption ||
+                               (normalizedSelected === "wahr" && normalizedOption === "true") ||
+                               (normalizedSelected === "falsch" && normalizedOption === "false");
+              
+              // Check if correct, considering language equivalents
+              const isCorrect = showResults && (
+                normalizedCorrect === normalizedOption ||
+                (normalizedCorrect === "wahr" && normalizedOption === "true") ||
+                (normalizedCorrect === "falsch" && normalizedOption === "false")
+              );
+              
               const isWrong = showResults && isSelected && !isCorrect;
+              
+              // Display the option in the user's preferred language
+              const displayOption = option === "True" ? 
+                (normalizedSelected === "wahr" ? "Wahr" : "True") : 
+                (normalizedSelected === "falsch" ? "Falsch" : "False");
               
               return (
                 <label 
@@ -326,8 +412,10 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                       disabled={showResults}
                       class="mr-4 h-5 w-5"
                       onChange={() => !showResults && handleAnswerSelect(index, option)}
+                      ref={optIndex === 0 ? (el) => { inputRefs.current[`question-${index}`] = el; } : null}
+                      tabIndex={isCurrentQuestion ? 0 : -1}
                     />
-                    <span class="text-lg">{option}</span>
+                    <span class="text-lg">{displayOption}</span>
                     {showResults && isCorrect && <span class="ml-auto text-green-600 text-xl">✓</span>}
                     {isWrong && <span class="ml-auto text-red-600 text-xl">✗</span>}
                   </div>
@@ -346,6 +434,18 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               disabled={showResults}
               onInput={(e) => !showResults && handleAnswerSelect(index, (e.target as HTMLInputElement).value)}
               placeholder="Type your answer here..."
+              ref={(el) => { inputRefs.current[`question-${index}`] = el; }}
+              tabIndex={isCurrentQuestion ? 0 : -1}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (currentQuestionIndex < (test?.questions.length || 0) - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                  } else {
+                    handleSubmit();
+                  }
+                }
+              }}
             />
             {showResults && (
               <div class="mt-6 pl-4 border-l-4 border-l-blue-500 bg-blue-50 p-4">
@@ -535,7 +635,9 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             
             {currentQuestionIndex < test.questions.length - 1 ? (
               <Button
-                onClick={() => setCurrentQuestionIndex(Math.min(test.questions.length - 1, currentQuestionIndex + 1))}
+                onClick={() => {
+                  setCurrentQuestionIndex(Math.min(test.questions.length - 1, currentQuestionIndex + 1));
+                }}
                 class="px-6 py-3 text-lg"
               >
                 Next
@@ -544,6 +646,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               <Button
                 onClick={handleSubmit}
                 class="px-6 py-3 text-lg bg-green-600 hover:bg-green-700"
+                type="submit"
               >
                 Submit Test
               </Button>

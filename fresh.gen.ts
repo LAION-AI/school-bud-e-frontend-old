@@ -26,10 +26,13 @@ import * as $graph_list from "./routes/graph/list.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $lernpfade from "./routes/lernpfade.tsx";
 import * as $presentations_generator from "./routes/presentations/generator.tsx";
+import * as $presentations_index from "./routes/presentations/index.tsx";
+import * as $presentations_preview from "./routes/presentations/preview.tsx";
 import * as $profile from "./routes/profile.tsx";
 import * as $settings from "./routes/settings.tsx";
 import * as $tests_check from "./routes/tests/check.tsx";
-import * as $tests_generate from "./routes/tests/generate.tsx";
+import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
+import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
 import * as $tests_index from "./routes/tests/index.tsx";
 import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
 import * as $video_novel from "./routes/video-novel.tsx";
@@ -45,6 +48,8 @@ import * as $Header from "./islands/Header.tsx";
 import * as $LearningPathsGraph from "./islands/LearningPathsGraph.tsx";
 import * as $Menu from "./islands/Menu.tsx";
 import * as $PresentationGeneratorIsland from "./islands/PresentationGeneratorIsland.tsx";
+import * as $PresentationPreviewIsland from "./islands/PresentationPreviewIsland.tsx";
+import * as $PresentationsListIsland from "./islands/PresentationsListIsland.tsx";
 import * as $RelatedArticles from "./islands/RelatedArticles.tsx";
 import * as $RightSidebar from "./islands/RightSidebar.tsx";
 import * as $StoryEditor from "./islands/StoryEditor.tsx";
@@ -70,6 +75,7 @@ import * as $sidebar_UserProfileSection from "./islands/sidebar/UserProfileSecti
 import * as $sidebar_VideoNovelLink from "./islands/sidebar/VideoNovelLink.tsx";
 import * as $sidebar_index from "./islands/sidebar/index.tsx";
 import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions.tsx";
+import * as $tests_islands_TestComposerIsland from "./routes/tests/(_islands)/TestComposerIsland.tsx";
 import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
 import * as $tests_islands_TestsListIsland from "./routes/tests/(_islands)/TestsListIsland.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -100,10 +106,13 @@ const manifest = {
     "./routes/index.tsx": $index,
     "./routes/lernpfade.tsx": $lernpfade,
     "./routes/presentations/generator.tsx": $presentations_generator,
+    "./routes/presentations/index.tsx": $presentations_index,
+    "./routes/presentations/preview.tsx": $presentations_preview,
     "./routes/profile.tsx": $profile,
     "./routes/settings.tsx": $settings,
     "./routes/tests/check.tsx": $tests_check,
-    "./routes/tests/generate.tsx": $tests_generate,
+    "./routes/tests/compose/[id].tsx": $tests_compose_id_,
+    "./routes/tests/compose/index.tsx": $tests_compose_index,
     "./routes/tests/index.tsx": $tests_index,
     "./routes/tests/view/[id].tsx": $tests_view_id_,
     "./routes/video-novel.tsx": $video_novel,
@@ -121,6 +130,8 @@ const manifest = {
     "./islands/LearningPathsGraph.tsx": $LearningPathsGraph,
     "./islands/Menu.tsx": $Menu,
     "./islands/PresentationGeneratorIsland.tsx": $PresentationGeneratorIsland,
+    "./islands/PresentationPreviewIsland.tsx": $PresentationPreviewIsland,
+    "./islands/PresentationsListIsland.tsx": $PresentationsListIsland,
     "./islands/RelatedArticles.tsx": $RelatedArticles,
     "./islands/RightSidebar.tsx": $RightSidebar,
     "./islands/StoryEditor.tsx": $StoryEditor,
@@ -150,6 +161,8 @@ const manifest = {
     "./islands/sidebar/VideoNovelLink.tsx": $sidebar_VideoNovelLink,
     "./islands/sidebar/index.tsx": $sidebar_index,
     "./routes/chat/(_islands)/ChatActions.tsx": $chat_islands_ChatActions,
+    "./routes/tests/(_islands)/TestComposerIsland.tsx":
+      $tests_islands_TestComposerIsland,
     "./routes/tests/(_islands)/TestViewIsland.tsx":
       $tests_islands_TestViewIsland,
     "./routes/tests/(_islands)/TestsListIsland.tsx":
