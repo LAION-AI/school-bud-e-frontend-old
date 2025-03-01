@@ -1,5 +1,6 @@
 import { useState, useEffect } from "preact/hooks";
 import FloatingChat from "../../../components/chat/FloatingChat.tsx";
+import { Button } from "../../../components/Button.tsx";
 
 interface VideoNovelIslandProps {
 	lang: string;
@@ -301,7 +302,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 						{/* Controls */}
 						<div className="bg-gray-800/70 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
 							<div className="flex flex-wrap gap-3">
-								<button
+								<Button
 									type="button"
 									className="bg-green-500 hover:bg-green-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2"
 								>
@@ -321,8 +322,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										<polygon points="5 3 19 12 5 21 5 3" />
 									</svg>
 									Play
-								</button>
-								<button
+								</Button>
+								<Button
 									type="button"
 									className="bg-gray-700 hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2"
 									onClick={() => setIsModalOpen(true)}
@@ -344,8 +345,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										<path d="M5 12h14" />
 									</svg>
 									Create New
-								</button>
-								<button
+								</Button>
+								<Button
 									type="button"
 									className="bg-gray-700 hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2"
 								>
@@ -366,8 +367,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
 									</svg>
 									Edit
-								</button>
-								<button
+								</Button>
+								<Button
 									type="button"
 									className="bg-gray-700 hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2"
 								>
@@ -389,7 +390,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										<line x1="12" y1="15" x2="12" y2="3" />
 									</svg>
 									Save
-								</button>
+								</Button>
 							</div>
 						</div>
 					</div>
@@ -574,14 +575,14 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 									</div>
 
 									<div className="pt-4 flex justify-end space-x-3">
-										<button
+										<Button
 											type="button"
 											className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md"
 											onClick={() => setIsModalOpen(false)}
 										>
 											Cancel
-										</button>
-										<button
+										</Button>
+										<Button
 											type="submit"
 											className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-md flex items-center gap-2"
 											disabled={isGenerating}
@@ -615,7 +616,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 											) : (
 												<>Generate</>
 											)}
-										</button>
+										</Button>
 									</div>
 								</div>
 							</form>
