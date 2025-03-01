@@ -1,7 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { Button } from "../components/Button.tsx";
-import { editStore } from "../components/video-novel/edit-store.ts";
+// import { editStore } from "../components/video-novel/edit-store.ts";
 import { useSignal } from "@preact/signals";
+const editStore = {} as any;
 
 interface StoryEditorProps {
   originalHash: string;

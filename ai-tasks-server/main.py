@@ -11,7 +11,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 import asyncio
 import multiprocessing_logging
 import xml.etree.ElementTree as ET
-from typing import Optional
+from typing import Optional, Dict, Any
 import shutil
 
 multiprocessing_logging.install_mp_handler()
@@ -97,6 +97,16 @@ async def generate_video(request: Request):
         prompt = body['prompt']
         if not isinstance(prompt, str):
             raise HTTPException(status_code=400, detail="Prompt must be a string")
+            
+        # Extract optional parameters
+        style = body.get('style', 'realistic')
+        custom_instructions = body.get('customInstructions', '')
+        
+        # Create a configuration object to pass to the generation logic
+        config: Dict[str, Any] = {
+            'style': style,
+            'custom_instructions': custom_instructions
+        }
 
         hash = unique_hash()
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -105,10 +115,20 @@ async def generate_video(request: Request):
         request_log = RequestLogger(request)
         request_log.log("videoId", hash)
         
-        asyncio.create_task(asyncio.to_thread(generate_video_logic, prompt, hash_dir, request_log))
+        # Pass the config to the generation logic
+        asyncio.create_task(asyncio.to_thread(
+            generate_video_logic, 
+            prompt, 
+            hash_dir, 
+            request_log, 
+            config
+        ))
         
         async def json_stream():
             async for item in request_log.create_stream():
+                # Remove any videoId field that might have been added
+                if 'videoId' in item and item['type'] != 'videoId':
+                    del item['videoId']
                 yield JSONResponse(content=item).body + b"\n"
                 
         return StreamingResponse(json_stream(), media_type="application/json")
@@ -134,6 +154,14 @@ async def edit_story(original_hash: str, request: Request):
         
         segment_id = body['segment_id']
         edit_content = body['edit_content']
+        
+        # Extract optional parameters
+        custom_instructions = body.get('customInstructions', '')
+        
+        # Create a configuration object
+        config: Dict[str, Any] = {
+            'custom_instructions': custom_instructions
+        }
         
         # Create new session
         request_log = init_request_logger(request)
@@ -169,16 +197,20 @@ async def edit_story(original_hash: str, request: Request):
         # Update session status
         request_log.session_manager.update_session_status(session.edit_hash, "processing")
         
-        # Process edit in isolated workspace
+        # Process edit in isolated workspace with custom instructions
         asyncio.create_task(asyncio.to_thread(
             generate_video_logic,
             edit_content,
             edit_dir,
-            request_log
+            request_log,
+            config
         ))
         
         async def json_stream():
             async for item in request_log.create_stream():
+                # Remove any videoId field that might have been added
+                if 'videoId' in item and item['type'] != 'videoId':
+                    del item['videoId']
                 yield JSONResponse(content=item).body + b"\n"
                 
         return StreamingResponse(json_stream(), media_type="application/json")

@@ -11,6 +11,7 @@ import * as $api_bildungsplan from "./routes/api/bildungsplan.ts";
 import * as $api_chat_index from "./routes/api/chat/index.ts";
 import * as $api_chat_recent_graphs from "./routes/api/chat/recent-graphs.ts";
 import * as $api_game from "./routes/api/game.ts";
+import * as $api_generate_video from "./routes/api/generate/video.ts";
 import * as $api_images_pixelart from "./routes/api/images/pixelart.ts";
 import * as $api_papers from "./routes/api/papers.ts";
 import * as $api_presentations_generate from "./routes/api/presentations/generate.ts";
@@ -91,6 +92,7 @@ const manifest = {
     "./routes/api/chat/index.ts": $api_chat_index,
     "./routes/api/chat/recent-graphs.ts": $api_chat_recent_graphs,
     "./routes/api/game.ts": $api_game,
+    "./routes/api/generate/video.ts": $api_generate_video,
     "./routes/api/images/pixelart.ts": $api_images_pixelart,
     "./routes/api/papers.ts": $api_papers,
     "./routes/api/presentations/generate.ts": $api_presentations_generate,

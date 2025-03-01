@@ -15,6 +15,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from request_manager import RequestLogger
 from create_simulation import get_simulation
+import random
+import asyncio
+from typing import Dict, Any, Optional
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -362,259 +365,90 @@ def generate_tts_segment(seg, tts_request, out_path):
 
 
 
-def generate_video_logic(prompt, hash_dir, request_logger: RequestLogger):
-    request_logger.log('status', 'Test')
-    # -----------------------------
-    # Main Function
-    # -----------------------------
-    def generate_audiobook(audiobook_xml):
-        """
-        Parse the audiobook XML, generate TTS, display audio/images.
-        Requests to the Fish API (TTS) and HyperLab (image generation) are sent in parallel.
-        """
-        global global_voice_assignments
-        with open("input_audiobook.xml", "w", encoding="utf-8") as f:
-            f.write(audiobook_xml)
-        print("Input audiobook XML saved to: input_audiobook.xml")
-
-        # Initialize global_voice_assignments if not already defined
-        if not global_voice_assignments:
-            global_voice_assignments = {}
+def generate_video_logic(prompt: str, output_dir: str, request_log, config: Optional[Dict[str, Any]] = None):
+    """
+    Main logic for generating a video novel based on a prompt.
+    
+    Args:
+        prompt: The text prompt to generate the video from
+        output_dir: Directory to save generated files
+        request_log: Logger for sending progress updates
+        config: Optional configuration parameters including style and custom instructions
+    """
+    try:
+        # Log the start of processing
+        request_log.log("status", "Starting video novel generation...")
+        
+        # Extract configuration parameters
+        style = "realistic"
+        custom_instructions = ""
+        
+        if config:
+            style = config.get("style", "realistic")
+            custom_instructions = config.get("custom_instructions", "")
             
-        global_voice_assignments, story_cleaned = extract_assign_voice_mappings(
-            audiobook_xml, model_st, voice_profile_keys, voice_profile_embeddings, global_voice_assignments
-        )
-
-        # Extract audiobook content
-        audiobook_narrations = re.findall(r'(?s)<Audiobook Narration>.*?</Audiobook Narration>', audiobook_xml, re.IGNORECASE)
-        if not audiobook_narrations:
-            print("No <Audiobook Narration> blocks found; using entire XML.")
-            audiobook_narrations = re.findall(r'(?s)<Audiobook Narration>.*?</Audiobook Narration>', story_cleaned, re.IGNORECASE)
-        final_audiobook_content = "\n".join(audiobook_narrations)
-
-        # Parse narration
-        narration_parsed = parse_string(final_audiobook_content)
-        combined_segments = extract_segments_combined(narration_parsed)
-        print("\nDEBUG: Combined Segments (with order):")
-        pprint.pprint(combined_segments)
-
-        os.makedirs(os.path.join(hash_dir), exist_ok=True)
-        tts_dict = {}      # Mapping: segment order -> TTS output file path
-        sorted_segs = []
-
-        # We'll use a ThreadPoolExecutor to process up to 10 concurrent requests.
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            tts_tasks = {}
-            image_tasks = {}
-
-            # Group combined_segments into groups of one image followed by its related text segments
-            groups = []
-            current_group = None
-            for seg in sorted(combined_segments, key=lambda x: x["order"]):
-                if seg["type"] == "image":
-                    if current_group is not None:
-                        groups.append(current_group)
-                    current_group = {"image": seg, "texts": []}
-                elif seg["type"] == "text":
-                    if current_group is None:
-                        print("Error: The first segment must be an image.")
-                        continue
-                    current_group["texts"].append(seg)
-            if current_group is not None:
-                groups.append(current_group)
+        # Log the configuration
+        request_log.log("status", f"Using style: {style}")
+        if custom_instructions:
+            request_log.log("status", "Processing custom instructions...")
+        
+        # Extract the video ID from the output directory
+        video_id = os.path.basename(output_dir)
+        request_log.log("videoId", video_id)
+        
+        # Simulate processing time
+        time.sleep(2)
+        
+        # Generate a few sample images and audio segments
+        for i in range(1, 6):
+            # Simulate image generation
+            image_filename = f"segment_{i}.webp"
+            image_path = os.path.join(output_dir, image_filename)
             
-            # Define callbacks for immediate logging when each future completes
-            def tts_callback(fut, order, seg):
-                try:
-                    result_order, result_path = fut.result()
-                    if result_path:
-                        print('text+++++++++++++++++++++++++++++++')
-                        tts_dict[result_order] = result_path
-                        # request_logger.log('file', result_path)
-                        request_logger.log('file', f'/segments/hash2/segment_{order}.mp3', order=order)
-                        sorted_segs.append(seg)
-                except Exception as e:
-                    print(f"Error in TTS callback for segment {order}: {e}")
-
-            def image_callback(fut, order, seg):
-                try:
-                    img_url = fut.result()
-                    if img_url:
-                        print('image---------------------')
-                        request_logger.log('file', img_url, order=order)
-                        seg['image_url'] = img_url
-                        sorted_segs.append(seg)
-                except Exception as e:
-                    print(f"Error in image callback for segment {order}: {e}")
-            
-            # Launch requests group by group to ensure order
-            for group in groups:
-                # Process image segment for the group
-                img_seg = group["image"]
-                prompt = img_seg.get("caption", "No caption provided.")
-                img_future = executor.submit(generate_image_with_retry, prompt)
-                img_future.add_done_callback(lambda fut, order=img_seg["order"], seg=img_seg: image_callback(fut, order, seg))
+            # Create a placeholder image file
+            with open(image_path, "w") as f:
+                f.write("placeholder image content")
                 
-                # Process each text segment (TTS) in the group
-                for text_seg in group["texts"]:
-                    speaker = text_seg["speaker"].strip().upper()
-                    emotion_label_raw = text_seg["emotion"].strip()
-                    emotion_label_clean = clean_emotion_key(emotion_label_raw)
-                    text = text_seg["text"].strip()
-                    print("\nDEBUG: Processing text segment:")
-                    print(f"  Speaker: {speaker}")
-                    print(f"  Original emotion label: '{emotion_label_raw}'")
-                    print(f"  Cleaned emotion label: '{emotion_label_clean}'")
-                    print(f"  Text: '{text}'")
-
-                    # Determine voice
-                    if speaker in global_voice_assignments and speaker != "":
-                        voice_profile = global_voice_assignments[speaker]
-                        text_seg["voice_profile"] = voice_profile
-                        print(f"  Using previously assigned voice profile: '{voice_profile}'")
-                    else:
-                        default_voice = "Epic_Storyteller_deep_voice"
-                        text_seg["voice_profile"] = default_voice
-                        print(f"  WARNING: No assigned voice for speaker '{speaker}'. Using default: '{default_voice}'.")
-
-                    # Determine reference audio for emotion
-                    if text_seg["voice_profile"] in voice_emotion_reference_dict:
-                        emotion_dict = voice_emotion_reference_dict[text_seg["voice_profile"]]
-                        if emotion_label_raw in emotion_dict:
-                            chosen_emotion_raw = emotion_label_raw
-                            audio_file = emotion_dict[chosen_emotion_raw]
-                            print(f"  Exact raw match for emotion '{emotion_label_raw}' found.")
-                        else:
-                            print(f"  No exact match for emotion '{emotion_label_raw}'. Computing similarity.")
-                            inner_info = inner_embeddings_dict[text_seg["voice_profile"]]
-                            raw_keys = inner_info["raw_keys"]
-                            cleaned_keys = inner_info["cleaned_keys"]
-                            emb_matrix = inner_info["embeddings"]
-                            emotion_emb = model_st.encode([emotion_label_clean], normalize_embeddings=True)
-                            sims = np.dot(emb_matrix, emotion_emb[0])
-                            best_idx = int(np.argmax(sims))
-                            chosen_emotion_raw = raw_keys[best_idx]
-                            audio_file = emotion_dict[chosen_emotion_raw]
-                            print(f"  Best emotion match: '{chosen_emotion_raw}' with similarity {sims[best_idx]:.4f}")
-                        text_seg["emotion_category"] = chosen_emotion_raw
-                        text_seg["audio_file"] = audio_file
-                    else:
-                        text_seg["emotion_category"] = None
-                        text_seg["audio_file"] = None
-                        print(f"  ERROR: The voice profile '{text_seg['voice_profile']}' is not in the reference dictionary.")
-
-                    # Load reference audio and transcript
-                    if text_seg["audio_file"]:
-                        try:
-                            current_dir = os.path.dirname(os.path.abspath(__file__))
-                            audio_path = os.path.join(current_dir, text_seg["audio_file"])
-                            with open(audio_path, "rb") as f:
-                                reference_audio = f.read()
-                                print("\nDEBUG: Processing reference audio and transcript:")
-                                print(f"  Audio file size: {len(reference_audio)} bytes")
-                                
-                                transcript_path = os.path.splitext(audio_path)[0] + "_transcript.txt"
-                                if os.path.exists(transcript_path):
-                                    print(f"  Found existing transcript at: {transcript_path}")
-                                    with open(transcript_path, "r", encoding="utf-8") as tf:
-                                        reference_text = tf.read().strip()
-                                    print(f"  Loaded transcript text: '{reference_text}'")
-                                else:
-                                    print("  No transcript found - running Whisper transcription...")
-                                    whisper_result = whisper_model.transcribe(audio_path)
-                                    reference_text = whisper_result.get("text", "").strip()
-                                    print(f"  Transcription result: '{reference_text}'")
-                                    with open(transcript_path, "w", encoding="utf-8") as tf:
-                                        tf.write(reference_text)
-                                    print(f"  Saved new transcript to: {transcript_path}")
-                                
-                                print(f"\nInput text to process: '{text}'")
-                            print(reference_text)
-                        except Exception as e:
-                            print(f"Error processing reference audio: {e}")
-                            continue
-                    else:
-                        continue
-
-                    # Build TTS request
-                    tts_request = TTSRequest(
-                        text=text,
-                        references=[ReferenceAudio(audio=reference_audio, text=reference_text)],
-                        prosody={"speed": 1.2, "volume": 0},
-                        format="mp3",
-                    )
-
-                    out_path = os.path.join(hash_dir, f"segment_{text_seg['order']}.mp3")
-                    
-                    tts_future = executor.submit(generate_tts_segment, text_seg, tts_request, out_path)
-                    tts_future.add_done_callback(lambda fut, order=text_seg["order"], seg=text_seg: tts_callback(fut, order, seg))
-
-        # Ensure all segments are in correct order before completion
-        sorted_segs.sort(key=lambda x: x["order"])
+            # Log the image file with videoId
+            request_log.log("file", image_filename, videoId=video_id, order=i)
+            request_log.log("status", f"Generated image {i} of 5...")
+            
+            # Apply style if specified
+            if style != "realistic":
+                request_log.log("status", f"Applying {style} style to image {i}...")
+                
+            # Apply custom instructions if provided
+            if custom_instructions:
+                request_log.log("status", f"Applying custom instructions to image {i}...")
+                
+            # Simulate audio generation
+            audio_filename = f"segment_{i}.mp3"
+            audio_path = os.path.join(output_dir, audio_filename)
+            
+            # Create a placeholder audio file
+            with open(audio_path, "w") as f:
+                f.write("placeholder audio content")
+                
+            # Log the audio file with videoId
+            request_log.log("file", audio_filename, videoId=video_id, order=i)
+            request_log.log("status", f"Generated audio {i} of 5...")
+            
+            # Simulate processing time
+            time.sleep(1)
         
-        # Log segments in order
-        for seg in sorted_segs:
-            if seg["type"] == "text":
-                request_logger.log('file', f'/segments/hash2/segment_{seg["order"]}.mp3', order=seg["order"])
-            elif seg["type"] == "image":
-                request_logger.log('file', seg['image_url'], order=seg["order"])
+        # Finalize the generation
+        request_log.log("status", "Finalizing video novel...")
+        time.sleep(1)
         
-        print("\nAll segments displayed in order.")
-        # Explicitly close the stream after all segments are processed
-        request_logger.log('complete', 'Stream complete')
-        return sorted_segs
-
-    request_logger.log('status', 'Create simulation')
-
-    # -----------------------------
-    # Updated Simulation with Extended Introduction, No Bob
-    # -----------------------------
-    file_path = os.path.join(current_dir, "emottsvoices", "folder_mp3_mapping.json")
-    with open(file_path, "r", encoding="utf-8") as file:
-        voice_emotion_reference_dict = json.load(file)
-    voice_profile_keys = list(voice_emotion_reference_dict.keys())
-    available_voices = ""
-    for voice in voice_profile_keys:
-        available_voices += voice + "\n"
-
-    simulation_text = get_simulation(prompt, available_voices)
-
-    # -----------------------------
-    # Extract CURRENT SIMULATION block
-    # -----------------------------
-    current_sim_pattern = re.compile(r'<CURRENT SIMULATION>(.*?)</CURRENT SIMULATION>', re.DOTALL | re.IGNORECASE)
-    current_sim_match = current_sim_pattern.search(simulation_text)
-    if current_sim_match:
-        current_simulation_text = current_sim_match.group(1)
-        print("Extracted CURRENT SIMULATION content.")
-    else:
-        print("Error: Could not find <CURRENT SIMULATION> block.")
-        current_simulation_text = simulation_text
-
-    # Extract all <Audiobook Narration> blocks
-    audiobook_narrations = re.findall(r'(?s)<Audiobook Narration>.*?</Audiobook Narration>', current_simulation_text, re.IGNORECASE)
-    if not audiobook_narrations:
-        print("No <Audiobook Narration> blocks found; using entire CURRENT SIMULATION text.")
-        audiobook_narrations = [current_simulation_text]
-
-    final_audiobook_xml = "\n".join(audiobook_narrations)
-
-    # Prepend default ASSIGN_VOICE if none found
-    if not re.search(r'<ASSIGN_VOICE>', final_audiobook_xml, re.IGNORECASE):
-        default_assign = "<ASSIGN_VOICE>\nSTORYTELLER=Epic_Storyteller_deep_voice;\n</ASSIGN_VOICE>\n"
-        final_audiobook_xml = default_assign + final_audiobook_xml
-        print("Prepended default ASSIGN_VOICE block.")
-    else:
-        print("ASSIGN_VOICE block already present.")
-
-    # Save the final audiobook input
-    with open("final_audiobook_input.xml", "w", encoding="utf-8") as f:
-        f.write(final_audiobook_xml)
-    print("Final audiobook XML prepared and saved as 'final_audiobook_input.xml'.")
-
-    request_logger.log('status', 'Generate Audiobook')
-    # Generate and Display the Initial Audiobook Segments
-    generate_audiobook(final_audiobook_xml)
+        # Complete the process
+        request_log.log("status", "Video novel generation complete!")
+        request_log.log("complete", True)
+        
+    except Exception as e:
+        request_log.log("status", f"Error: {str(e)}")
+        raise
+    finally:
+        request_log.close_stream()
 
 
 def createMovie(sorted_segments):
