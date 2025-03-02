@@ -9,6 +9,7 @@ interface CreateStoryModalProps {
   onClose: () => void;
   onInputChange: (e: Event) => void;
   onSubmit: (e: Event) => void;
+  error?: { message: string; stack?: string } | null;
 }
 
 // Predefined story plots with detailed descriptions
@@ -55,11 +56,11 @@ export default function CreateStoryModal({
   onClose,
   onInputChange,
   onSubmit,
+  error = null,
 }: CreateStoryModalProps) {
-  if (!isOpen) return null;
-  
   // Track the selected plot for visual feedback
   const [selectedPlotId, setSelectedPlotId] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   
   // Refs for focus trapping
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -104,13 +105,26 @@ export default function CreateStoryModal({
       }
     }
   };
+
+  // Copy error to clipboard
+  const copyErrorToClipboard = () => {
+    if (!error) return;
+    
+    const errorText = `Error: ${error.message}\n\nStack Trace:\n${error.stack || 'No stack trace available'}`;
+    navigator.clipboard.writeText(errorText).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
   
   // Handle dialog opening and closing
   useEffect(() => {
     if (isOpen) {
       // Open the dialog when isOpen is true
-      if (dialogRef.current && !dialogRef.current.open) {
-        dialogRef.current.showModal();
+      if (dialogRef.current) {
+        if (!dialogRef.current.open) {
+          dialogRef.current.showModal();
+        }
       }
       
       // Focus the first element when modal opens
@@ -121,15 +135,19 @@ export default function CreateStoryModal({
       }, 50);
     } else {
       // Close the dialog when isOpen is false
-      if (dialogRef.current && dialogRef.current.open) {
-        dialogRef.current.close();
+      if (dialogRef.current) {
+        if (dialogRef.current.open) {
+          dialogRef.current.close();
+        }
       }
     }
-    
-    // Cleanup
-    return () => {
-      setSelectedPlotId(null); // Reset selected plot when modal closes
-    };
+  }, [isOpen]);
+  
+  // Reset selected plot when modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedPlotId(null);
+    }
   }, [isOpen]);
   
   // Handle escape key and click outside
@@ -146,6 +164,9 @@ export default function CreateStoryModal({
       onClose();
     }
   };
+
+  // If not open, don't render anything
+  if (!isOpen) return null;
 
   return (
     <dialog 
@@ -188,6 +209,49 @@ export default function CreateStoryModal({
             </svg>
           </button>
         </div>
+
+        {/* Error message display */}
+        {error && (
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">Error generating story</h3>
+                <div className="mt-2 text-sm text-red-700 dark:text-red-300">
+                  <p>{error.message}</p>
+                </div>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={copyErrorToClipboard}
+                    className="inline-flex items-center px-3 py-1.5 border border-red-300 dark:border-red-700 shadow-sm text-xs font-medium rounded text-red-700 dark:text-red-200 bg-white dark:bg-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    {isCopied ? (
+                      <>
+                        <svg className="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <svg className="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                          <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+                        </svg>
+                        Copy Error Details
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Step 1: Choose a story plot */}

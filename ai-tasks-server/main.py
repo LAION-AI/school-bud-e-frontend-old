@@ -86,7 +86,7 @@ async def pdf_to_markdown(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/generate_video/")
+@app.post("/api/generate/video")
 async def generate_video(request: Request):
     request_log = None
     try:

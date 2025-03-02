@@ -6,6 +6,7 @@ import StoryLibrary from "./components/StoryLibrary.tsx";
 import SettingsPanel from "./components/SettingsPanel.tsx";
 import CreateStoryModal from "./components/CreateStoryModal.tsx";
 import type { Story, FormData } from "./components/types.ts";
+import { Button } from "../../../components/Button.tsx";
 
 interface VideoNovelIslandProps {
 	lang: string;
@@ -20,6 +21,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 	const [videoId, setVideoId] = useState<string | null>(null);
 	const [stories, setStories] = useState<Story[]>([]);
 	const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+	const [error, setError] = useState<{ message: string; stack?: string } | null>(null);
 	const [formData, setFormData] = useState<FormData>({
 		prompt: "",
 		style: "realistic",
@@ -137,13 +139,14 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 		setLogs([]);
 		setVideoId(null); // Reset videoId for new generation
 		setPreviewImage(null); // Reset preview image
+		setError(null); // Reset any previous errors
 		addLog("Starting generation process...");
 
 		try {
 			addLog(
 				`Sending request with prompt: ${formData.prompt.substring(0, 30)}...`,
 			);
-			const response = await fetch("/api/generate/video", {
+			const response = await fetch("http://localhost:8083/api/generate/video", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -156,8 +159,9 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 			});
 
 			if (!response.ok) {
+				const errorText = await response.text();
 				throw new Error(
-					`Failed to generate video novel: ${response.status} ${response.statusText}`,
+					`Failed to generate video novel: ${response.status} ${response.statusText}. ${errorText}`,
 				);
 			}
 
@@ -251,9 +255,20 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 		} catch (error) {
 			addLog(`Error: ${error}`);
 			console.error("Error generating video novel:", error);
+			// Set the error state with the caught error
+			setError({
+				message: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined
+			});
 		} finally {
 			setIsGenerating(false);
 		}
+	};
+
+	// Function to close the modal and reset error
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+		setError(null);
 	};
 
 	return (
@@ -293,9 +308,10 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 				isOpen={isModalOpen}
 				isGenerating={isGenerating}
 				formData={formData}
-				onClose={() => setIsModalOpen(false)}
+				onClose={handleCloseModal}
 				onInputChange={handleInputChange}
 				onSubmit={handleSubmit}
+				error={error}
 			/>
 
 			<FloatingChat />
