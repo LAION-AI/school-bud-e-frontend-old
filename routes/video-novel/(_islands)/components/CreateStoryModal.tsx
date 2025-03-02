@@ -1,5 +1,6 @@
 import { Button } from "../../../../components/Button.tsx";
 import type { FormData } from "./types.ts";
+import { useEffect, useRef } from "preact/hooks";
 
 interface CreateStoryModalProps {
   isOpen: boolean;
@@ -10,6 +11,30 @@ interface CreateStoryModalProps {
   onSubmit: (e: Event) => void;
 }
 
+// Predefined story plots with detailed descriptions
+const STORY_PLOTS = [
+  { 
+    id: "adventure", 
+    label: "Adventure Quest", 
+    plot: "A young explorer discovers an ancient map leading to a legendary treasure hidden in a dangerous jungle. Along the journey, they encounter mysterious creatures, ancient traps, and form unexpected alliances."
+  },
+  { 
+    id: "mystery", 
+    label: "Mystery Investigation", 
+    plot: "In a small coastal town, a renowned detective must solve a series of puzzling disappearances that seem connected to an old town legend. As they dig deeper, they uncover long-forgotten history that powerful people want to keep hidden."
+  },
+  { 
+    id: "fantasy", 
+    label: "Magical Academy", 
+    plot: "A teenager discovers they possess rare magical abilities and is invited to attend a secret school for gifted individuals. While learning to control their powers, they uncover a hidden truth about the school's mysterious founder."
+  },
+  { 
+    id: "sci-fi", 
+    label: "Space Colony", 
+    plot: "The first human colony on a distant planet faces unexpected challenges when strange phenomena begin affecting the settlers. The colony's scientist must race against time to understand the planet's secrets before it's too late."
+  }
+];
+
 export default function CreateStoryModal({
   isOpen,
   isGenerating,
@@ -19,14 +44,86 @@ export default function CreateStoryModal({
   onSubmit,
 }: CreateStoryModalProps) {
   if (!isOpen) return null;
+  
+  // Refs for focus trapping
+  const modalRef = useRef<HTMLDialogElement>(null);
+  const firstFocusableRef = useRef<HTMLButtonElement>(null);
+  const lastFocusableRef = useRef<HTMLButtonElement>(null);
+
+  // Handle plot selection
+  const handlePlotSelect = (plot: string) => {
+    // Create a synthetic event to simulate input change
+    const event = new Event('input', { bubbles: true });
+    const textarea = document.getElementById('prompt') as HTMLTextAreaElement;
+    
+    if (textarea) {
+      // Set the textarea value to the selected plot
+      textarea.value = plot;
+      
+      // Update the formData by dispatching the event
+      textarea.dispatchEvent(event);
+    }
+  };
+  
+  // Handle keyboard events for accessibility
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // Focus the first element when modal opens
+    if (firstFocusableRef.current) {
+      firstFocusableRef.current.focus();
+    }
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Close modal on Escape key
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      
+      // Trap focus within modal
+      if (e.key === 'Tab') {
+        // If shift+tab on first element, move to last element
+        if (e.shiftKey && document.activeElement === firstFocusableRef.current) {
+          e.preventDefault();
+          lastFocusableRef.current?.focus();
+        } 
+        // If tab on last element, move to first element
+        else if (!e.shiftKey && document.activeElement === lastFocusableRef.current) {
+          e.preventDefault();
+          firstFocusableRef.current?.focus();
+        }
+      }
+    };
+    
+    // Add event listener for keyboard navigation
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Prevent scrolling of background content
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalStyle;
+    };
+  }, [isOpen, onClose]);
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <dialog 
+        ref={modalRef}
+        open={isOpen}
+        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        aria-labelledby="modal-title"
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Video Novel</h2>
+            <h2 id="modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">Create New Video Novel</h2>
             <button
+              ref={firstFocusableRef}
               type="button"
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
               onClick={onClose}
@@ -60,6 +157,32 @@ export default function CreateStoryModal({
                 >
                   Story Prompt
                 </label>
+                
+                {/* Story plot suggestions */}
+                <div className="mb-4" aria-label="Suggested story plots">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    Choose a story plot or write your own:
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {STORY_PLOTS.map((storyPlot) => (
+                      <button
+                        key={storyPlot.id}
+                        type="button"
+                        onClick={() => handlePlotSelect(storyPlot.plot)}
+                        className="text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        aria-label={`Use ${storyPlot.label} plot`}
+                      >
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-1">
+                          {storyPlot.label}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {storyPlot.plot.substring(0, 100)}...
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
                 <textarea
                   id="prompt"
                   name="prompt"
@@ -70,6 +193,9 @@ export default function CreateStoryModal({
                   onChange={onInputChange}
                   required
                 />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Select a plot suggestion above or write your own creative story prompt
+                </p>
               </div>
 
               <div>
@@ -121,6 +247,7 @@ export default function CreateStoryModal({
                   Cancel
                 </Button>
                 <Button
+                  ref={lastFocusableRef}
                   type="submit"
                   className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-md flex items-center gap-2 text-white"
                   disabled={isGenerating}
@@ -159,7 +286,7 @@ export default function CreateStoryModal({
             </div>
           </form>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 } 

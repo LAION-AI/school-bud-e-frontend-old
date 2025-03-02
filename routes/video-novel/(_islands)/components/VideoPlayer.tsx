@@ -1,4 +1,3 @@
-import { useState } from "preact/hooks";
 
 interface VideoPlayerProps {
   previewImage: string | null;
