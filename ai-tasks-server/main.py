@@ -6,7 +6,7 @@ import subprocess
 import os
 import uvicorn
 from generate_video import generate_video_logic
-from request_manager import unique_hash, RequestLogger, init_request_logger
+from request_log import unique_hash, RequestLogger, init_request_logger
 from fastapi.responses import StreamingResponse, JSONResponse
 import asyncio
 import multiprocessing_logging

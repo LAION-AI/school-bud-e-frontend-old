@@ -213,8 +213,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 
 										// Construct the image URL
 										const imageUrl = currentVideoId
-											? `/segments/${currentVideoId}/${data.data}`
-											: `/segments/${data.data}`;
+											? `http://localhost:8083/segments/${currentVideoId}/${data.data}`
+											: `http://localhost:8083/segments/${data.data}`;
 
 										addLog(`Setting preview image to: ${imageUrl}`);
 										setPreviewImage(imageUrl);
@@ -232,7 +232,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										}
 
 										// Construct the image URL using the server endpoint
-										const imageUrl = `/segments/${currentVideoId}/${fileData.filename}`;
+										const imageUrl = `http://localhost:8083/segments/${currentVideoId}/${fileData.filename}`;
 
 										addLog(`Setting preview image to: ${imageUrl}`);
 										setPreviewImage(imageUrl);

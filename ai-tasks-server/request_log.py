@@ -108,7 +108,7 @@ class RequestLogger:
         self._is_streaming = True
         RequestLogger._active_loggers.add(self)
 
-    def log(self, type_name, data, order=None):
+    def log(self, type_name, data, videoId=None, order=None):
         """
         Add data to the response stream.
         
@@ -120,7 +120,8 @@ class RequestLogger:
         self._stream_queue.append({
             'type': type_name,
             'data': data,
-            'order': order
+            'order': order,
+            'videoId': videoId
         })
 
     async def create_stream(self):

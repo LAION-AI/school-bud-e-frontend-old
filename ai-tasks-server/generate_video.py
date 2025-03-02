@@ -13,7 +13,7 @@ import whisper
 import sentence_transformers
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
-from request_manager import RequestLogger
+from request_log import RequestLogger
 from create_simulation import get_simulation
 import random
 import asyncio
@@ -377,7 +377,7 @@ def generate_video_logic(prompt: str, output_dir: str, request_log, config: Opti
     """
     try:
         # Log the start of processing
-        request_log.log("status", "Starting video novel generation...")
+        request_log.log("status", "Starting video novel generation...", videoId=video_id)
         
         # Extract configuration parameters
         style = "realistic"
@@ -388,13 +388,13 @@ def generate_video_logic(prompt: str, output_dir: str, request_log, config: Opti
             custom_instructions = config.get("custom_instructions", "")
             
         # Log the configuration
-        request_log.log("status", f"Using style: {style}")
+        request_log.log("status", f"Using style: {style}", videoId=video_id)
         if custom_instructions:
-            request_log.log("status", "Processing custom instructions...")
+            request_log.log("status", "Processing custom instructions...", videoId=video_id)
         
         # Extract the video ID from the output directory
         video_id = os.path.basename(output_dir)
-        request_log.log("videoId", video_id)
+        request_log.log("videoId", video_id, videoId=video_id)
         
         # Simulate processing time
         time.sleep(2)
@@ -411,15 +411,15 @@ def generate_video_logic(prompt: str, output_dir: str, request_log, config: Opti
                 
             # Log the image file with videoId
             request_log.log("file", image_filename, videoId=video_id, order=i)
-            request_log.log("status", f"Generated image {i} of 5...")
+            request_log.log("status", f"Generated image {i} of 5...", videoId=video_id)
             
             # Apply style if specified
             if style != "realistic":
-                request_log.log("status", f"Applying {style} style to image {i}...")
+                request_log.log("status", f"Applying {style} style to image {i}...", videoId=video_id)
                 
             # Apply custom instructions if provided
             if custom_instructions:
-                request_log.log("status", f"Applying custom instructions to image {i}...")
+                request_log.log("status", f"Applying custom instructions to image {i}...", videoId=video_id)
                 
             # Simulate audio generation
             audio_filename = f"segment_{i}.mp3"
@@ -431,21 +431,21 @@ def generate_video_logic(prompt: str, output_dir: str, request_log, config: Opti
                 
             # Log the audio file with videoId
             request_log.log("file", audio_filename, videoId=video_id, order=i)
-            request_log.log("status", f"Generated audio {i} of 5...")
+            request_log.log("status", f"Generated audio {i} of 5...", videoId=video_id)
             
             # Simulate processing time
             time.sleep(1)
         
         # Finalize the generation
-        request_log.log("status", "Finalizing video novel...")
+        request_log.log("status", "Finalizing video novel...", videoId=video_id)
         time.sleep(1)
         
         # Complete the process
-        request_log.log("status", "Video novel generation complete!")
+        request_log.log("status", "Video novel generation complete!", videoId=video_id)
         request_log.log("complete", True)
         
     except Exception as e:
-        request_log.log("status", f"Error: {str(e)}")
+        request_log.log("status", f"Error: {str(e)}", videoId=video_id)
         raise
     finally:
         request_log.close_stream()
