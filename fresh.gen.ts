@@ -36,7 +36,7 @@ import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
 import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
 import * as $tests_index from "./routes/tests/index.tsx";
 import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
-import * as $video_novel from "./routes/video-novel.tsx";
+import * as $video_novel_index from "./routes/video-novel/index.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
@@ -56,7 +56,6 @@ import * as $RightSidebar from "./islands/RightSidebar.tsx";
 import * as $StoryEditor from "./islands/StoryEditor.tsx";
 import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
-import * as $VideoNovelIsland from "./islands/VideoNovelIsland.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
 import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_TourProgress from "./islands/core/TourProgress.tsx";
@@ -79,6 +78,13 @@ import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions
 import * as $tests_islands_TestComposerIsland from "./routes/tests/(_islands)/TestComposerIsland.tsx";
 import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
 import * as $tests_islands_TestsListIsland from "./routes/tests/(_islands)/TestsListIsland.tsx";
+import * as $video_novel_islands_VideoNovelIsland from "./routes/video-novel/(_islands)/VideoNovelIsland.tsx";
+import * as $video_novel_islands_components_CreateStoryModal from "./routes/video-novel/(_islands)/components/CreateStoryModal.tsx";
+import * as $video_novel_islands_components_SettingsPanel from "./routes/video-novel/(_islands)/components/SettingsPanel.tsx";
+import * as $video_novel_islands_components_StoryLibrary from "./routes/video-novel/(_islands)/components/StoryLibrary.tsx";
+import * as $video_novel_islands_components_VideoControls from "./routes/video-novel/(_islands)/components/VideoControls.tsx";
+import * as $video_novel_islands_components_VideoPlayer from "./routes/video-novel/(_islands)/components/VideoPlayer.tsx";
+import * as $video_novel_islands_components_types from "./routes/video-novel/(_islands)/components/types.ts";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -117,7 +123,7 @@ const manifest = {
     "./routes/tests/compose/index.tsx": $tests_compose_index,
     "./routes/tests/index.tsx": $tests_index,
     "./routes/tests/view/[id].tsx": $tests_view_id_,
-    "./routes/video-novel.tsx": $video_novel,
+    "./routes/video-novel/index.tsx": $video_novel_index,
   },
   islands: {
     "./islands/ChatAgreement.tsx": $ChatAgreement,
@@ -139,7 +145,6 @@ const manifest = {
     "./islands/StoryEditor.tsx": $StoryEditor,
     "./islands/TourGuideInitializer.tsx": $TourGuideInitializer,
     "./islands/UserProfile.tsx": $UserProfile,
-    "./islands/VideoNovelIsland.tsx": $VideoNovelIsland,
     "./islands/WindowManager.tsx": $WindowManager,
     "./islands/core/Tooltip.tsx": $core_Tooltip,
     "./islands/core/TourProgress.tsx": $core_TourProgress,
@@ -169,6 +174,20 @@ const manifest = {
       $tests_islands_TestViewIsland,
     "./routes/tests/(_islands)/TestsListIsland.tsx":
       $tests_islands_TestsListIsland,
+    "./routes/video-novel/(_islands)/VideoNovelIsland.tsx":
+      $video_novel_islands_VideoNovelIsland,
+    "./routes/video-novel/(_islands)/components/CreateStoryModal.tsx":
+      $video_novel_islands_components_CreateStoryModal,
+    "./routes/video-novel/(_islands)/components/SettingsPanel.tsx":
+      $video_novel_islands_components_SettingsPanel,
+    "./routes/video-novel/(_islands)/components/StoryLibrary.tsx":
+      $video_novel_islands_components_StoryLibrary,
+    "./routes/video-novel/(_islands)/components/VideoControls.tsx":
+      $video_novel_islands_components_VideoControls,
+    "./routes/video-novel/(_islands)/components/VideoPlayer.tsx":
+      $video_novel_islands_components_VideoPlayer,
+    "./routes/video-novel/(_islands)/components/types.ts":
+      $video_novel_islands_components_types,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

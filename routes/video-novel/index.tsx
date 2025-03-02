@@ -14,9 +14,9 @@ export default function VideoNovel(req: Request) {
         <meta name="description" content="Explore interactive video novels with AI-generated stories" />
       </Head>
       
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-b from-gray-900 to-gray-800 text-gray-900 dark:text-white">
       {/* Header */}
-      <header className="bg-gray-900/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-10">
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
