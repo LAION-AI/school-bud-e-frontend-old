@@ -91,7 +91,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 			// Create a new story object
 			const newStory: Story = {
 				id,
-				title: `${formData.prompt.substring(0, 30)}...`,
+				title: `${formData.prompt?.substring(0, 30)}...`,
 				previewImage: localImageUrl,
 				createdAt: new Date(),
 			};
@@ -144,7 +144,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 
 		try {
 			addLog(
-				`Sending request with prompt: ${formData.prompt.substring(0, 30)}...`,
+				`Sending request with prompt: ${formData.prompt?.substring(0, 30)}...`,
 			);
 			const response = await fetch("http://localhost:8083/api/generate/video", {
 				method: "POST",
@@ -185,13 +185,12 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 
 					// Process the chunks
 					const chunk = new TextDecoder().decode(value);
-					addLog(`Received chunk: ${chunk.substring(0, 100)}...`);
 					const lines = chunk.split("\n").filter((line) => line.trim());
 
 					for (const line of lines) {
 						try {
 							const data = JSON.parse(line);
-							addLog(`Parsed JSON: ${JSON.stringify(data)}`);
+							addLog(data);
 
 							// Handle different response types
 							if (data.type === "videoId") {
@@ -200,6 +199,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 							} else if (data.type === "file") {
 								addLog(`File data received: ${JSON.stringify(data.data)}`);
 
+								debugger;
 								// Check if data.data is a string (old format) or an object (new format)
 								if (typeof data.data === "string") {
 									// Old format - data.data is just the filename

@@ -4,8 +4,8 @@ import os
 import re
 import json
 import time
-import pprint
 import numpy as np
+import openai
 import torch
 import requests
 from loguru import logger
@@ -15,8 +15,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from request_log import RequestLogger
 from create_simulation import get_simulation
-import random
-import asyncio
 from typing import Dict, Any, Optional
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -363,84 +361,135 @@ def generate_tts_segment(seg, tts_request, out_path):
     print(f"Segment {seg['order']} failed after all retries. Skipping.")
     return (seg["order"], None)
 
+def generate_segments_from_prompt(prompt: str):
+    """
+    Generate segments from a prompt.
+    """
+    segments = []
+    # ask ai
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that generates segments from a prompt."},
+            {"role": "user", "content": prompt}
+        ],
+        response_format={"type": "json_object"}
+    )
+    segments = json.loads(response.choices[0].message.content)
+    for segment in segments:
+        segments.append({
+            "type": segment["type"],
+            "text": segment["text"],
+            "speaker": segment["speaker"],
+            "emotion": segment["emotion"]
+        })
+        
+    return segments
+    
 
 
-def generate_video_logic(prompt: str, output_dir: str, request_log, config: Optional[Dict[str, Any]] = None):
+def generate_video_logic(prompt: str, output_dir: str, request_log, config: Optional[Dict[str, Any]] = None, video_id: Optional[str] = None):
     """
     Main logic for generating a video novel based on a prompt.
     
     Args:
-        prompt: The text prompt to generate the video from
+        prompt: The XML story input containing character dialogue and scene descriptions
         output_dir: Directory to save generated files
         request_log: Logger for sending progress updates
         config: Optional configuration parameters including style and custom instructions
     """
     try:
-        # Log the start of processing
-        request_log.log("status", "Starting video novel generation...", videoId=video_id)
-        
-        # Extract configuration parameters
-        style = "realistic"
-        custom_instructions = ""
-        
-        if config:
-            style = config.get("style", "realistic")
-            custom_instructions = config.get("custom_instructions", "")
-            
-        # Log the configuration
-        request_log.log("status", f"Using style: {style}", videoId=video_id)
-        if custom_instructions:
-            request_log.log("status", "Processing custom instructions...", videoId=video_id)
+        # Create output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
         
         # Extract the video ID from the output directory
-        video_id = os.path.basename(output_dir)
         request_log.log("videoId", video_id, videoId=video_id)
         
-        # Simulate processing time
-        time.sleep(2)
         
-        # Generate a few sample images and audio segments
-        for i in range(1, 6):
-            # Simulate image generation
-            image_filename = f"segment_{i}.webp"
-            image_path = os.path.join(output_dir, image_filename)
+        # Extract voice assignments and clean the story text
+        voice_assignments, cleaned_story = extract_assign_voice_mappings(
+            prompt, 
+            model_st, 
+            voice_profile_keys, 
+            voice_profile_embeddings, 
+            global_voice_assignments
+        )
+        
+        # Extract segments from the cleaned story
+        segments = extract_segments_combined(parse_string(cleaned_story))
+        
+        # Track current segment for ordering
+        current_segment = 0
+        
+        # Process each segment in order
+        for segment in segments:
+            current_segment += 1
             
-            # Create a placeholder image file
-            with open(image_path, "w") as f:
-                f.write("placeholder image content")
+            if segment["type"] == "image":
+                # Generate image for scene
+                image_prompt = segment["caption"]
+                image_url = generate_image_with_retry(image_prompt)
                 
-            # Log the image file with videoId
-            request_log.log("file", image_filename, videoId=video_id, order=i)
-            request_log.log("status", f"Generated image {i} of 5...", videoId=video_id)
+                if image_url:
+                    # Download and save the image
+                    image_filename = f"segment_{current_segment}.webp"
+                    image_path = os.path.join(output_dir, image_filename)
+                    
+                    response = requests.get(image_url)
+                    if response.status_code == 200:
+                        with open(image_path, "wb") as f:
+                            f.write(response.content)
+                        segment["image_url"] = image_url  # Store URL for video creation
+                        request_log.log("file", image_filename, videoId=video_id, order=current_segment)
+                        request_log.log("status", f"Generated image for scene: {image_prompt[:50]}...", videoId=video_id)
+                    else:
+                        request_log.log("status", f"Failed to download image for scene: {image_prompt[:50]}...", videoId=video_id)
+                
+            elif segment["type"] == "text":
+                # Get the appropriate voice for this speaker
+                speaker = segment["speaker"].upper()
+                voice_preset = voice_assignments.get(speaker, "default")
+                
+                # Get the emotion for this segment
+                emotion = segment["emotion"]
+                
+                # Find the most appropriate emotional voice variant
+                if voice_preset in inner_embeddings_dict:
+                    emotion_data = inner_embeddings_dict[voice_preset]
+                    emotion_emb = model_st.encode([emotion], normalize_embeddings=True)
+                    sims = np.dot(emotion_data["embeddings"], emotion_emb[0])
+                    best_idx = np.argmax(sims)
+                    voice_variant = emotion_data["raw_keys"][best_idx]
+                else:
+                    voice_variant = voice_preset
+                
+                # Generate audio for this segment
+                audio_filename = f"segment_{current_segment}.mp3"
+                audio_path = os.path.join(output_dir, audio_filename)
+                
+                tts_request = TTSRequest(
+                    text=segment["text"],
+                    voice_preset=voice_variant
+                )
+                
+                try:
+                    with open(audio_path, "wb") as f:
+                        for chunk in session.tts(tts_request):
+                            f.write(chunk)
+                    segment["audio_file"] = audio_path  # Store path for video creation
+                    request_log.log("file", audio_filename, videoId=video_id, order=current_segment)
+                    request_log.log("status", f"Generated audio for {speaker}: {segment['text'][:50]}...", videoId=video_id)
+                except Exception as e:
+                    request_log.log("status", f"Failed to generate audio for {speaker}: {str(e)}", videoId=video_id)
             
-            # Apply style if specified
-            if style != "realistic":
-                request_log.log("status", f"Applying {style} style to image {i}...", videoId=video_id)
-                
-            # Apply custom instructions if provided
-            if custom_instructions:
-                request_log.log("status", f"Applying custom instructions to image {i}...", videoId=video_id)
-                
-            # Simulate audio generation
-            audio_filename = f"segment_{i}.mp3"
-            audio_path = os.path.join(output_dir, audio_filename)
-            
-            # Create a placeholder audio file
-            with open(audio_path, "w") as f:
-                f.write("placeholder audio content")
-                
-            # Log the audio file with videoId
-            request_log.log("file", audio_filename, videoId=video_id, order=i)
-            request_log.log("status", f"Generated audio {i} of 5...", videoId=video_id)
-            
-            # Simulate processing time
-            time.sleep(1)
+            time.sleep(1)  # Small delay between generations
+        
+        # Store the processed segments for video creation
+        global sorted_segments
+        sorted_segments = segments
         
         # Finalize the generation
         request_log.log("status", "Finalizing video novel...", videoId=video_id)
-        time.sleep(1)
-        
-        # Complete the process
         request_log.log("status", "Video novel generation complete!", videoId=video_id)
         request_log.log("complete", True)
         
@@ -450,66 +499,3 @@ def generate_video_logic(prompt: str, output_dir: str, request_log, config: Opti
     finally:
         request_log.close_stream()
 
-
-def createMovie(sorted_segments):
-    # List of tuples: (image_path, [list of audio_paths])
-    media_entries = [
-        # Add more entries as needed
-    ]
-
-    for i in range(len(sorted_segments)):
-        segment = sorted_segments[i]
-        if len(media_entries) == 0 and segment['type'] != 'image':
-            print('Error: The first segment has to be an image.')
-            break
-        
-        if segment['type'] == 'image':
-            media_entries.append((segment['image_url'], []))
-        elif segment['type'] == 'text':
-            last_entry = media_entries[len(media_entries) - 1]
-            last_entry[1].append(segment['audio_file'])
-            
-    print(media_entries)
-    clips = []
-    def download_image(url, save_path):
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(save_path, 'wb') as file:
-                file.write(response.content)
-            print(f"Image successfully downloaded: {save_path}")
-        else:
-            print(f"Failed to retrieve image. HTTP Status code: {response.status_code}")
-
-    save_path = './image.webp'
-    # media_entries is assumed to be defined somewhere in your code.
-    # It should be an iterable of (image_url, [list_of_audio_paths]) pairs.
-
-    for image_path, audio_paths in media_entries:
-        # Load each audio clip for the current image
-        audio_clips = [AudioFileClip(os.path.join(current_dir, audio_path)) for audio_path in audio_paths]
-        
-        # Concatenate the audio clips sequentially
-        combined_audio = concatenate_audioclips(audio_clips)
-        
-        # Image path is actually a url
-        print('Trying to request: ' + image_path)
-        download_image(image_path, save_path)
-        
-        # Option 1: Simply trim the audio so only the first 1/10 of the audio is used.
-        image_clip = ImageClip(save_path).with_duration(combined_audio.duration)
-        clip = image_clip.with_audio(combined_audio)
-        
-        # Option 2: Alternatively, if you want the entire audio to play at 10x speed so it fits the shortened duration,
-        # uncomment the next three lines and comment out Option 1 above.
-        # image_clip = ImageClip(save_path).with_duration(combined_audio.duration / 10)
-        # sped_up_audio = combined_audio.fx(speedx, 10)
-        # clip = image_clip.with_audio(sped_up_audio)
-        
-        print('Successfully requested: ' + image_path)
-        clips.append(clip)
-
-    # Concatenate all image clips into one final video
-    final_video = concatenate_videoclips(clips)
-
-    # Write the final video to a file with 24 fps
-    final_video.write_videofile("output_video.mp4", fps=24)

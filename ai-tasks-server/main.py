@@ -113,7 +113,7 @@ async def generate_video(request: Request):
         hash_dir = os.path.join(current_dir, "segments", hash)
         os.makedirs(hash_dir, exist_ok=True)
         request_log = RequestLogger(request)
-        request_log.log("videoId", hash)
+        request_log.log("videoId", hash, videoId=hash)
         
         # Pass the config to the generation logic
         asyncio.create_task(asyncio.to_thread(

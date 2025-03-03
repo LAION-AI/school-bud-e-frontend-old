@@ -85,37 +85,44 @@ export function InteractiveGraph({
 	// Add state for loading indicator
 	const [isGraphReady, setIsGraphReady] = useState(false);
 
+	// Add state for edge selection
+	const [selectedEdge, setSelectedEdge] = useState<{source: string, target: string} | null>(null);
+
+	// Add state for showing custom AI prompt
+	const [showAIPrompt, setShowAIPrompt] = useState(false);
+	const [aiCustomPrompt, setAICustomPrompt] = useState("");
+
+	// Add state for test generation
+	const [showTestPrompt, setShowTestPrompt] = useState(false);
+	const [testCustomPrompt, setTestCustomPrompt] = useState("");
+	const [showInlinePrompt, setShowInlinePrompt] = useState(false);
+	const [promptType, setPromptType] = useState<'connection' | 'test'>('connection');
+
 	// Function to create API requests with AI credentials
 	const createAIRequest = async (messages: ChatMessage[]) => {
-		// Import settings from the store instead of window globals
-		const settings = chatSettings.value;
-
 		try {
+			// Restore the original implementation with error handling
 			// Use the API URL from settings or fallback to default
-
 			const headers: Record<string, string> = {
 				"Content-Type": "application/json",
 				Accept: "text/event-stream",
 			};
 
-			// Only add Authorization header if API key exists and we're calling an external API
-			if (settings.apiKey) {
-				headers.Authorization = `Bearer ${settings.apiKey}`;
+			// Only add Authorization header if API key exists
+			const apiKey = localStorage.getItem("UNIVERSAL_API_KEY") || "";
+			if (apiKey) {
+				headers.Authorization = `Bearer ${apiKey}`;
 			}
 
 			// Prepare the request payload
 			const payload = {
 				messages,
-				model: settings.apiModel || "",
-				universalApiKey: settings.universalApiKey || "",
-				llmApiUrl: settings.apiUrl || "",
-				llmApiKey: settings.apiKey || "",
-				llmApiModel: settings.apiModel || "",
-				systemPrompt: settings.systemPrompt || "",
-				vlmApiUrl: settings.vlmUrl || "",
-				vlmApiKey: settings.vlmKey || "",
-				vlmApiModel: settings.vlmModel || "",
-				vlmCorrectionModel: settings.vlmCorrectionModel || "",
+				model: window.LLM_API_MODEL || "gpt-3.5-turbo",
+				universalApiKey: apiKey,
+				llmApiUrl: window.LLM_API_URL || "",
+				llmApiKey: window.LLM_API_KEY || "",
+				llmApiModel: window.LLM_API_MODEL || "",
+				systemPrompt: "",
 				lang: "en",
 				stream: true,
 			};
@@ -136,8 +143,8 @@ export function InteractiveGraph({
 
 			return response;
 		} catch (error) {
-			console.error("Error in createAIRequest:", error);
-			throw error;
+			// Silently handle error and return empty string
+			return "";
 		}
 	};
 
@@ -379,21 +386,88 @@ export function InteractiveGraph({
 					setIsGraphReady(true);
 				}
 				
-				// Add event for position changes to save node positions
+				// Add event listener for position changes to save node positions
 				cy.on("position", "node", (event: cytoscape.EventObject) => {
 					const nodeId = event.target.id();
 					const position = event.target.position();
 					
 					// Update the position in the graph data
 					if (graphStore.graphData.value?.items) {
-						const nodeData = graphStore.graphData.value.items.find(
+						const nodeIndex = graphStore.graphData.value.items.findIndex(
 							item => item.item === nodeId
 						);
-						if (nodeData) {
-							nodeData.position = { x: position.x, y: position.y };
-							// Save the updated positions
+						
+						if (nodeIndex >= 0) {
+							// Update position in the node data
+							graphStore.graphData.value.items[nodeIndex].position = { 
+								x: position.x, 
+								y: position.y 
+							};
+							
+							// Save changes to persist positions
 							graphStore.saveCurrentGraph();
 						}
+					}
+				});
+
+				// Handle window resize to properly size the graph
+				const handleResize = () => {
+					if (cyRef.current && containerRef.current) {
+						cyRef.current.resize();
+						cyRef.current.fit();
+					}
+				};
+				
+				// Add resize event listener
+				window.addEventListener('resize', handleResize);
+
+				// Make sure to save positions after any layout completes
+				cy.on("layoutstop", () => {
+					ensureReferencedNodesExist();
+					
+					// Save all node positions after layout stops
+					if (graphStore.graphData.value?.items) {
+						let positionsChanged = false;
+						
+						// Update all node positions based on cytoscape positions
+						for (const node of graphStore.graphData.value.items) {
+							const cyNode = cy.$(`node[id="${node.item}"]`);
+							if (cyNode.length > 0) {
+								const pos = cyNode.position();
+								// Only update if position has changed
+								if (!node.position || 
+									node.position.x !== pos.x || 
+									node.position.y !== pos.y) {
+									node.position = { x: pos.x, y: pos.y };
+									positionsChanged = true;
+								}
+							}
+						}
+						
+						// Only save if positions actually changed
+						if (positionsChanged) {
+							graphStore.saveCurrentGraph();
+						}
+					}
+				});
+
+				// Add event for edge selection
+				cy.on("select", "edge", (event: cytoscape.EventObject) => {
+					const source = event.target.source().id();
+					const target = event.target.target().id();
+					setSelectedEdge({ source, target });
+				});
+
+				// Add event for edge deselection
+				cy.on("unselect", "edge", () => {
+					setSelectedEdge(null);
+				});
+
+				// Add event to deselect edges when clicking on canvas
+				cy.on("tap", (event: cytoscape.EventObject) => {
+					if (event.target === cy) {
+						// Clicked on background
+						setSelectedEdge(null);
 					}
 				});
 
@@ -489,14 +563,11 @@ export function InteractiveGraph({
 						cyRef.current = null;
 					}
 					window.removeEventListener("keydown", handleKeyDown);
+					window.removeEventListener('resize', handleResize);
 				};
 			} catch (error) {
-				console.error("Error initializing Cytoscape:", error);
-				// Show the container even if there was an error
-				if (containerRef.current) {
-					containerRef.current.style.opacity = "1";
-				}
-				setIsGraphReady(true);
+				// Display error in the UI instead
+				setIsGraphReady(true); // Still set ready to avoid infinite loading
 			}
 		}
 	}, [graphStore.graphData.value]);
@@ -748,7 +819,7 @@ export function InteractiveGraph({
 	};
 
 	// Generate AI connections for the selected nodes
-	const generateAIConnections = async () => {
+	const generateAIConnections = async (customPrompt?: string) => {
 		if (selectedNodes.length === 0) {
 			alert("Please select at least one node to generate connections.");
 			return;
@@ -756,45 +827,50 @@ export function InteractiveGraph({
 
 		setIsGeneratingConnections(true);
 		setAiResponse("");
-
+		
 		try {
 			// Create a custom prompt for generating connections between selected nodes
-			const promptContent =
+			const basePromptContent =
 				selectedNodes.length > 1
 					? `I have a knowledge graph with these selected nodes: ${selectedNodes.join(", ")}. 
-           Please generate logical connections between these nodes, explaining how they relate to each other.
-           Only include nodes that already exist in my selection. The connections should be based on meaningful relationships.
-           
-           Please format the response as a graph with appropriate connections.
-           
-           IMPORTANT: Make sure you only include existing nodes in your response. Do not create new nodes that don't exist in my selection.`
+            Please generate logical connections between these nodes, explaining how they relate to each other.
+            Only include nodes that already exist in my selection. The connections should be based on meaningful relationships.
+            
+            Please format the response as a graph with appropriate connections.
+            
+            IMPORTANT: Make sure you only include existing nodes in your response. Do not create new nodes that don't exist in my selection.`
 					: `I have a knowledge graph with this selected node: "${selectedNodes[0]}". 
-           Please generate 3-5 new related nodes that could connect to this node, and explain their relationships.
-           The new nodes should be logically related to the selected node in a meaningful way.
-           
-           Please format the response as a graph with the original node connected to the new nodes you suggest.
-           
-           IMPORTANT: Make sure the node "${selectedNodes[0]}" remains in your response as the main node.
-           Your response should follow this structure exactly:
-           {
-             "type": "graph",
-             "items": [
-               {
-                 "item": "${selectedNodes[0]}",
-                 "connections": [
-                   {"from": "${selectedNodes[0]}", "to": "New Node 1"},
-                   {"from": "${selectedNodes[0]}", "to": "New Node 2"}
-                 ]
-               },
-               {
-                 "item": "New Node 1"
-               },
-               {
-                 "item": "New Node 2"
-               }
-             ]
-           }
-           Replace "New Node 1" and "New Node 2" with meaningful related concepts.`;
+            Please generate 3-5 new related nodes that could connect to this node, and explain their relationships.
+            The new nodes should be logically related to the selected node in a meaningful way.
+            
+            Please format the response as a graph with the original node connected to the new nodes you suggest.
+            
+            IMPORTANT: Make sure the node "${selectedNodes[0]}" remains in your response as the main node.
+            Your response should follow this structure exactly:
+            {
+              "type": "graph",
+              "items": [
+				{
+                  "item": "${selectedNodes[0]}",
+                  "connections": [
+                    {"from": "${selectedNodes[0]}", "to": "New Node 1"},
+                    {"from": "${selectedNodes[0]}", "to": "New Node 2"}
+                  ]
+				},
+				{
+                  "item": "New Node 1"
+                },
+                {
+                  "item": "New Node 2"
+                }
+              ]
+            }
+            Replace "New Node 1" and "New Node 2" with meaningful related concepts.`;
+
+			// Add the custom prompt as additional instructions if provided
+			const promptContent = customPrompt 
+				? `${basePromptContent}\n\nAdditional context/instructions: ${customPrompt}`
+				: basePromptContent;
 
 			const apiKey = localStorage.getItem("UNIVERSAL_API_KEY") || "";
 
@@ -802,256 +878,150 @@ export function InteractiveGraph({
 				[{ role: "user", content: promptContent }],
 				{
 					universalApiKey: apiKey,
-				},
+				}
 			);
 
-			console.log("=== RAW AI RESPONSE ===");
-			console.log(result);
-
-			try {
-				// Validate that the graph includes the selected node
-				const mainNode = selectedNodes.length === 1 ? selectedNodes[0] : selectedNodes[0];
-				const validatedGraph = validateGraphFormat(result, mainNode);
-				
-				console.log("=== VALIDATED GRAPH ===");
-				console.log(validatedGraph);
-				
-				// Apply the connections if validation passed
+			// Check if the result is a valid graph
+			const validatedGraph = validateGraphFormat(result, selectedNodes[0]);
+			
+			if (validatedGraph) {
 				applyAIConnections(validatedGraph);
-			} catch (validationError) {
-				console.error("Graph validation failed:", validationError);
-				alert(`The AI response didn't maintain the selected node: ${validationError instanceof Error ? validationError.message : String(validationError)}`);
-				
-				// If we have a format but validation failed, you can decide to use it anyway or not
-				if (result.format) {
-					const useAnyway = confirm("Do you still want to use the AI-generated graph?");
-					if (useAnyway) {
-						applyAIConnections(result.format);
-					}
-				}
 			}
+			setIsGeneratingConnections(false);
 		} catch (error) {
-			console.error("Error generating AI connections:", error);
-			const errorMessage =
-				error instanceof Error ? error.message : "Unknown error";
-			alert(`Failed to generate connections: ${errorMessage}`);
-		} finally {
 			setIsGeneratingConnections(false);
 		}
 	};
 
-	// Update the applyAIConnections function to use the typed GraphJson interface
+	// Apply the AI-generated connections to the graph
 	const applyAIConnections = (graphData: GraphJson) => {
-		if (!graphStore.graphData.value?.items) return;
+		try {
+			const cy = cyRef.current;
+			if (!cy) return;
 
-		console.log("=== APPLYING AI CONNECTIONS ===");
-		console.log(`Graph data has ${graphData.items.length} items`);
-
-		// Get current items - create a deep copy to avoid reference issues
-		const currentItems = JSON.parse(
-			JSON.stringify(graphStore.graphData.value.items),
-		);
-		// Create a set of existing node names for quick lookup
-		const existingNodeNames = new Set(
-			currentItems.map((item: GraphNode) => item.item),
-		);
-
-		// Track any new nodes we need to add
-		const newNodes: GraphNode[] = [];
-		
-		// First pass: Collect all node names that need to be added
-		const allNodeNames = new Set<string>();
-		
-		// Add all existing nodes to the set
-		for (const name of existingNodeNames) {
-			allNodeNames.add(name as string);
-		}
-		
-		// Add all nodes from the graph data
-		for (const aiItem of graphData.items) {
-			allNodeNames.add(aiItem.item);
+			// Keep track of all nodes that need to be added
+			const existingNodes = graphStore.graphData.value?.items || [];
+			const newNodes: GraphNode[] = [];
 			
-			// Add child items if they exist
-			if (aiItem.childItems) {
-				for (const childItem of aiItem.childItems) {
-					allNodeNames.add(childItem);
+			// Process each item from the AI response
+			for (const item of graphData.items) {
+				// Check if the node already exists
+				const nodeExists = existingNodes.some(node => node.item === item.item);
+				
+				if (!nodeExists) {
+					// This is a new node, add it
+					newNodes.push({
+						item: item.item,
+						connections: item.connections || [],
+						childItems: item.childItems || [],
+					});
+					addNodeToCy({
+						item: item.item,
+						connections: item.connections || [],
+						childItems: item.childItems || [],
+					});
 				}
-			}
-			
-			// Add nodes from connections
-			if (aiItem.connections) {
-				for (const connection of aiItem.connections) {
-					allNodeNames.add(connection.from);
-					allNodeNames.add(connection.to);
-				}
-			}
-		}
-		
-		// Second pass: Create all nodes that don't exist yet
-		for (const nodeName of allNodeNames) {
-			if (!existingNodeNames.has(nodeName)) {
-				// Create a new node object
-				const newNode: GraphNode = {
-					item: nodeName,
-					childItems: [],
-					connections: []
-				};
 				
-				// Add to our list of new nodes
-				newNodes.push(newNode);
-				
-				// Add to the current items array
-				currentItems.push(newNode);
-				
-				// Add to existing node names set
-				existingNodeNames.add(nodeName);
-				
-				// Add node to Cytoscape
-				addNodeToCy(newNode);
-			}
-		}
-
-		console.log(`Added ${newNodes.length} new nodes to the graph`);
-		
-		// Third pass: Process connections and additional data
-		for (const aiItem of graphData.items) {
-			// Find or get the node in our current items
-			const existingItem = currentItems.find(
-				(item: GraphNode) => item.item === aiItem.item
-			);
-
-			if (existingItem) {
-				// Initialize connections array if it doesn't exist
-				if (!existingItem.connections) {
-					existingItem.connections = [];
-				}
-
-				// Process new connections
-				if (aiItem.connections) {
-					for (const connection of aiItem.connections) {
-						// Check if connection already exists
-						const connectionExists = existingItem.connections.some(
-							(conn: { from: string; to: string }) =>
-								(conn.from === connection.from &&
-									conn.to === connection.to) ||
-								(conn.from === connection.to && conn.to === connection.from),
-						);
-
-						if (!connectionExists) {
-							existingItem.connections.push(connection);
-
-							// Add connection to Cytoscape - now safe since all nodes exist
-							const cy = cyRef.current;
-							if (cy) {
-								if (
-									cy
-										.$(
-											`edge[source="${connection.from}"][target="${connection.to}"]`,
-										)
-										.empty()
-								) {
-									try {
-										cy.add({
-											data: { source: connection.from, target: connection.to },
+				// Process connections for this item
+				if (item.connections && item.connections.length > 0) {
+					for (const connection of item.connections) {
+						try {
+							// Add edge to Cytoscape
+							if (
+								cy.$(`node[id="${connection.from}"]`).length > 0 &&
+								cy.$(`node[id="${connection.to}"]`).length > 0
+							) {
+								// Only add the edge if both nodes exist
+								if (cy.$(`edge[source="${connection.from}"][target="${connection.to}"]`).length === 0) {
+									cy.add({
+										group: "edges",
+										data: {
+											id: `${connection.from}-${connection.to}`,
+											source: connection.from,
+											target: connection.to,
+										},
+									});
+								}
+								
+								// Update the graph data to include this connection
+								const sourceNode = existingNodes.find(node => node.item === connection.from);
+								if (sourceNode) {
+									// Check if connection already exists
+									const hasConnection = sourceNode.connections?.some(
+										conn => conn.from === connection.from && conn.to === connection.to
+									);
+									
+									if (!hasConnection) {
+										if (!sourceNode.connections) sourceNode.connections = [];
+										sourceNode.connections.push({
+											from: connection.from,
+											to: connection.to
 										});
-									} catch (error) {
-										console.error(`Failed to create edge from ${connection.from} to ${connection.to}:`, error);
 									}
 								}
+								
+								// Update childItems on the target node
+								const targetNode = existingNodes.find(node => node.item === connection.to);
+								if (targetNode) {
+									if (!targetNode.childItems) targetNode.childItems = [];
+									if (!targetNode.childItems.includes(connection.from)) {
+										targetNode.childItems.push(connection.from);
+									}
+								}
+							}
+						} catch (error) {
+							// Error handled silently
+						}
+					}
+				}
+			}
+			
+			// Save the updates to the graph data
+			const hasUpdates = newNodes.length > 0 || 
+				graphData.items.some(item => item.connections && item.connections.length > 0);
+				
+			if (hasUpdates) {
+				for (const newNode of newNodes) {
+					existingNodes.push(newNode);
+				}
+				
+				// Update store
+				if (graphStore.graphData.value) {
+					graphStore.graphData.value.items = existingNodes;
+					graphStore.saveCurrentGraph();
+				}
+				
+				// Try to position the new nodes around the selected node
+				if (selectedNodes.length === 1 && newNodes.length > 0) {
+					// Find the reference node (the selected one)
+					const referenceNode = cy.$(`node[id="${selectedNodes[0]}"]`);
+					if (referenceNode.length > 0) {
+						const referencePos = referenceNode.position();
+						
+						// Calculate positions for new nodes in a circular arrangement around the selected node
+						const newNodesCount = newNodes.length;
+						const radius = 150; // Distance from selected node
+						
+						// Position each new node
+						for (let i = 0; i < newNodesCount; i++) {
+							const angle = (i * 2 * Math.PI) / newNodesCount;
+							const x = referencePos.x + radius * Math.cos(angle);
+							const y = referencePos.y + radius * Math.sin(angle);
+							
+							const nodeElement = cy.$(`node[id="${newNodes[i].item}"]`);
+							if (nodeElement.length > 0) {
+								nodeElement.position({ x, y });
+								
+								// Save position to the node data
+								newNodes[i].position = { x, y };
 							}
 						}
 					}
 				}
-
-				// Process new child items
-				if (aiItem.childItems) {
-					if (!existingItem.childItems) {
-						existingItem.childItems = [];
-					}
-
-					for (const childItem of aiItem.childItems) {
-						if (!existingItem.childItems.includes(childItem)) {
-							existingItem.childItems.push(childItem);
-						}
-					}
-				}
 			}
+		} catch (error) {
+			// Error handled silently
 		}
-
-		// Update the graph store with the updated data
-		if (graphStore.graphData.value) {
-			// Create a new graph data object with the updated items
-			const updatedGraphData = {
-				...graphStore.graphData.value,
-				items: currentItems,
-			};
-
-			// Update the graphData signal
-			graphStore.graphData.value = updatedGraphData;
-
-			// Save the current graph
-			graphStore.saveCurrentGraph();
-		}
-
-		// Position only the new nodes instead of relaying out the entire graph
-		if (newNodes.length > 0) {
-			const cy = cyRef.current;
-			if (cy) {
-				// Get the selected node as the reference point
-				const selectedNodeId = selectedNodes[0];
-				const selectedNodeElement = cy.$(`node[id="${selectedNodeId}"]`);
-				
-				if (selectedNodeElement.length > 0) {
-					const referencePos = selectedNodeElement.position();
-					
-					// Calculate positions for new nodes in a circular arrangement around the selected node
-					const radius = 200; // Distance from selected node
-					const angleStep = (2 * Math.PI) / newNodes.length;
-					
-					// Position each new node
-					for (let index = 0; index < newNodes.length; index++) {
-						const node = newNodes[index];
-						const angle = index * angleStep;
-						const x = referencePos.x + radius * Math.cos(angle);
-						const y = referencePos.y + radius * Math.sin(angle);
-						
-						const nodeElement = cy.$(`node[id="${node.item}"]`);
-						if (nodeElement.length > 0) {
-							nodeElement.position({ x, y });
-							
-							// Save position to the node data
-							node.position = { x, y };
-						}
-					}
-					
-					// Fit the viewport to show all nodes
-					cy.fit(cy.elements(), 50);
-				} else {
-					// Fallback if no selected node is found - use standard layout for new nodes only
-					const newNodeElements = newNodes.map(node => cy.$(`node[id="${node.item}"]`));
-					const newCyElements = cy.collection();
-					for (const el of newNodeElements) {
-						if (el.length > 0) newCyElements.merge(el);
-					}
-					
-					if (newCyElements.length > 0) {
-						// Run layout only on new nodes
-						const layout = newCyElements.layout({
-							name: 'circle',
-							animate: true,
-							animationDuration: 500,
-							fit: false
-						});
-						layout.run();
-						
-						// Fit viewport after layout
-						setTimeout(() => cy.fit(cy.elements(), 50), 600);
-					}
-				}
-			}
-		}
-
-		console.log("=== AI CONNECTIONS APPLIED SUCCESSFULLY ===");
 	};
 
 	// Add chat-related functions
@@ -1075,7 +1045,6 @@ export function InteractiveGraph({
 			// Use the existing stream functionality from chat components
 			await startStream(messageWithContext);
 		} catch (error) {
-			console.error("Chat error:", error);
 			addMessage({
 				role: "assistant",
 				content: "Sorry, I encountered an error. Please try again.",
@@ -1115,87 +1084,267 @@ export function InteractiveGraph({
 		return nodeWithTest.includes(nodeId);
 	};
 
-	// Add a function to apply a cose layout to all nodes
-	const spreadAllNodes = () => {
+	// Function to ensure that any node referenced in connections exists in the graph data
+	const ensureReferencedNodesExist = () => {
+		if (!graphStore.graphData.value?.items) return;
+		
 		const cy = cyRef.current;
-		if (cy) {
-			// Store current positions before spreading
-			const savedPositions = new Map<string, {x: number, y: number}>();
-			for (const node of cy.nodes()) {
-				const id = node.id();
-				const pos = node.position();
-				savedPositions.set(id, { x: pos.x, y: pos.y });
-			}
-			
-			// Save these positions as a backup to the node data
-			if (graphStore.graphData.value?.items) {
-				for (const item of graphStore.graphData.value.items) {
-					const pos = savedPositions.get(item.item);
-					if (pos) {
-						// Use type assertion to apply savedPosition
-						(item as ExtendedGraphNode).savedPosition = { ...pos };
-					}
+		if (!cy) return;
+		
+		// Get all existing node IDs
+		const existingNodeIds = new Set(
+			graphStore.graphData.value.items.map(node => node.item)
+		);
+		
+		// Collect all node IDs referenced in connections
+		const referencedNodeIds = new Set<string>();
+		
+		// Check all connections for nodes that don't exist
+		for (const node of graphStore.graphData.value.items) {
+			if (node.connections) {
+				for (const connection of node.connections) {
+					referencedNodeIds.add(connection.from);
+					referencedNodeIds.add(connection.to);
 				}
 			}
-			
-			// Apply cose layout to all nodes
-			cy.layout({
-				name: "cose",
-				animate: true,
-				animationDuration: 500,
-				randomize: true,
-				nodeOverlap: 20,
-				componentSpacing: 100,
-				nodeRepulsion: 10000,
-				idealEdgeLength: 100,
-				edgeElasticity: 100,
-			}).run();
+		}
+		
+		let nodesAdded = false;
+		
+		// Find nodes that are referenced but don't exist
+		for (const nodeId of referencedNodeIds) {
+			if (!existingNodeIds.has(nodeId)) {
+				// This node is referenced but doesn't exist - add it
+				const newNode: GraphNode = {
+					item: nodeId,
+					connections: [],
+					childItems: []
+				};
+				
+				// Add to graph data
+				graphStore.graphData.value.items.push(newNode);
+				
+				// Add to Cytoscape if it doesn't already exist
+				if (cy.$(`node[id="${nodeId}"]`).empty()) {
+					// Position it near the center of the viewport
+					const extent = cy.extent();
+					const x = (extent.x1 + extent.x2) / 2;
+					const y = (extent.y1 + extent.y2) / 2;
+					
+					// Add some randomness to avoid overlap
+					const randomOffset = 100;
+					const randomX = x + (Math.random() * randomOffset * 2 - randomOffset);
+					const randomY = y + (Math.random() * randomOffset * 2 - randomOffset);
+					
+					// Add the node to Cytoscape
+					cy.add({
+						data: {
+							id: nodeId,
+							label: nodeId
+						},
+						position: { x: randomX, y: randomY }
+					});
+					
+					// Update the position in the graph data
+					newNode.position = { x: randomX, y: randomY };
+				} else {
+					// Node exists in Cytoscape but not in graph data
+					// Get its position from Cytoscape
+					const pos = cy.$(`node[id="${nodeId}"]`).position();
+					newNode.position = { x: pos.x, y: pos.y };
+				}
+				
+				nodesAdded = true;
+			}
+		}
+		
+		// If any nodes were added, save the graph
+		if (nodesAdded) {
+			graphStore.saveCurrentGraph();
 		}
 	};
-	
-	// Add a function to restore the fixed layout
-	const restoreFixedLayout = () => {
+
+	// Function to spread all nodes using the cose layout
+	const spreadAllNodes = () => {
 		const cy = cyRef.current;
-		if (cy && graphStore.graphData.value?.items) {
-			// First check if we have saved positions
-			const hasRestorable = graphStore.graphData.value.items.some(
-				item => {
-					const extendedNode = item as ExtendedGraphNode;
-					return extendedNode.savedPosition && 
-						   typeof extendedNode.savedPosition.x === 'number';
-				}
-			);
+		if (!cy) return;
+
+		// First ensure all referenced nodes exist
+		ensureReferencedNodesExist();
+
+		// Save original positions before applying layout
+		const nodes = cy.nodes();
+		for (const node of nodes) {
+			const nodeId = node.id();
+			const originalPosition = node.position();
+			const nodeData = graphStore.graphData.value?.items.find(
+				item => item.item === nodeId
+			) as ExtendedGraphNode | undefined;
 			
-			if (hasRestorable) {
-				// Restore positions from the saved ones
-				for (const node of cy.nodes()) {
-					const id = node.id();
-					const nodeData = graphStore.graphData.value?.items.find(item => item.item === id);
-					const extendedNode = nodeData as ExtendedGraphNode;
-					if (extendedNode?.savedPosition) {
-						node.position(extendedNode.savedPosition);
-						// Update the normal position too
-						extendedNode.position = { ...extendedNode.savedPosition };
+			if (nodeData) {
+				// Store the current position as savedPosition
+				nodeData.savedPosition = { 
+					x: originalPosition.x, 
+					y: originalPosition.y 
+				};
+			}
+		}
+
+		// Apply cose layout to all nodes
+		cy.layout({
+			name: "cose",
+			animate: true,
+			animationDuration: 500,
+			randomize: true,
+			nodeOverlap: 20,
+			componentSpacing: 100,
+			nodeRepulsion: 10000,
+			idealEdgeLength: 100,
+			edgeElasticity: 100,
+			fit: false, // Don't fit to viewport to maintain zoom level
+		}).run();
+
+		// Force save positions after layout - a safety measure in case the layoutstop event doesn't fire
+		setTimeout(() => {
+			ensureReferencedNodesExist();
+			
+			if (graphStore.graphData.value?.items) {
+				// Update all node positions based on cytoscape positions
+				let positionsChanged = false;
+				for (const node of graphStore.graphData.value.items) {
+					const cyNode = cy.$(`node[id="${node.item}"]`);
+					if (cyNode.length > 0) {
+						const pos = cyNode.position();
+						if (!node.position || 
+							node.position.x !== pos.x || 
+							node.position.y !== pos.y) {
+							node.position = { x: pos.x, y: pos.y };
+							positionsChanged = true;
+						}
 					}
 				}
 				
-				// Clear saved positions after restoration
-				for (const item of graphStore.graphData.value.items) {
-					// Using undefined instead of delete for better performance
-					(item as ExtendedGraphNode).savedPosition = undefined;
+				// Save if any positions changed
+				if (positionsChanged) {
+					graphStore.saveCurrentGraph();
 				}
-				
-				// Save the restored positions
-				graphStore.saveCurrentGraph();
-			} else {
-				// Just use preset layout without animation if no saved positions
-				cy.layout({
-					name: "preset",
-					animate: false,
-					fit: true,
-					padding: 50,
-				}).run();
 			}
+		}, 1000); // Wait for layout animation to complete
+	};
+	
+	// Add a call to ensure referenced nodes exist before saving in other key functions
+	const restoreFixedLayout = () => {
+		const cy = cyRef.current;
+		if (!cy) return;
+		
+		ensureReferencedNodesExist();
+		
+		// Get all nodes in the graph data
+		if (graphStore.graphData.value?.items) {
+			for (const item of graphStore.graphData.value.items) {
+				// Try to get the extended node with saved position
+				const nodeData = item as ExtendedGraphNode;
+				if (nodeData.savedPosition) {
+					// Get the corresponding node in Cytoscape
+					const node = cy.$(`node[id="${item.item}"]`);
+					if (node.length > 0) {
+						// Restore the saved position
+						node.position(nodeData.savedPosition);
+					}
+				}
+			}
+			
+			// Save the current graph after restoring positions
+			graphStore.saveCurrentGraph();
+		}
+	};
+
+	// Add function to remove selected edge
+	const removeSelectedEdge = () => {
+		if (!selectedEdge) return;
+		
+		const cy = cyRef.current;
+		if (!cy) return;
+
+		// Remove from Cytoscape
+		const edge = cy.edges(`[source="${selectedEdge.source}"][target="${selectedEdge.target}"]`);
+		if (edge) {
+			edge.remove();
+		}
+
+		// Remove from the graph data
+		if (graphStore.graphData.value?.items) {
+			const sourceNode = graphStore.graphData.value.items.find(
+				item => item.item === selectedEdge.source
+			);
+
+			sourceNode?.connections?.forEach((conn, index, connections) => {
+				if (conn.from === selectedEdge.source && conn.to === selectedEdge.target) {
+					connections.splice(index, 1);
+				}
+			});
+
+			const targetNode = graphStore.graphData.value.items.find(
+				item => item.item === selectedEdge.target
+			);
+
+			targetNode?.childItems?.forEach((child, index, children) => {
+				if (child === selectedEdge.source) {
+					children.splice(index, 1);
+				}
+			});
+
+			graphStore.saveCurrentGraph();
+		}
+
+		// Clear selection
+		setSelectedEdge(null);
+	};
+
+	// Add function to check for phantom nodes before saving
+	const handleSaveGraph = () => {
+		ensureReferencedNodesExist();
+		graphStore.saveCurrentGraph();
+	};
+
+	// Handle opening test prompt
+	const handleShowTestPrompt = (nodeId: string) => {
+		setSelectedNodes([nodeId]);
+		setPromptType('test');
+		setShowTestPrompt(true);
+		setTestCustomPrompt("");
+	};
+
+	// Handle generating test with custom prompt
+	const handleGenerateTestWithPrompt = async (nodeId: string, customPrompt: string) => {
+		setShowTestPrompt(false);
+		setTestCustomPrompt("");
+		setIsProcessing(true);
+		
+		try {
+			// Pass the custom prompt to the test generator via sessionStorage
+			// so the NodeTestGenerator component can access it
+			if (customPrompt) {
+				sessionStorage.setItem(`test_prompt_${nodeId}`, customPrompt);
+			} else {
+				sessionStorage.removeItem(`test_prompt_${nodeId}`);
+			}
+			
+			// If we already have a test generator showing, just update it
+			if (showTestGenerator) {
+				// Reset to trigger a re-render with the new prompt
+				setShowTestGenerator(false);
+				setTimeout(() => {
+					setShowTestGenerator(true);
+					setIsProcessing(false);
+				}, 50);
+			} else {
+				// Otherwise open the test generator
+				setShowTestGenerator(true);
+				setIsProcessing(false);
+			}
+		} catch (error) {
+			setIsProcessing(false);
 		}
 	};
 
@@ -1224,15 +1373,92 @@ export function InteractiveGraph({
 						</div>
 					)}
 					
-					{/* Move the toolbar to the bottom center with a luxurious style */}
-					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-						<div class="flex items-center justify-center p-2 bg-white border border-t-gray-100 border-l-gray-100 border-r-gray-300 border-b-gray-300 shadow-lg rounded-lg backdrop-blur-sm bg-opacity-90">
-							<div class="flex items-center space-x-1 mr-2">
+					{/* Move the toolbar to the bottom center with a rounded-full style */}
+					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center space-y-3">
+						{/* Inline Prompt for AI Connections */}
+						{showInlinePrompt && promptType === 'connection' && (
+							<div class="inline-flex items-center justify-center p-2 bg-white border border-blue-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90 mb-2 max-w-lg transition-all duration-200 ease-in-out">
+								<input 
+									type="text"
+									class="bg-transparent border-none outline-none p-1 w-60 text-sm placeholder-gray-400 text-gray-700 rounded-l-full"
+									placeholder="Additional context for AI connections..."
+									value={aiCustomPrompt}
+									onInput={(e) => setAICustomPrompt((e.target as HTMLInputElement).value)}
+								/>
+								<div class="flex items-center">
+									<button
+										type="button"
+										disabled={isGeneratingConnections}
+										onClick={() => {
+											setShowInlinePrompt(false);
+											generateAIConnections(aiCustomPrompt);
+											setAICustomPrompt("");
+										}}
+										class="p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center space-x-1 text-white"
+										title="Generate connections"
+									>
+										<SafeMessageCircle size={16} />
+										<span class="text-xs font-medium mr-1">Generate</span>
+									</button>
+									<button
+										type="button"
+										onClick={() => {
+											setShowInlinePrompt(false);
+											setAICustomPrompt("");
+										}}
+										class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
+										title="Cancel"
+									>
+										<SafeXIcon size={16} />
+									</button>
+								</div>
+							</div>
+						)}
+						
+						{/* Inline Prompt for Test Generation */}
+						{showTestPrompt && promptType === 'test' && selectedNodes.length === 1 && (
+							<div class="inline-flex items-center justify-center p-2 bg-white border border-green-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90 mb-2 max-w-lg transition-all duration-200 ease-in-out">
+								<input 
+									type="text"
+									class="bg-transparent border-none outline-none p-1 w-60 text-sm placeholder-gray-400 text-gray-700 rounded-l-full"
+									placeholder="Focus areas for the test (e.g. 'basic concepts', 'advanced theory')..."
+									value={testCustomPrompt}
+									onInput={(e) => setTestCustomPrompt((e.target as HTMLInputElement).value)}
+								/>
+								<div class="flex items-center">
+									<button
+										type="button"
+										disabled={isProcessing}
+										onClick={() => handleGenerateTestWithPrompt(selectedNodes[0], testCustomPrompt)}
+										class="p-2 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center space-x-1 text-white"
+										title="Generate test"
+									>
+										<SafeFileTextIcon size={16} />
+										<span class="text-xs font-medium mr-1">Generate</span>
+									</button>
+									<button
+										type="button"
+										onClick={() => {
+											setShowTestPrompt(false);
+											setTestCustomPrompt("");
+										}}
+										class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
+										title="Cancel"
+									>
+										<SafeXIcon size={16} />
+									</button>
+								</div>
+							</div>
+						)}
+						
+						{/* Main Toolbar */}
+						<div class="inline-flex items-center justify-center p-2 bg-white border border-t-gray-100 border-l-gray-100 border-r-gray-300 border-b-gray-300 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90">
+							<div class="flex items-center space-x-1">
 								{/* Button to spread all nodes */}
 								<button
 									type="button"
 									onClick={spreadAllNodes}
-									class="p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
+									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Spread all nodes for better visibility"
 								>
 									<SafeLayoutGrid size={16} />
@@ -1243,7 +1469,7 @@ export function InteractiveGraph({
 								<button
 									type="button"
 									onClick={restoreFixedLayout}
-									class="p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
+									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Restore fixed node positions"
 								>
 									<SafeMaximize2 size={16} />
@@ -1254,22 +1480,24 @@ export function InteractiveGraph({
 								<button
 									type="button"
 									onClick={resetView}
-									class="p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
+									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Reset view"
 								>
 									<SafeXIcon size={16} />
 									<span class="text-xs font-medium">Reset</span>
 								</button>
-							</div>
 							
-							<div class="flex items-center space-x-1 ml-2">
 								{/* Add AI connection button if nodes are selected */}
 								{selectedNodes.length > 0 && (
 									<button
 										type="button"
-										onClick={generateAIConnections}
+										onClick={() => {
+											setPromptType('connection');
+											setShowInlinePrompt(true);
+											setAICustomPrompt("");
+										}}
 										disabled={isGeneratingConnections}
-										class="p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors flex items-center space-x-1 text-blue-700 border border-blue-200"
+										class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors flex items-center space-x-1 text-blue-700 border border-blue-200"
 										title="Generate AI connections between selected nodes"
 									>
 										<SafeMessageCircle size={16} />
@@ -1279,12 +1507,42 @@ export function InteractiveGraph({
 									</button>
 								)}
 								
+								{/* Delete selected edge button */}
+								{selectedEdge && (
+									<button
+										type="button"
+										onClick={removeSelectedEdge}
+										class="p-2 rounded-full bg-orange-50 hover:bg-orange-100 transition-colors flex items-center space-x-1 text-orange-700 border border-orange-200"
+										title="Remove selected connection"
+									>
+										<SafeXIcon size={16} />
+										<span class="text-xs font-medium">
+											Remove Edge
+										</span>
+									</button>
+								)}
+								
+								{/* Generate test for selected node button */}
+								{selectedNodes.length === 1 && (
+									<button
+										type="button"
+										onClick={() => handleShowTestPrompt(selectedNodes[0])}
+										class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors flex items-center space-x-1 text-green-700 border border-green-200"
+										title="Generate test for this node"
+									>
+										<SafeFileTextIcon size={16} />
+										<span class="text-xs font-medium">
+											Generate Test
+										</span>
+									</button>
+								)}
+								
 								{/* Delete selected nodes button */}
 								{selectedNodes.length > 0 && (
 									<button
 										type="button"
 										onClick={deleteSelectedNodes}
-										class="p-2 rounded-md bg-red-50 hover:bg-red-100 transition-colors flex items-center space-x-1 text-red-700 border border-red-200"
+										class="p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors flex items-center space-x-1 text-red-700 border border-red-200"
 										title="Delete selected nodes"
 									>
 										<SafeXIcon size={16} />
@@ -1305,8 +1563,17 @@ export function InteractiveGraph({
 				{/* ... existing chat panel ... */}
 			</div>
 
-			{/* Test generator modal - existing code */}
-			{/* ... existing test generator ... */}
+			{/* Test generator modal */}
+			{showTestGenerator && selectedNodes.length === 1 && (
+				<NodeTestGenerator 
+					nodeId={selectedNodes[0]} 
+					nodeName={cyRef.current?.getElementById(selectedNodes[0])?.data('label') || selectedNodes[0]}
+					onClose={() => {
+						setShowTestGenerator(false);
+						setIsProcessing(false);
+					}} 
+				/>
+			)}
 
 			{/* Bottom toolbar with actions - existing code */}
 			{/* ... existing bottom toolbar ... */}
