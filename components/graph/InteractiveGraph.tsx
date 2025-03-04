@@ -17,6 +17,7 @@ import type { LucideProps } from "lucide-preact";
 import type { VNode } from "preact";
 import { hasTestForNode, getTestForNode, setSelectedTest } from "../tests/store.ts";
 import NodeTestGenerator from "../tests/NodeTestGenerator.tsx";
+import FloatingChat from "../chat/FloatingChat.tsx";
 
 // @ts-ignore: Suppressing linter error for MessageCircle not being a valid JSX component
 const SafeMessageCircle = (props: LucideProps): VNode => <MessageCircle {...props} />;
@@ -244,7 +245,7 @@ export function InteractiveGraph({
 							selector: "node",
 							style: {
 								shape: "ellipse",
-								"background-color": "#7AC70C", // Default color
+								"background-color": "#eee", // Default color
 								width: 65, // Larger nodes for visibility
 								height: 65, // Larger nodes for visibility
 								label: "data(label)",
@@ -252,11 +253,11 @@ export function InteractiveGraph({
 								"text-halign": "center",
 								"text-margin-y": "0px", // Move text to center
 								"text-wrap": "wrap",
-								"text-max-width": "110px", // Wider text area
-								"font-size": "14px", // Larger font
+								"text-max-width": "50px", // Wider text area
+								"font-size": "12px", // Larger font
 								"font-weight": "bold", // Bold text
 								color: "#000000", // Black text
-								"text-outline-width": "2px",
+								"text-outline-width": "1px",
 								"text-outline-color": "#ffffff", // White outline for visibility
 								"font-family": "'Poppins', sans-serif",
 								"background-image": (ele: { data: (id: string) => string }) => {
@@ -264,8 +265,8 @@ export function InteractiveGraph({
 									return nodeData?.image ? `url(${nodeData.image})` : "none";
 								},
 								"background-fit": "cover",
-								"border-width": "3px",
-								"border-color": "#000", // Black border for visibility
+								"border-width": "1px",
+								"border-color": "#aaa", // Black border for visibility
 								"border-style": "solid",
 								"shadow-blur": "10px",
 								"shadow-color": "rgba(0, 0, 0, 0.5)", // Darker shadow for visibility
@@ -1355,7 +1356,7 @@ export function InteractiveGraph({
 			<div class="flex-grow flex relative">
 				{/* Graph container */}
 				<div 
-					class={`relative ${isChatOpen ? 'w-2/3' : 'w-full'} h-full transition-all duration-300 ease-in-out`}
+					class="relative w-full h-full transition-all duration-300 ease-in-out"
 				>
 					<div 
 						ref={containerRef}
@@ -1486,7 +1487,22 @@ export function InteractiveGraph({
 									<SafeXIcon size={16} />
 									<span class="text-xs font-medium">Reset</span>
 								</button>
-							
+								
+								{/* Button to toggle chat panel */}
+								<button
+									type="button"
+									onClick={() => setIsChatOpen(!isChatOpen)}
+									class={`p-2 rounded-full transition-colors flex items-center space-x-1 border ${
+										isChatOpen
+											? "bg-blue-100 text-blue-700 border-blue-200"
+											: "hover:bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
+									}`}
+									title={isChatOpen ? "Close chat" : "Open chat"}
+								>
+									<SafeMessageCircle size={16} />
+									<span class="text-xs font-medium">Chat</span>
+								</button>
+								
 								{/* Add AI connection button if nodes are selected */}
 								{selectedNodes.length > 0 && (
 									<button
@@ -1554,13 +1570,11 @@ export function InteractiveGraph({
 							</div>
 						</div>
 					</div>
-					
-					{/* Node controls - existing code */}
-					{/* ... existing controls ... */}
 				</div>
 
-				{/* Chat panel - existing code */}
-				{/* ... existing chat panel ... */}
+				{/* Chat panel */}
+				{isChatOpen && (<FloatingChat />
+				)}
 			</div>
 
 			{/* Test generator modal */}
@@ -1574,9 +1588,6 @@ export function InteractiveGraph({
 					}} 
 				/>
 			)}
-
-			{/* Bottom toolbar with actions - existing code */}
-			{/* ... existing bottom toolbar ... */}
 		</div>
 	);
 }

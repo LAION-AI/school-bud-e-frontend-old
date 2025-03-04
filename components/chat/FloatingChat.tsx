@@ -2,7 +2,7 @@ import { MessageCircle } from "lucide-preact";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { useRef, useEffect } from "preact/hooks";
 import ChatHistory from "./ChatHistory.tsx";
-import { messages as storeMessages, addMessage } from "./store.ts";
+import { messages as storeMessages, addMessage, startNewChat } from "./store.ts";
 import { startStream } from "./stream.ts";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 
@@ -10,10 +10,18 @@ export default function FloatingChat() {
   const isOpen = useSignal(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isProcessing = useSignal(false);
   
   // Check if we're on a chat page (done once during component initialization)
   const isOnChatPage = IS_BROWSER ? window.location.pathname.startsWith('/chat') : false;
+
+  // Function to scroll to the bottom of the chat
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
 
   // Add event listener for the Escape key to close the chat
   useEffect(() => {
@@ -27,7 +35,15 @@ export default function FloatingChat() {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [isOpen]);
+
+  // Watch for changes in the messages to auto-scroll
+  useSignalEffect(() => {
+    if (isOpen.value && storeMessages.value.length > 0) {
+      // Use setTimeout to make sure the DOM has updated
+      setTimeout(scrollToBottom, 0);
+    }
+  });
 
   // Don't render anything if we're on a chat page
   if (isOnChatPage) {
@@ -36,6 +52,8 @@ export default function FloatingChat() {
 
   const handleOpenChat = () => {
     isOpen.value = true;
+    // Scroll to the bottom when chat is opened (after DOM update)
+    setTimeout(scrollToBottom, 0);
   };
 
   const handleCloseChat = () => {
@@ -59,6 +77,10 @@ export default function FloatingChat() {
 
     // Update global chat via store
     addMessage({ role: "user", content: userMessage });
+    
+    // Scroll to bottom after adding user message
+    setTimeout(scrollToBottom, 0);
+    
     isProcessing.value = true;
 
     try {
@@ -70,12 +92,18 @@ export default function FloatingChat() {
           detail: { message: userMessage },
         })
       );
+      
+      // Scroll to bottom after receiving response
+      setTimeout(scrollToBottom, 0);
     } catch (error) {
       console.error("Chat error:", error);
       addMessage({
         role: "assistant",
         content: "Sorry, I encountered an error. Please try again.",
       });
+      
+      // Scroll to bottom even after error
+      setTimeout(scrollToBottom, 0);
     } finally {
       isProcessing.value = false;
       // Focus the input field again after sending the message
@@ -98,22 +126,42 @@ export default function FloatingChat() {
               <MessageCircle size={18} className="text-blue-500" />
               Chat Assistant
             </h3>
-            <button
-              type="button"
-              onClick={handleCloseChat}
-              class="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-              aria-label="Close chat"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <title>Close chat</title>
-                <path d="M18 6L6 18" />
-                <path d="M6 6l12 12" />
-              </svg>
-            </button>
+            <div class="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  startNewChat();
+                  setTimeout(scrollToBottom, 0);
+                }}
+                class="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Start new chat"
+                title="Start new chat"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleCloseChat}
+                class="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Close chat"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <title>Close chat</title>
+                  <path d="M18 6L6 18" />
+                  <path d="M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Chat history area */}
-          <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
+          <div 
+            ref={messagesContainerRef} 
+            class="flex-1 overflow-y-auto p-4 bg-gray-50"
+          >
             <ChatHistory messages={storeMessages.value} />
           </div>
 
