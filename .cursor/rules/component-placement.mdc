@@ -1,0 +1,17 @@
+---
+description: Make AI follow component structure.
+globs: *.tsx
+alwaysApply: false
+---
+# Component Placement Decision Matrix
+
+| Interactivity Level | Usage Scope     | Parent Component | Child Component | Placement Recommendation                                   |
+|---------------------|-----------------|------------------|-----------------|-----------------------------------------------------------|
+| Non-interactive     | Shared          | N/A              | N/A             | Place in `components/`                                     |
+| Non-interactive     | Route-specific  | N/A              | N/A             | Colocate in route's `(_components)/` folder               |
+| Interactive         | Shared          | N/A              | N/A             | Place in `islands/`                                        |
+| Interactive         | Route-specific  | N/A              | N/A             | Colocate in route's `(_islands)/` folder                  |
+| Non-interactive     | Shared          | Interactive      | Non-interactive | Parent in `islands/`, Child in `components/`              |
+| Non-interactive     | Route-specific  | Interactive      | Non-interactive | Parent in route's `(_islands)/`, Child in `(_components)/`|
+| Interactive         | Shared          | Non-interactive  | Interactive     | Parent in `components/`, Child in `islands/`              |
+| Interactive         | Route-specific  | Non-interactive  | Interactive     | Parent in `(_components)/`, Child in `(_islands)/`        |
