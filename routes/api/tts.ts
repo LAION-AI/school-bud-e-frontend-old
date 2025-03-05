@@ -36,11 +36,10 @@ async function callMARS6API(
       console.log(`Status code for creating TTS: ${response.status}`);
       if (response.ok) {
         return responseJSON.task_id;
-      } else {
-        console.error(
-          `Failed to create TTS task for MARS6. Status code: ${response.status}: ${response.statusText}`,
-        );
       }
+      console.error(
+        `Failed to create TTS task for MARS6. Status code: ${response.status}: ${response.statusText}`,
+      );
     } catch (error) {
       console.error(`Error in createTTSTask: ${error}`);
     }
@@ -132,10 +131,9 @@ async function textToSpeech(
   console.log("ttsKey", ttsKey);
   console.log("ttsModel", ttsModel);
 
-  const useThisTttsUrl = ttsUrl != "" ? ttsUrl : TTS_URL;
-  const useThisTtsKey = ttsKey != "" ? ttsKey : TTS_KEY;
-  const useThisTtsModel = ttsModel != "" ? ttsModel : TTS_MODEL;
-  
+  const useThisTttsUrl = ttsUrl !== "" ? ttsUrl : TTS_URL;
+  const useThisTtsKey = ttsKey !== "" ? ttsKey : TTS_KEY;
+  const useThisTtsModel = ttsModel !== "" ? ttsModel : TTS_MODEL;
 
   //   Deepgram random with 40 chars
   // 9371dfaed6d8b42e9eaf9458ba8604126fb373d0

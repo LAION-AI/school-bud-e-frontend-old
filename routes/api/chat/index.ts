@@ -85,8 +85,6 @@ ${value.requirements.join("\n")}`
 
   useThisSystemPrompt += `\n\n${jsonInstruction}`;
 
-  console.log(useThisSystemPrompt);
-
   // Setze den System-Prompt an den Anfang der Nachrichtenliste
   messages.unshift({
     role: "system",

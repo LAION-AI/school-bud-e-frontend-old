@@ -1,20 +1,17 @@
 import { useSignal, useComputed } from "@preact/signals";
-import { settingsContent } from "../internalization/content.ts";
-import ConfigurationSelector from "../islands/settings/ConfigurationSelector.tsx";
-import TokenUsage from "./settings/TokenUsage.tsx";
-import { settings } from "./chat/store.ts";
+import { settingsContent } from "../../internalization/content.ts";
+import ConfigurationSelector from "./ConfigurationSelector.tsx";
+import TokenUsage from "./TokenUsage.tsx";
+import { settings } from "../../components/chat/store.ts";
 
 export default function Settings({
-  onClose,
   lang = "en",
 }: {
-  onClose: () => void;
   lang?: string;
 }) {
   const newSettings = useSignal({
     ...settings.value,
   });
-  const showAdvanced = useSignal(true);
   const activeTab = useSignal("general");
   const showPassword = useSignal(false);
 
@@ -150,10 +147,9 @@ export default function Settings({
   function handleSubmit(e: any) {
     e.preventDefault();
     settings.value = { ...newSettings.value };
-    onClose();
   }
 
-  function updateSettings(key: string, value: string) {
+  const updateSettings = (key: string, value: string) => {
     const updatedSettings = { ...newSettings.value };
 
     if (key !== "universalApiKey") {
@@ -188,6 +184,7 @@ export default function Settings({
     updatedSettings[key as keyof typeof settings.value] = value;
     newSettings.value = updatedSettings;
   }
+  console.log(updateSettings);
 
   // Get capability explanation
   function getCapabilityExplanation(capability: string) {
@@ -442,7 +439,6 @@ export default function Settings({
             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
-                onClick={onClose}
                 className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Cancel
@@ -465,32 +461,4 @@ export default function Settings({
       )}
     </div>
   );
-}
-
-function getProviderIcon(provider: string) {
-  const icons = {
-    openai: "🤖",
-    anthropic: "👤",
-    googleai: "🔍",
-    groq: "⚡",
-    hyprlab: "🧪",
-    sambanova: "🌟",
-    fish: "🎵",
-    deepgram: "🎤",
-  };
-  return icons[provider as keyof typeof icons] || "🤖";
-}
-
-function getProviderName(provider: string) {
-  const names = {
-    openai: "OpenAI",
-    anthropic: "Anthropic",
-    googleai: "Google AI",
-    groq: "Groq",
-    hyprlab: "Hypr Lab",
-    sambanova: "SambaNova",
-    fish: "Fish Audio",
-    deepgram: "Deepgram",
-  };
-  return names[provider as keyof typeof names] || provider;
 }

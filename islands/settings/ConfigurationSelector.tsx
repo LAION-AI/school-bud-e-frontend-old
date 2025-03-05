@@ -1,5 +1,4 @@
 import { useState, useEffect } from "preact/hooks";
-import { Input } from "../../components/core/Form.tsx";
 
 interface Configuration {
     name: string;
@@ -52,12 +51,12 @@ export default function ConfigurationSelector({
                 onUpdateSettings(`${serviceType}Key`, defaultConfig.key);
             }
         }
-    }, [savedConfigs, selectedConfig, serviceType, onUpdateSettings]);
+    }, [savedConfigs, selectedConfig, onUpdateSettings, serviceType]);
 
     const saveNewConfiguration = () => {
         if (!newConfigName) return;
 
-        const newConfig: Configuration = {
+        const newConfig = {
             name: newConfigName,
             url: currentConfig.url,
             model: currentConfig.model,
@@ -67,21 +66,11 @@ export default function ConfigurationSelector({
         const updatedConfigs = [...savedConfigs, newConfig];
         setSavedConfigs(updatedConfigs);
         localStorage.setItem(`${serviceType}Configs`, JSON.stringify(updatedConfigs));
-        
-        // Select the new configuration
-        setSelectedConfig(newConfig);
-        localStorage.setItem(`${serviceType}SelectedConfig`, newConfig.name);
-        
-        // Reset the form
         setNewConfigName("");
         setShowNewConfig(false);
     };
 
     const loadConfiguration = (config: Configuration) => {
-        setSelectedConfig(config);
-        localStorage.setItem(`${serviceType}SelectedConfig`, config.name);
-        
-        // Apply the configuration
         onUpdateSettings(`${serviceType}Url`, config.url);
         onUpdateSettings(`${serviceType}Model`, config.model);
         if (config.key) {
@@ -90,23 +79,24 @@ export default function ConfigurationSelector({
     };
 
     return (
-        <div class="mb-8">
-            <div class="flex items-center mb-4">
-                <div class="mr-2 text-2xl">{icon}</div>
-                <h3 class="text-lg font-medium">{title}</h3>
-            </div>
-
+        <div class="mb-4">
+            <h3 class="font-medium mb-2">
+                {icon} {title}
+            </h3>
             <div class="space-y-4">
                 {savedConfigs.length > 0 && (
-                    <div class="flex gap-2 items-center">
+                    <div class="flex gap-2">
                         <select
                             onChange={(e) => {
-                                const index = Number.parseInt((e.target as HTMLSelectElement).value);
-                                if (!Number.isNaN(index)) {
-                                    const config = savedConfigs[index];
-                                    loadConfiguration(config);
+                                const index = Number((e.target as HTMLSelectElement).value);
+                                const selected = savedConfigs[index];
+                                if (selected) {
+                                    setSelectedConfig(selected);
+                                    // Persist the selected configuration's name (or index)
+                                    localStorage.setItem(`${serviceType}SelectedConfig`, selected.name);
+                                    loadConfiguration(selected);
                                 } else {
-                                    // Disable the configuration
+                                    // Clear the fields when disabled
                                     onUpdateSettings(`${serviceType}Url`, "");
                                     onUpdateSettings(`${serviceType}Model`, "");
                                     onUpdateSettings(`${serviceType}Key`, "");
@@ -128,7 +118,6 @@ export default function ConfigurationSelector({
                         </select>
                         <div class="flex gap-2">
                             <button
-                                type="button"
                                 onClick={() => {
                                     if (selectedConfig) {
                                         const newConfigs = savedConfigs.filter(c => c.name !== selectedConfig.name);
@@ -143,7 +132,6 @@ export default function ConfigurationSelector({
                                 🗑️
                             </button>
                             <button
-                                type="button"
                                 onClick={() => setShowNewConfig(true)}
                                 class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             >
@@ -158,7 +146,6 @@ export default function ConfigurationSelector({
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="font-medium">{selectedConfig.name}</h4>
                             <button
-                                type="button"
                                 onClick={() => setSelectedConfig(null)}
                                 class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
                             >
@@ -167,29 +154,20 @@ export default function ConfigurationSelector({
                         </div>
                         <div class="space-y-2">
                             <div>
-                                <Input
-                                    type="password"
-                                    value={selectedConfig.key ? "*".repeat(12) : ""}
-                                    readOnly={true}
-                                    label="API Key:"
-                                    name="selectedApiKey"
-                                    labelClassName="text-sm text-gray-600"
-                                    inputClassName="font-mono bg-gray-100"
-                                />
+                                <label class="text-sm text-gray-600">API Key:</label>
+                                <div class="font-mono bg-gray-100 p-2 rounded mt-1">
+                                    {selectedConfig.key ? "*".repeat(12) : "Not set"}
+                                </div>
                             </div>
                             <div>
-                                <Input
-                                    type="text"
-                                    value={selectedConfig.url}
-                                    readOnly={true}
-                                    label="URL:"
-                                    name="selectedApiUrl"
-                                    labelClassName="text-sm text-gray-600"
-                                    inputClassName="font-mono bg-gray-100 break-all"
-                                />
+                                <label class="text-sm text-gray-600">URL:</label>
+                                <div class="font-mono bg-gray-100 p-2 rounded mt-1 break-all">
+                                    {selectedConfig.url}
+                                </div>
                             </div>
                             <div>
-                                <Input
+                                <label class="text-sm text-gray-600">Model:</label>
+                                <input
                                     type="text"
                                     value={selectedConfig.model}
                                     onChange={(e) => {
@@ -207,10 +185,7 @@ export default function ConfigurationSelector({
                                         setSavedConfigs(updatedConfigs);
                                         localStorage.setItem(`${serviceType}Configs`, JSON.stringify(updatedConfigs));
                                     }}
-                                    label="Model:"
-                                    name="model"
-                                    labelClassName="text-sm text-gray-600"
-                                    inputClassName="font-mono"
+                                    class="w-full font-mono p-2 border rounded focus:ring-2 focus:ring-blue-500 mt-1"
                                 />
                             </div>
                         </div>
@@ -219,42 +194,36 @@ export default function ConfigurationSelector({
 
                 {(showNewConfig || savedConfigs.length === 0) && (
                     <div class="space-y-4">
-                        <Input
+                        <input
                             type="text"
                             value={newConfigName}
                             onChange={(e) => setNewConfigName((e.target as HTMLInputElement).value)}
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                             placeholder="Configuration name"
-                            label="Configuration Name"
-                            name="configName"
                         />
-                        <Input
+                        <input
                             type="password"
                             value={currentConfig.key || ''}
                             onChange={(e) => onUpdateSettings(`${serviceType}Key`, (e.target as HTMLInputElement).value)}
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
                             placeholder="API Key"
-                            label="API Key"
-                            name="apiKey"
-                            inputClassName="bg-yellow-50"
                         />
-                        <Input
+                        <input
                             type="text"
                             value={currentConfig.url}
                             onChange={(e) => onUpdateSettings(`${serviceType}Url`, (e.target as HTMLInputElement).value)}
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                             placeholder="API URL"
-                            label="API URL"
-                            name="apiUrl"
                         />
-                        <Input
+                        <input
                             type="text"
                             value={currentConfig.model}
                             onChange={(e) => onUpdateSettings(`${serviceType}Model`, (e.target as HTMLInputElement).value)}
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                             placeholder="Model"
-                            label="Model"
-                            name="model"
                         />
                         <div class="flex gap-2">
                             <button
-                                type="button"
                                 onClick={saveNewConfiguration}
                                 disabled={!newConfigName}
                                 class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
@@ -263,7 +232,6 @@ export default function ConfigurationSelector({
                             </button>
                             {savedConfigs.length > 0 && (
                                 <button
-                                    type="button"
                                     onClick={() => setShowNewConfig(false)}
                                     class="px-4 py-2 text-gray-600 hover:text-gray-800"
                                 >

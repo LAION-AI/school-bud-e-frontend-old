@@ -1,9 +1,6 @@
 import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import ImageUploadButton from "./core/buttons/ImageUploadButton.tsx";
-import ConfigurationSelector from "../components/settings/ConfigurationSelector.tsx";
-import { settings } from "../components/chat/store.ts";
-import { settingsContent } from "../internalization/content.ts";
 
 interface UserProfileProps {
 	lang: string;
@@ -21,10 +18,6 @@ interface UserData {
 
 export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 	const [userData, setUserData] = useState<UserData>({});
-	const [newSettings, setNewSettings] = useState({
-		...settings.value,
-	});
-	const [showAdvanced, setShowAdvanced] = useState(false);
 
 	useEffect(() => {
 		// Load user data from localStorage on component mount
@@ -38,14 +31,6 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 		const updatedData = { ...userData, ...newData };
 		setUserData(updatedData);
 		localStorage.setItem("userData", JSON.stringify(updatedData));
-	};
-
-	const updateSettings = (key: string, value: string) => {
-		setNewSettings((newSettings) => {
-			const updatedSettings = { ...newSettings };
-			updatedSettings[key as keyof typeof settings.value] = value;
-			return updatedSettings;
-		});
 	};
 
 	return (
@@ -117,89 +102,6 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 									class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
 								/>
 							</div>
-						</div>
-					</div>
-
-					{/* Settings Section */}
-					<div class="mt-8">
-						<h3 class="text-xl font-bold mb-4">⚙️ {settingsContent[lang].title}</h3>
-						
-						{/* Advanced Settings Toggle Button */}
-						<button
-							type="button"
-							onClick={() => setShowAdvanced(!showAdvanced)}
-							class="mb-4 text-blue-500 hover:text-blue-600"
-						>
-							{showAdvanced
-								? settingsContent[lang].lessSettings
-								: settingsContent[lang].advancedSettings}
-						</button>
-
-						{/* Advanced Settings */}
-						{showAdvanced && (
-							<>
-								<ConfigurationSelector
-									serviceType="api"
-									currentConfig={{
-										url: newSettings.apiUrl,
-										model: newSettings.apiModel,
-										key: newSettings.apiKey,
-									}}
-									onUpdateSettings={updateSettings}
-									lang={lang}
-									icon="💬"
-									title={settingsContent[lang].chatApiTitle}
-								/>
-								<ConfigurationSelector
-									serviceType="tts"
-									currentConfig={{
-										url: newSettings.ttsUrl,
-										model: newSettings.ttsModel,
-										key: newSettings.ttsKey,
-									}}
-									onUpdateSettings={updateSettings}
-									lang={lang}
-									icon="🗣️"
-									title={settingsContent[lang].ttsTitle}
-								/>
-								<ConfigurationSelector
-									serviceType="stt"
-									currentConfig={{
-										url: newSettings.sttUrl,
-										model: newSettings.sttModel,
-										key: newSettings.sttKey,
-									}}
-									onUpdateSettings={updateSettings}
-									lang={lang}
-									icon="👂"
-									title={settingsContent[lang].sttTitle}
-								/>
-								<ConfigurationSelector
-									serviceType="vlm"
-									currentConfig={{
-										url: newSettings.vlmUrl,
-										model: newSettings.vlmModel,
-										key: newSettings.vlmKey,
-									}}
-									onUpdateSettings={updateSettings}
-									lang={lang}
-									icon="👀"
-									title={settingsContent[lang].vlmTitle}
-								/>
-							</>
-						)}
-
-						{/* Save Settings Button */}
-						<div class="mt-4">
-							<button
-								type="button"
-								onClick={() => {
-									settings.value = { ...newSettings };
-								}}
-								class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-							>
-								{settingsContent[lang].save}
-							</button>
 						</div>
 					</div>
 				</div>
