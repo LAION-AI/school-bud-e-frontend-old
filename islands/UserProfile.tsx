@@ -1,7 +1,6 @@
 import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import ImageUploadButton from "./core/buttons/ImageUploadButton.tsx";
-import BasicSettings from "../components/settings/BasicSettings.tsx";
 import ConfigurationSelector from "../components/settings/ConfigurationSelector.tsx";
 import { settings } from "../components/chat/store.ts";
 import { settingsContent } from "../internalization/content.ts";
@@ -47,87 +46,6 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 			updatedSettings[key as keyof typeof settings.value] = value;
 			return updatedSettings;
 		});
-	};
-
-	const providerConfigs = {
-		googleai: {
-			keyCharacteristics: { startsWith: "AI" },
-			config: {
-				api: {
-					url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-					model: "gemini-1.5-flash",
-				},
-				vlm: {
-					url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-					model: "gemini-1.5-flash",
-				},
-			},
-		},
-		hyprlab: {
-			keyCharacteristics: { startsWith: "hypr-lab" },
-			config: {
-				api: {
-					url: "https://api.hyprlab.io/v1/chat/completions",
-					model: "gemini-1.5-pro",
-				},
-				vlm: {
-					url: "https://api.hyprlab.io/v1/chat/completions",
-					model: "gemini-1.5-pro",
-				},
-			},
-		},
-		groq: {
-			keyCharacteristics: { startsWith: "gsk_" },
-			config: {
-				api: {
-					url: "https://api.groq.com/openai/v1/chat/completions",
-					model: "llama-3.3-70b-versatile",
-				},
-				vlm: {
-					url: "https://api.groq.com/openai/v1/chat/completions",
-					model: "llama-3.2-90b-vision-preview",
-				},
-				stt: {
-					url: "https://api.groq.com/openai/v1/audio/transcriptions",
-					model: "whisper-large-v3-turbo",
-				},
-			},
-		},
-		sambanova: {
-			keyCharacteristics: { length: 36 },
-			config: {
-				api: {
-					url: "https://api.sambanova.ai/v1/chat/completions",
-					model: "Meta-Llama-3.3-70B-Instruct",
-				},
-				vlm: {
-					url: "https://api.sambanova.ai/v1/chat/completions",
-					model: "Meta-Llama-3.2-90B-Vision-Instruct",
-				},
-			},
-		},
-		fish: {
-			keyCharacteristics: { length: 32 },
-			config: {
-				tts: {
-					url: "https://api.fish.audio/v1/tts",
-					model: lang === "de" ? "61561f50f41046e0b267aa4cb30e4957" : "6f45f4694ff54d6980337a68902e20d7",
-				},
-			},
-		},
-		deepgram: {
-			keyCharacteristics: { length: 40 },
-			config: {
-				stt: {
-					url: "https://api.deepgram.com/v1/listen?language=en&model=nova-2",
-					model: "nova-2",
-				},
-				tts: {
-					url: "https://api.deepgram.com/v1/speak?model=aura-helios-en",
-					model: "aura-helios-en",
-				},
-			},
-		},
 	};
 
 	return (
@@ -206,12 +124,6 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 					<div class="mt-8">
 						<h3 class="text-xl font-bold mb-4">⚙️ {settingsContent[lang].title}</h3>
 						
-						<BasicSettings
-							settings={newSettings}
-							onUpdateSettings={updateSettings}
-							lang={lang}
-						/>
-
 						{/* Advanced Settings Toggle Button */}
 						<button
 							type="button"

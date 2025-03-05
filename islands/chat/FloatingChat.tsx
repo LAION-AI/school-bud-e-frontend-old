@@ -1,9 +1,9 @@
-import { MessageCircle } from "lucide-preact";
+import { IconMessageCircle, IconPlus, IconX, IconArrowRight} from "@tabler/icons-preact";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { useRef, useEffect } from "preact/hooks";
-import ChatHistory from "./ChatHistory.tsx";
-import { messages as storeMessages, addMessage, startNewChat } from "./store.ts";
-import { startStream } from "./stream.ts";
+import ChatHistory from "../../components/chat/ChatHistory.tsx";
+import { messages as storeMessages, addMessage, startNewChat } from "../../components/chat/store.ts";
+import { startStream } from "../../components/chat/stream.ts";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 
 export default function FloatingChat() {
@@ -14,7 +14,7 @@ export default function FloatingChat() {
   const isProcessing = useSignal(false);
   
   // Check if we're on a chat page (done once during component initialization)
-  const isOnChatPage = IS_BROWSER ? window.location.pathname.startsWith('/chat') : false;
+  const isOnChatPage = IS_BROWSER ? location.pathname.startsWith('/chat') : false;
 
   // Function to scroll to the bottom of the chat
   const scrollToBottom = () => {
@@ -123,7 +123,7 @@ export default function FloatingChat() {
           {/* Header with improved design */}
           <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
             <h3 class="font-medium text-gray-800 flex items-center gap-2">
-              <MessageCircle size={18} className="text-blue-500" />
+              <IconMessageCircle size={18} className="text-blue-500" />
               Chat Assistant
             </h3>
             <div class="flex gap-2">
@@ -137,10 +137,7 @@ export default function FloatingChat() {
                 aria-label="Start new chat"
                 title="Start new chat"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M12 5v14"></path>
-                  <path d="M5 12h14"></path>
-                </svg>
+                <IconPlus size={16} />
               </button>
               <button
                 type="button"
@@ -148,11 +145,7 @@ export default function FloatingChat() {
                 class="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
                 aria-label="Close chat"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <title>Close chat</title>
-                  <path d="M18 6L6 18" />
-                  <path d="M6 6l12 12" />
-                </svg>
+                <IconX size={16} />
               </button>
             </div>
           </div>
@@ -191,11 +184,7 @@ export default function FloatingChat() {
                 }`}
                 aria-label="Send message"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <title>Send message</title>
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
+                <IconArrowRight size={20} />
               </button>
             </div>
           </div>
@@ -207,9 +196,9 @@ export default function FloatingChat() {
           class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
           aria-label="Open chat"
         >
-          <MessageCircle size={24} />
+          <IconMessageCircle size={24} />
         </button>
       )}
     </div>
   );
-}
+} 

@@ -10,7 +10,7 @@ export default function VideoPlayer({ previewImage, videoId, logs, isGenerating 
   return (
     <div className="space-y-6">
       <div
-        className="aspect-video bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 relative"
+        className="aspect-video bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200 relative"
         style={{
           backgroundImage: previewImage
             ? `url('${previewImage}')`
@@ -37,7 +37,7 @@ export default function VideoPlayer({ previewImage, videoId, logs, isGenerating 
 
       {/* Debug info */}
       {videoId && (
-        <div className="bg-gray-100/90 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-2 border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300">
+        <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl p-2 border border-gray-200 text-xs text-gray-700">
           <p>Current Video ID: {videoId}</p>
           {previewImage && <p>Current Image: {previewImage}</p>}
         </div>

@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { chatIslandContent } from "../internalization/content.ts";
 import type { JSX } from "preact";
-import RightSidebar from "../islands/RightSidebar.tsx";
-import { Message } from "./Message.tsx";
-import { autoScroll, lang, messages, settings } from "./chat/store.ts";
+import RightSidebar from "./RightSidebar.tsx";
+import { Message } from "../components/Message.tsx";
+import { autoScroll, messages } from "../components/chat/store.ts";
 import ChatInput from "./chat/ChatInput.tsx";
-import WelcomeBanner from "./WelcomeBanner.tsx";
+import WelcomeBanner from "../components/WelcomeBanner.tsx";
 import { startTour } from "../utils/tourGuide.ts";
-import { isApiConfigured } from "./chat/store.ts";
+import { isApiConfigured } from "../components/chat/store.ts";
 
 interface AudioItem {
 	audio: HTMLAudioElement;
@@ -24,6 +23,7 @@ interface ChatTemplateProps {
 	onEditAction: (groupIndex: number) => void;
 	children: JSX.Element | JSX.Element[];
 	onOpenSettings: () => void;
+	onStartTour?: () => void;
 }
 
 function downloadAudioFiles(items: {
@@ -77,6 +77,7 @@ function ChatTemplate({
 	onEditAction,
 	children,
 	onOpenSettings,
+	onStartTour = () => startTour("basics"),
 }: ChatTemplateProps) {
 	const [sidebarData, setSidebarData] = useState<
 		{
@@ -146,19 +147,14 @@ function ChatTemplate({
 		}
 	}, []); // Also run when autoScroll changes
 
-	const handleStartTour = () => {
-		startTour('basics');
-	};
-
 	return (
 		<div class="flex w-full">
 			<div class="flex-grow flex flex-col min-h-full">
-				{/* <LogoHeader lang={lang.value} /> */}
 				<div
 					class={
 						messages.value?.length === 0
-							? `bg-transparent`
-							: `chat-history flex flex-col w-full overflow-auto flex-grow pt-20`
+							? "bg-transparent"
+							: "chat-history flex flex-col w-full overflow-auto flex-grow pt-20"
 					}
 					ref={chatRef}
 				>
@@ -183,7 +179,7 @@ function ChatTemplate({
 				{!isApiConfigured.value && (
 					<WelcomeBanner
 						onOpenSettings={onOpenSettings}
-						onStartTour={handleStartTour}
+						onStartTour={onStartTour}
 					/>
 				)}
 

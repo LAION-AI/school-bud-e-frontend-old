@@ -25,11 +25,9 @@ import * as $games_list from "./routes/games/list.tsx";
 import * as $graph_name_ from "./routes/graph/[name].tsx";
 import * as $graph_list from "./routes/graph/list.tsx";
 import * as $index from "./routes/index.tsx";
-import * as $lernpfade from "./routes/lernpfade.tsx";
 import * as $presentations_generator from "./routes/presentations/generator.tsx";
 import * as $presentations_index from "./routes/presentations/index.tsx";
 import * as $presentations_preview from "./routes/presentations/preview.tsx";
-import * as $profile from "./routes/profile.tsx";
 import * as $settings from "./routes/settings.tsx";
 import * as $tests_check from "./routes/tests/check.tsx";
 import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
@@ -40,7 +38,7 @@ import * as $video_novel_index from "./routes/video-novel/index.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
-import * as $FloatingToolGuide from "./islands/FloatingToolGuide.tsx";
+import * as $ChatTemplate from "./islands/ChatTemplate.tsx";
 import * as $Game from "./islands/Game.tsx";
 import * as $GamePage from "./islands/GamePage.tsx";
 import * as $GamesList from "./islands/GamesList.tsx";
@@ -48,6 +46,7 @@ import * as $GraphList from "./islands/GraphList.tsx";
 import * as $Header from "./islands/Header.tsx";
 import * as $LearningPathsGraph from "./islands/LearningPathsGraph.tsx";
 import * as $Menu from "./islands/Menu.tsx";
+import * as $Modal from "./islands/Modal.tsx";
 import * as $PresentationGeneratorIsland from "./islands/PresentationGeneratorIsland.tsx";
 import * as $PresentationPreviewIsland from "./islands/PresentationPreviewIsland.tsx";
 import * as $PresentationsListIsland from "./islands/PresentationsListIsland.tsx";
@@ -57,8 +56,9 @@ import * as $StoryEditor from "./islands/StoryEditor.tsx";
 import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
+import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
+import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
 import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
-import * as $core_TourProgress from "./islands/core/TourProgress.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
 import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
 import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
@@ -112,11 +112,9 @@ const manifest = {
     "./routes/graph/[name].tsx": $graph_name_,
     "./routes/graph/list.tsx": $graph_list,
     "./routes/index.tsx": $index,
-    "./routes/lernpfade.tsx": $lernpfade,
     "./routes/presentations/generator.tsx": $presentations_generator,
     "./routes/presentations/index.tsx": $presentations_index,
     "./routes/presentations/preview.tsx": $presentations_preview,
-    "./routes/profile.tsx": $profile,
     "./routes/settings.tsx": $settings,
     "./routes/tests/check.tsx": $tests_check,
     "./routes/tests/compose/[id].tsx": $tests_compose_id_,
@@ -129,7 +127,7 @@ const manifest = {
     "./islands/ChatAgreement.tsx": $ChatAgreement,
     "./islands/ChatAgreementOrIsland.tsx": $ChatAgreementOrIsland,
     "./islands/ChatIsland.tsx": $ChatIsland,
-    "./islands/FloatingToolGuide.tsx": $FloatingToolGuide,
+    "./islands/ChatTemplate.tsx": $ChatTemplate,
     "./islands/Game.tsx": $Game,
     "./islands/GamePage.tsx": $GamePage,
     "./islands/GamesList.tsx": $GamesList,
@@ -137,6 +135,7 @@ const manifest = {
     "./islands/Header.tsx": $Header,
     "./islands/LearningPathsGraph.tsx": $LearningPathsGraph,
     "./islands/Menu.tsx": $Menu,
+    "./islands/Modal.tsx": $Modal,
     "./islands/PresentationGeneratorIsland.tsx": $PresentationGeneratorIsland,
     "./islands/PresentationPreviewIsland.tsx": $PresentationPreviewIsland,
     "./islands/PresentationsListIsland.tsx": $PresentationsListIsland,
@@ -146,8 +145,9 @@ const manifest = {
     "./islands/TourGuideInitializer.tsx": $TourGuideInitializer,
     "./islands/UserProfile.tsx": $UserProfile,
     "./islands/WindowManager.tsx": $WindowManager,
+    "./islands/chat/ChatInput.tsx": $chat_ChatInput,
+    "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
     "./islands/core/Tooltip.tsx": $core_Tooltip,
-    "./islands/core/TourProgress.tsx": $core_TourProgress,
     "./islands/core/buttons/ChatSubmitButton.tsx":
       $core_buttons_ChatSubmitButton,
     "./islands/core/buttons/ImageUploadButton.tsx":

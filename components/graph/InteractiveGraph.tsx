@@ -17,7 +17,7 @@ import type { LucideProps } from "lucide-preact";
 import type { VNode } from "preact";
 import { hasTestForNode, getTestForNode, setSelectedTest } from "../tests/store.ts";
 import NodeTestGenerator from "../tests/NodeTestGenerator.tsx";
-import FloatingChat from "../chat/FloatingChat.tsx";
+import FloatingChat from "../../islands/chat/FloatingChat.tsx";
 
 // @ts-ignore: Suppressing linter error for MessageCircle not being a valid JSX component
 const SafeMessageCircle = (props: LucideProps): VNode => <MessageCircle {...props} />;

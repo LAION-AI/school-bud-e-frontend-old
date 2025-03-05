@@ -1,5 +1,5 @@
 import { useState, useEffect } from "preact/hooks";
-import FloatingChat from "../components/chat/FloatingChat.tsx";
+import FloatingChat from "./chat/FloatingChat.tsx";
 import { apiWarningMessage, settings } from "../components/chat/store.ts";
 
 interface SlideData {

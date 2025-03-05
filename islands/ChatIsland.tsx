@@ -1,9 +1,5 @@
-// ###############
-// ### IMPORTS ###
-// ###############
-
 // The ChatIsland component is responsible for managing the chat messages and audio playback.
-import ChatTemplate from "../components/ChatTemplate.tsx";
+import ChatTemplate from "./ChatTemplate.tsx";
 import ChatWarning from "../components/Warning.tsx";
 
 // Necessary for streaming service
@@ -11,21 +7,8 @@ import { useEffect, useState, useRef } from "preact/hooks";
 
 // // Import necessary types from Preact
 import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
-import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages, isApiConfigured } from "../components/chat/store.ts";
-import { initTourGuide, tours, startTour } from "../utils/tourGuide.ts";
-import Modal from "../components/Modal.tsx";
-import Settings from "../components/Settings.tsx";
-import TourProgress from "./core/TourProgress.tsx";
-
-// Import the restructured button components
-import ImageUploadButton from "./core/buttons/ImageUploadButton.tsx";
-import VoiceRecordButton from "./core/buttons/VoiceRecordButton.tsx";
-import ChatSubmitButton from "./core/buttons/ChatSubmitButton.tsx";
-
-// ###############
-// ## / IMPORTS ##
-// ###############
-
+import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
+import { initTourGuide, startTour } from "../utils/tourGuide.ts";
 
 // Define the AudioItem interface if not already defined
 interface AudioItem {
@@ -49,25 +32,10 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   // dictionary containg audio files for each groupIndex for the current chat
   const [audioFileDict, setAudioFileDict] = useState<AudioFileDict>({});
 
-  // General settings
-  const [isStreamComplete, setIsStreamComplete] = useState(true);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isStreamComplete] = useState(true);
+  const [setIsSettingsOpen] = useState(false);
   const tourInitialized = useRef(false);
 
-  // Add useEffect for loading settings
-
-  // #################
-  // ### useEffect ###
-  // #################
-  // Explanation: If a value changes, the useEffect hook is called. This is useful for side effects like fetching data or updating the DOM.
-
-  // 2. useEffect [isStreamComplete]: Save chat messages to localStorage when the stream is complete
-  // 3. useEffect [messages]: Automatic scrolling to last message on incoming messages
-  // 4. useEffect [currentChatSuffix]: Load messages from localStorage when the chat suffix changes
-  // 5. useEffect [audioFileDict, readAlways, stopList.value]: Play incoming audio files when readAlways is true
-
-
-  // 2. useEffect [isStreamComplete]
   useEffect(() => {
     const lastMessage = messages.value[messages.value.length - 1];
     if (isStreamComplete && lastMessage) {
@@ -97,9 +65,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     }
   }, [isStreamComplete]);
 
-
-
-  // 5. useEffect [audioFileDict, readAlways, stopList.value]
   useEffect(() => {
     if (!readAlways) return;
 
@@ -196,10 +161,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     setIsSettingsOpen(true);
   };
   
-  const handleCloseSettings = () => {
-    setIsSettingsOpen(false);
-  };
-  
   const handleStartTour = () => {
     startTour("basics");
   };
@@ -218,19 +179,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>
-      
-      {/* Settings Modal */}
-      <Modal
-        isOpen={isSettingsOpen}
-        onClose={handleCloseSettings}
-        title="Settings"
-        size="md"
-      >
-        <Settings onClose={handleCloseSettings} lang={lang.value} />
-      </Modal>
-      
-      {/* Tour Progress Component - only show when API is configured */}
-      {isApiConfigured.value && <TourProgress />}
     </div>
   );
 }

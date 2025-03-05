@@ -1,7 +1,7 @@
 import { useSignal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
 import { graphs } from "../components/graph/store.ts";
-import FloatingChat from "../components/chat/FloatingChat.tsx";
+import FloatingChat from "./chat/FloatingChat.tsx";
 
 export default function GraphList() {
   const isClient = useSignal(false);

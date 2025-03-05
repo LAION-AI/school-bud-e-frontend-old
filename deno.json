@@ -2,9 +2,9 @@
   "imports": {
     "$std/": "https://deno.land/std@0.216.0/",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
-    "lucide-preact": "npm:lucide-preact@^0.475.0",
-    "preact": "https://esm.sh/preact@10.22.0",
-    "preact/": "https://esm.sh/preact@10.22.0/",
+    "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
+    "preact": "https://esm.sh/preact@10.26.4",
+    "preact/": "https://esm.sh/preact@10.26.4/",
     "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
     "tailwindcss": "npm:tailwindcss@3.4.1",
@@ -25,7 +25,6 @@
   },
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["cypress"],
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },

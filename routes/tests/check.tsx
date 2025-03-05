@@ -1,5 +1,5 @@
 import { PageProps } from "$fresh/server.ts";
-import FloatingChat from "../../components/chat/FloatingChat.tsx";
+import FloatingChat from "../../islands/chat/FloatingChat.tsx";
 
 export default function CheckTestsPage(props: PageProps) {
   return (

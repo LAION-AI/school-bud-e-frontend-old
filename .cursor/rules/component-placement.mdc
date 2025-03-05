@@ -15,3 +15,5 @@ alwaysApply: false
 | Non-interactive     | Route-specific  | Interactive      | Non-interactive | Parent in route's `(_islands)/`, Child in `(_components)/`|
 | Interactive         | Shared          | Non-interactive  | Interactive     | Parent in `components/`, Child in `islands/`              |
 | Interactive         | Route-specific  | Non-interactive  | Interactive     | Parent in `(_components)/`, Child in `(_islands)/`        |
+
+Info: If you ever need to figure out the parent components. You can use ``deno info ./relative/path/to/component.tsx``

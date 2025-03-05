@@ -1,6 +1,5 @@
 import { useSignal, useComputed } from "@preact/signals";
 import { settingsContent } from "../internalization/content.ts";
-import BasicSettings from "./settings/BasicSettings.tsx";
 import ConfigurationSelector from "../islands/settings/ConfigurationSelector.tsx";
 import TokenUsage from "./settings/TokenUsage.tsx";
 import { settings } from "./chat/store.ts";

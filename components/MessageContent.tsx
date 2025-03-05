@@ -58,7 +58,7 @@ function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: 
 
     // Find the earliest occurrence of any type's opening marker
     for (const type of types) {
-      const openMarker = "```" + type;
+      const openMarker = `\`\`\`${type}`;
       const index = text.indexOf(openMarker, currentPosition);
       if (index !== -1 && (earliestIndex === -1 || index < earliestIndex)) {
         earliestIndex = index;
@@ -80,7 +80,7 @@ function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: 
       });
     }
 
-    const openMarker = "```" + matchedType;
+    const openMarker = `\`\`\`${matchedType}`;
     const closeMarker = "```";
     const closeIndex = text.indexOf(closeMarker, earliestIndex + openMarker.length);
 
@@ -89,18 +89,18 @@ function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: 
       // Incomplete block: mark as loading
       segments.push({ type: matchedType, status: "loading" });
       break; // Stop processing as we hide everything after
+    } 
+
+    if (matchedType === " game") {
+      const code = text.substring(earliestIndex + openMarker.length, closeIndex);
+
+      segments.push({ type: " game", status: "completed", code });
+      currentPosition = closeIndex + closeMarker.length;
     } else {
-      if (matchedType === " game") {
-        const code = text.substring(earliestIndex + openMarker.length, closeIndex);
 
-        segments.push({ type: " game", status: "completed", code });
-        currentPosition = closeIndex + closeMarker.length;
-      } else {
-
-        // Complete block: mark as completed
-        segments.push({ type: matchedType, status: "completed" });
-        currentPosition = closeIndex + closeMarker.length;
-      }
+      // Complete block: mark as completed
+      segments.push({ type: matchedType, status: "completed" });
+      currentPosition = closeIndex + closeMarker.length;
     }
   }
 
@@ -133,7 +133,8 @@ export function MessageContent({ content }: MessageContentProps) {
                 {renderTextWithLinksAndBold(seg.content)}
               </span>
             );
-          } else if (seg.type === "json" || seg.type === "webresult" || seg.type === " game") {
+          } 
+          if (seg.type === "json" || seg.type === "webresult" || seg.type === " game") {
             return (
               <GraphLoadingState
                 key={idx}

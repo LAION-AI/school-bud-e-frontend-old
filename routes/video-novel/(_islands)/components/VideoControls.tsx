@@ -6,7 +6,7 @@ interface VideoControlsProps {
 
 export default function VideoControls({ onCreateNew }: VideoControlsProps) {
   return (
-    <div className="bg-gray-100/90 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-gray-100/90 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
       <div className="flex flex-wrap gap-3">
         <Button 
           type="button"
@@ -31,7 +31,7 @@ export default function VideoControls({ onCreateNew }: VideoControlsProps) {
         </Button>
         <Button
           type="button"
-          className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800 dark:text-white"
+          className="bg-gray-200 hover:bg-gray-300 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800"
           onClick={onCreateNew}
         >
           <svg
@@ -54,7 +54,7 @@ export default function VideoControls({ onCreateNew }: VideoControlsProps) {
         </Button>
         <Button
           type="button"
-          className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800 dark:text-white"
+          className="bg-gray-200 hover:bg-gray-300 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@ export default function VideoControls({ onCreateNew }: VideoControlsProps) {
         </Button>
         <Button
           type="button"
-          className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800 dark:text-white"
+          className="bg-gray-200 hover:bg-gray-300 transition-colors px-5 py-2 rounded-md font-medium flex items-center gap-2 text-gray-800"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -171,7 +171,7 @@ export default function CreateStoryModal({
   return (
     <dialog 
       ref={dialogRef}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl p-0 backdrop:bg-black/70"
+      className="bg-white rounded-xl border border-gray-200 w-full max-w-2xl p-0 backdrop:bg-black/70"
       aria-labelledby="modal-title"
       onClick={handleDialogClick}
       onKeyDown={handleKeyDown}
@@ -182,12 +182,12 @@ export default function CreateStoryModal({
     >
       <div className="p-6">
         {/* Header with clear visual hierarchy */}
-        <div className="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
-          <h2 id="modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">Create New Video Novel</h2>
+        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+          <h2 id="modal-title" className="text-2xl font-bold text-gray-900">Create New Video Novel</h2>
           <button
             ref={firstFocusableRef}
             type="button"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
             onClick={onClose}
             aria-label="Close modal"
           >
@@ -212,7 +212,7 @@ export default function CreateStoryModal({
 
         {/* Error message display */}
         {error && (
-          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -220,15 +220,15 @@ export default function CreateStoryModal({
                 </svg>
               </div>
               <div className="ml-3 flex-1">
-                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">Error generating story</h3>
-                <div className="mt-2 text-sm text-red-700 dark:text-red-300">
+                <h3 className="text-sm font-medium text-red-800">Error generating story</h3>
+                <div className="mt-2 text-sm text-red-700">
                   <p>{error.message}</p>
                 </div>
                 <div className="mt-4">
                   <button
                     type="button"
                     onClick={copyErrorToClipboard}
-                    className="inline-flex items-center px-3 py-1.5 border border-red-300 dark:border-red-700 shadow-sm text-xs font-medium rounded text-red-700 dark:text-red-200 bg-white dark:bg-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     {isCopied ? (
                       <>
@@ -255,8 +255,8 @@ export default function CreateStoryModal({
 
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Step 1: Choose a story plot */}
-          <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">
               Choose a Story Plot
             </h3>
             
@@ -268,8 +268,8 @@ export default function CreateStoryModal({
                   onClick={() => handlePlotSelect(storyPlot.plot, storyPlot.id)}
                   className={`text-left p-4 rounded-lg border relative ${
                     selectedPlotId === storyPlot.id 
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-2 ring-green-500' 
-                      : 'border-gray-200 dark:border-gray-600 bg-white hover:bg-gray-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 hover:border-green-300 dark:hover:border-green-500/50'
+                      ? 'border-green-500 bg-green-50 ring-2 ring-green-500' 
+                      : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-green-300'
                   } transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 h-full group`}
                   aria-label={`Use ${storyPlot.label} plot`}
                   aria-pressed={selectedPlotId === storyPlot.id}
@@ -277,10 +277,10 @@ export default function CreateStoryModal({
                   <div className="flex items-start">
                     <span className="text-2xl mr-3" aria-hidden="true">{storyPlot.icon}</span>
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                      <h4 className="font-medium text-gray-900 mb-1">
                         {storyPlot.label}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <p className="text-sm text-gray-600">
                         {storyPlot.plot.substring(0, 100)}...
                       </p>
                     </div>
@@ -288,7 +288,7 @@ export default function CreateStoryModal({
                   <div className={`absolute bottom-2 right-2 text-xs font-medium px-2 py-1 rounded-full ${
                     selectedPlotId === storyPlot.id
                       ? 'bg-green-500 text-white'
-                      : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity'
+                      : 'bg-gray-100 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity'
                   }`}>
                     {selectedPlotId === storyPlot.id ? 'Selected' : 'Select'}
                   </div>
@@ -300,15 +300,15 @@ export default function CreateStoryModal({
             <div>
               <label
                 htmlFor="prompt"
-                className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200"
+                className="block text-sm font-medium mb-1 text-gray-700"
               >
-                Custom Plot <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">(or edit selected plot)</span>
+                Custom Plot <span className="text-sm font-normal text-gray-500 ml-1">(or edit selected plot)</span>
               </label>
               <textarea
                 id="prompt"
                 name="prompt"
                 rows={3}
-                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-800 dark:text-white"
+                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-800"
                 placeholder="Describe your own story plot or edit the selected one..."
                 value={formData.prompt}
                 onChange={(e) => {
@@ -329,8 +329,8 @@ export default function CreateStoryModal({
           </div>
             
           {/* Step 2: Choose visual style */}
-          <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">
               Choose Visual Style
             </h3>
             
@@ -342,13 +342,13 @@ export default function CreateStoryModal({
                   onClick={() => handleStyleSelect(style.value)}
                   className={`p-3 rounded-lg border relative ${
                     formData.style === style.value 
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' 
-                      : 'border-gray-200 dark:border-gray-600 bg-white hover:bg-gray-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 hover:border-green-300 dark:hover:border-green-500/50'
+                      ? 'border-green-500 bg-green-50 ring-1 ring-green-500' 
+                      : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-green-300'
                   } transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex flex-col items-center group`}
                   aria-pressed={formData.style === style.value}
                 >
                   <span className="text-2xl mb-1" aria-hidden="true">{style.icon}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{style.label}</span>
+                  <span className="text-sm font-medium text-gray-900">{style.label}</span>
                   <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center ${
                     formData.style === style.value 
                       ? 'bg-green-500' 
@@ -383,7 +383,7 @@ export default function CreateStoryModal({
           <div className="flex justify-end space-x-3">
             <Button
               type="button"
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-gray-800 dark:text-white"
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-800"
               onClick={onClose}
             >
               Cancel
@@ -394,7 +394,7 @@ export default function CreateStoryModal({
               type="submit"
               className={`px-5 py-2 rounded-md flex items-center gap-2 text-white font-medium ${
                 !formData.prompt.trim() || !formData.style || isGenerating
-                  ? 'bg-gray-400 cursor-not-allowed opacity-60 dark:bg-gray-600'
+                  ? 'bg-gray-400 cursor-not-allowed opacity-60'
                   : 'bg-green-500 hover:bg-green-600'
               }`}
               disabled={!formData.prompt.trim() || !formData.style || isGenerating}

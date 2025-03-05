@@ -1,5 +1,5 @@
 import { useState, useEffect } from "preact/hooks";
-import FloatingChat from "../../../components/chat/FloatingChat.tsx";
+import FloatingChat from "../../../islands/chat/FloatingChat.tsx";
 import VideoPlayer from "./components/VideoPlayer.tsx";
 import VideoControls from "./components/VideoControls.tsx";
 import StoryLibrary from "./components/StoryLibrary.tsx";

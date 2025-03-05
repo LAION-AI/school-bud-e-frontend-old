@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { JSX } from "preact";
-import FloatingChat from "../components/chat/FloatingChat.tsx";
+import FloatingChat from "./chat/FloatingChat.tsx";
 
 interface Window {
   id: string;
