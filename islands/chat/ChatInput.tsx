@@ -245,9 +245,6 @@ export default function ChatInput() {
 
 							<VoiceRecordButton
 								resetTranscript={resetTranscript.value}
-								sttUrl={settings.value.sttUrl}
-								sttKey={settings.value.sttKey}
-								sttModel={settings.value.sttModel}
 								onFinishRecording={handleStartStream}
 								onInterimTranscript={(interimTranscript) => {
 									query.value = `${query.value} ${interimTranscript}`;

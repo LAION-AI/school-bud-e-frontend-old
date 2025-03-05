@@ -1,23 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { IconArrowLeft, IconTrash2, IconEye, type LucideProps } from "@tabler/icons-preact";
 import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import { startStream } from "../../../components/chat/stream.ts";
 import { addMessage, messages } from "../../../components/chat/store.ts";
+import { IconArrowLeft, IconEye, IconTrash } from "@tabler/icons-preact";
 
-// Safe wrapper for Lucide icon
-function SafeArrowLeft(props: LucideProps): VNode {
-  return <ArrowLeft {...props} />;
-}
-
-function SafeTrash2(props: LucideProps): VNode {
-  return <Trash2 {...props} />;
-}
-
-function SafeEye(props: LucideProps): VNode {
-  return <Eye {...props} />;
-}
 
 interface TestViewIslandProps {
   testId: string;
@@ -528,7 +516,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
     <div class="container mx-auto px-6 py-10 max-w-4xl">
       <div class="mb-8">
         <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800">
-          <SafeArrowLeft class="w-5 h-5 mr-2" />
+          <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Graph
         </a>
       </div>
@@ -546,7 +534,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 aria-label="View submissions"
                 type="button"
               >
-                <SafeEye class="w-5 h-5 mr-1" />
+                <IconEye class="w-5 h-5 mr-1" />
                 <span>View Submissions</span>
               </button>
             )}
@@ -558,7 +546,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 aria-label="Delete test"
                 type="button"
               >
-                <SafeTrash2 class="w-5 h-5 mr-1" />
+                <IconTrash class="w-5 h-5 mr-1" />
                 <span>Delete Test</span>
               </button>
             ) : (

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import type { JSX } from "preact";
 import { IconMicrophone } from "@tabler/icons-preact";
+import { settings } from "../../../components/chat/store.ts";
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   lang: string;
@@ -33,16 +34,10 @@ function VoiceRecordButton({
   onFinishRecording,
   onInterimTranscript,
   resetTranscript,
-  sttUrl,
-  sttKey,
-  sttModel,
 }: {
   onFinishRecording: (transcript: string) => void;
   onInterimTranscript: (transcript: string) => void;
   resetTranscript: number;
-  sttUrl: string;
-  sttKey: string;
-  sttModel: string;
 }): JSX.Element {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -122,8 +117,10 @@ function VoiceRecordButton({
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.wav");
 
-    let serverUrl = sttUrl;
-    let modelName = sttModel;
+    console.log(settings.peek());
+    let serverUrl = settings.peek().sttUrl;
+    let modelName = settings.peek().sttModel;
+    const sttKey = settings.peek().sttKey;
 
     if (sttKey.startsWith("gsk_")) {
       serverUrl = serverUrl === "" ? "https://api.groq.com/openai/v1/audio/transcriptions" : serverUrl;

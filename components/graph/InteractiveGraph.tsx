@@ -4,57 +4,17 @@ import type { GraphNode } from "../../islands/RightSidebar.tsx";
 import * as graphStore from "./store.ts";
 import {
 	requestGraphFormat,
-	createFormatPrompt,
 } from "../../utils/aiFormatClient.ts";
 import { validateGraphFormat } from "../../utils/graphValidation.ts";
 import type { GraphJson } from "../../types/formats.ts";
-import type { ChatMessage } from "../../utils/aiFormatClient.ts";
-import { settings as chatSettings } from "../../components/chat/store.ts";
-import { addMessage, messages as storeMessages } from "../chat/store.ts";
+import { addMessage, } from "../chat/store.ts";
 import { startStream } from "../chat/stream.ts";
-import { IconMessageCircle, IconX, IconClipboard, IconFileText, IconLayoutGrid, IconMaximize2 } from "@tabler/icons-preact";
-import type { VNode } from "preact";
 import { hasTestForNode, getTestForNode, setSelectedTest } from "../tests/store.ts";
 import NodeTestGenerator from "../tests/NodeTestGenerator.tsx";
 import FloatingChat from "../../islands/chat/FloatingChat.tsx";
-
-// @ts-ignore: Suppressing linter error for MessageCircle not being a valid JSX component
-const SafeMessageCircle = (props: LucideProps): VNode => <MessageCircle {...props} />;
-
-// @ts-ignore: Suppressing linter error for X not being a valid JSX component
-const SafeXIcon = (props: LucideProps): VNode => <X {...props} />;
-
-// @ts-ignore: Suppressing linter error for FileText not being a valid JSX component
-const SafeFileTextIcon = (props: LucideProps): VNode => <FileText {...props} />;
-
-// @ts-ignore: Suppressing linter error for Clipboard not being a valid JSX component
-const SafeClipboardIcon = (props: LucideProps): VNode => <Clipboard {...props} />;
-
-// Add more safe icon components
-// @ts-ignore: Suppressing linter error for LayoutGrid not being a valid JSX component
-const SafeLayoutGrid = (props: LucideProps): VNode => <LayoutGrid {...props} />;
-
-// @ts-ignore: Suppressing linter error for Maximize2 not being a valid JSX component
-const SafeMaximize2 = (props: LucideProps): VNode => <Maximize2 {...props} />;
-
-// Add interface declaration for window global variables
-declare global {
-	interface Window {
-		UNIVERSAL_API_KEY?: string;
-		API_URL?: string;
-		LLM_API_URL?: string;
-		LLM_API_KEY?: string;
-		LLM_API_MODEL?: string;
-		UNIVERSAL_SHOP_API_KEY?: string;
-		VLM_API_URL?: string;
-		VLM_API_KEY?: string;
-		VLM_API_MODEL?: string;
-		VLM_CORRECTION_MODEL?: string;
-	}
-}
+import { IconMessageCircle, IconX, IconFileText, IconMaximize, IconLayoutGrid } from "@tabler/icons-preact";
 
 interface InteractiveGraphProps {
-	height?: string;
 	isRoot?: boolean;
 }
 
@@ -64,7 +24,6 @@ type ExtendedGraphNode = GraphNode & {
 };
 
 export function InteractiveGraph({
-	height = "100%",
 	isRoot = false,
 }: InteractiveGraphProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -88,8 +47,6 @@ export function InteractiveGraph({
 	// Add state for edge selection
 	const [selectedEdge, setSelectedEdge] = useState<{source: string, target: string} | null>(null);
 
-	// Add state for showing custom AI prompt
-	const [showAIPrompt, setShowAIPrompt] = useState(false);
 	const [aiCustomPrompt, setAICustomPrompt] = useState("");
 
 	// Add state for test generation
@@ -97,56 +54,6 @@ export function InteractiveGraph({
 	const [testCustomPrompt, setTestCustomPrompt] = useState("");
 	const [showInlinePrompt, setShowInlinePrompt] = useState(false);
 	const [promptType, setPromptType] = useState<'connection' | 'test'>('connection');
-
-	// Function to create API requests with AI credentials
-	const createAIRequest = async (messages: ChatMessage[]) => {
-		try {
-			// Restore the original implementation with error handling
-			// Use the API URL from settings or fallback to default
-			const headers: Record<string, string> = {
-				"Content-Type": "application/json",
-				Accept: "text/event-stream",
-			};
-
-			// Only add Authorization header if API key exists
-			const apiKey = localStorage.getItem("UNIVERSAL_API_KEY") || "";
-			if (apiKey) {
-				headers.Authorization = `Bearer ${apiKey}`;
-			}
-
-			// Prepare the request payload
-			const payload = {
-				messages,
-				model: window.LLM_API_MODEL || "gpt-3.5-turbo",
-				universalApiKey: apiKey,
-				llmApiUrl: window.LLM_API_URL || "",
-				llmApiKey: window.LLM_API_KEY || "",
-				llmApiModel: window.LLM_API_MODEL || "",
-				systemPrompt: "",
-				lang: "en",
-				stream: true,
-			};
-
-			// Make the API request
-			const response = await fetch("/api/chat", {
-				method: "POST",
-				headers,
-				body: JSON.stringify(payload),
-			});
-
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(
-					`API request failed: ${response.status} ${response.statusText}. Details: ${errorText}`,
-				);
-			}
-
-			return response;
-		} catch (error) {
-			// Silently handle error and return empty string
-			return "";
-		}
-	};
 
 	// Create Cytoscape elements from graph data (used only during the initial mount)
 	const createGraphElements = (
@@ -1397,7 +1304,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center space-x-1 text-white"
 										title="Generate connections"
 									>
-										<SafeMessageCircle size={16} />
+										<IconMessageCircle size={16} />
 										<span class="text-xs font-medium mr-1">Generate</span>
 									</button>
 									<button
@@ -1409,7 +1316,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
 										title="Cancel"
 									>
-										<SafeXIcon size={16} />
+										<IconX size={16} />
 									</button>
 								</div>
 							</div>
@@ -1433,7 +1340,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center space-x-1 text-white"
 										title="Generate test"
 									>
-										<SafeFileTextIcon size={16} />
+										<IconFileText size={16} />
 										<span class="text-xs font-medium mr-1">Generate</span>
 									</button>
 									<button
@@ -1445,7 +1352,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
 										title="Cancel"
 									>
-										<SafeXIcon size={16} />
+										<IconX size={16} />
 									</button>
 								</div>
 							</div>
@@ -1461,7 +1368,7 @@ export function InteractiveGraph({
 									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Spread all nodes for better visibility"
 								>
-									<SafeLayoutGrid size={16} />
+									<IconLayoutGrid size={16} />
 									<span class="text-xs font-medium">Spread</span>
 								</button>
 								
@@ -1472,7 +1379,7 @@ export function InteractiveGraph({
 									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Restore fixed node positions"
 								>
-									<SafeMaximize2 size={16} />
+									<IconMaximize size={16} />
 									<span class="text-xs font-medium">Fix</span>
 								</button>
 								
@@ -1483,7 +1390,7 @@ export function InteractiveGraph({
 									class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
 									title="Reset view"
 								>
-									<SafeXIcon size={16} />
+									<IconX size={16} />
 									<span class="text-xs font-medium">Reset</span>
 								</button>
 								
@@ -1498,7 +1405,7 @@ export function InteractiveGraph({
 									}`}
 									title={isChatOpen ? "Close chat" : "Open chat"}
 								>
-									<SafeMessageCircle size={16} />
+									<IconMessageCircle size={16} />
 									<span class="text-xs font-medium">Chat</span>
 								</button>
 								
@@ -1515,7 +1422,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors flex items-center space-x-1 text-blue-700 border border-blue-200"
 										title="Generate AI connections between selected nodes"
 									>
-										<SafeMessageCircle size={16} />
+										<IconMessageCircle size={16} />
 										<span class="text-xs font-medium">
 											{isGeneratingConnections ? "Generating..." : "Connect AI"}
 										</span>
@@ -1530,7 +1437,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-orange-50 hover:bg-orange-100 transition-colors flex items-center space-x-1 text-orange-700 border border-orange-200"
 										title="Remove selected connection"
 									>
-										<SafeXIcon size={16} />
+										<IconX size={16} />
 										<span class="text-xs font-medium">
 											Remove Edge
 										</span>
@@ -1545,7 +1452,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors flex items-center space-x-1 text-green-700 border border-green-200"
 										title="Generate test for this node"
 									>
-										<SafeFileTextIcon size={16} />
+										<IconFileText size={16} />
 										<span class="text-xs font-medium">
 											Generate Test
 										</span>
@@ -1560,7 +1467,7 @@ export function InteractiveGraph({
 										class="p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors flex items-center space-x-1 text-red-700 border border-red-200"
 										title="Delete selected nodes"
 									>
-										<SafeXIcon size={16} />
+										<IconX size={16} />
 										<span class="text-xs font-medium">
 											Delete {selectedNodes.length > 1 ? `(${selectedNodes.length})` : ""}
 										</span>
