@@ -57,6 +57,7 @@ import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
 import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
+import * as $chat_ChatModeSelector from "./islands/chat/ChatModeSelector.tsx";
 import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
 import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
@@ -146,6 +147,7 @@ const manifest = {
     "./islands/UserProfile.tsx": $UserProfile,
     "./islands/WindowManager.tsx": $WindowManager,
     "./islands/chat/ChatInput.tsx": $chat_ChatInput,
+    "./islands/chat/ChatModeSelector.tsx": $chat_ChatModeSelector,
     "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
     "./islands/core/Tooltip.tsx": $core_Tooltip,
     "./islands/core/buttons/ChatSubmitButton.tsx":
