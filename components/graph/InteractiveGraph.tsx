@@ -1477,10 +1477,6 @@ export function InteractiveGraph({
 						</div>
 					</div>
 				</div>
-
-				{/* Chat panel */}
-				{isChatOpen && (<FloatingChat />
-				)}
 			</div>
 
 			{/* Test generator modal */}

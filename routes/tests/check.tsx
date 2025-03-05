@@ -66,7 +66,6 @@ export default function CheckTestsPage(props: PageProps) {
           </div>
         </div>
       </div>
-      <FloatingChat />
     </div>
   );
 }

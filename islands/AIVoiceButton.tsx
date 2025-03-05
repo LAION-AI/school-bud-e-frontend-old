@@ -166,6 +166,8 @@ function AIVoiceButton(): JSX.Element {
 
   const getButtonContent = () => {
     switch (buttonState) {
+      case "idle":
+        return null; // No icon in idle state
       case "listening":
         return <IconMicrophone style={iconStyle} />;
       case "processing":
@@ -179,15 +181,15 @@ function AIVoiceButton(): JSX.Element {
         );
       case "responding":
         return <IconVolume style={iconStyle} />;
-      default:
-        return <IconMicrophone style={iconStyle} />;
     }
   };
 
   const getButtonClass = () => `
-    w-full h-full rounded-full flex items-center justify-center 
-    transition-all duration-300 ease-in-out shadow-xl border-white border-4
-    ${buttonState === "idle" ? "bg-blue-300 hover:bg-blue-300" : ""}
+    flex items-center justify-center
+    rounded-full
+    transition-all duration-300 ease-in-out
+    border-white border-4
+    ${buttonState === "idle" ? "bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600" : ""}
     ${buttonState === "listening" ? "bg-red-600 hover:bg-red-700" : ""}
     ${buttonState === "processing" ? "bg-purple-600" : ""}
     ${buttonState === "responding" ? "bg-green-600" : ""}
@@ -207,11 +209,11 @@ function AIVoiceButton(): JSX.Element {
 
   return (
     <div 
-      className="fixed bottom-24 right-8" 
+      className="fixed bottom-10 right-8" 
       style={{ 
         zIndex: 9999, 
-        width: "100px", 
-        height: "100px",
+        width: "70px", 
+        height: "70px",
         position: "fixed",
         bottom: "6rem",
         right: "2rem",
@@ -227,6 +229,8 @@ function AIVoiceButton(): JSX.Element {
         style={{
           position: "relative",
           zIndex: 2,
+          width: "70px",
+          height: "70px",
           cursor: "pointer"
         }}
         aria-label={getAriaLabel()}

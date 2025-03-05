@@ -282,8 +282,6 @@ export default function PresentationGeneratorIsland() {
           </div>
         </div>
       </div>
-      
-      <FloatingChat />
     </div>
   );
 }

@@ -63,8 +63,6 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
           )
         ))}
       </div>
-
-      <FloatingChat />
     </div>
   );
 }

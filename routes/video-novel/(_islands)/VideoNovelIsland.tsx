@@ -313,8 +313,6 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 				onSubmit={handleSubmit}
 				error={error}
 			/>
-
-			<FloatingChat />
 		</>
 	);
 }

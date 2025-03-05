@@ -32,7 +32,7 @@ export default function PresentationPreview({ data }: PageProps<PreviewData>) {
         <meta name="description" content="Preview your AI-generated presentation" />
       </Head>
       
-      <div class="min-h-screen bg-gray-100">
+      <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
         <header class="bg-white shadow">
           <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">

@@ -1,7 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
 import { graphs } from "../components/graph/store.ts";
-import FloatingChat from "./chat/FloatingChat.tsx";
 
 export default function GraphList() {
   const isClient = useSignal(false);
@@ -17,10 +16,6 @@ export default function GraphList() {
     
     return () => clearTimeout(timer);
   }, [isClient]);
-
-  const handleGoToGraph = (id: string) => {
-    window.location.href = `/graph/${id}`;
-  };
 
   // Loading skeleton UI during SSR or initial client load
   if (!isClient.value || isLoading) {
@@ -60,10 +55,10 @@ export default function GraphList() {
       {graphEntries.length > 0 ? (
         <div class="space-y-3">
           {graphEntries.map(([id, graph]) => (
-            <button
+            <a
               key={id}
+              href={`/graph/${id}`}
               class="group border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer w-full text-left"
-              onClick={() => handleGoToGraph(id)}
               aria-label={`View graph: ${graph.name || "Untitled Graph"}`}
             >
               <div class="flex-1 min-w-0 mr-4">
@@ -112,7 +107,7 @@ export default function GraphList() {
                   <path d="M9 6l6 6l-6 6" />
                 </svg>
               </div>
-            </button>
+            </a>
           ))}
         </div>
       ) : (
@@ -133,8 +128,6 @@ export default function GraphList() {
           </a>
         </div>
       )}
-      
-      <FloatingChat />
     </div>
   );
 } 

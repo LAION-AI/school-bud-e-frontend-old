@@ -12,16 +12,16 @@ export default function TestsSection({ isCollapsed, highlight }: TestsSectionPro
   const [currentPath, setCurrentPath] = useState("");
 
   // Define the variant for this section
-  const sectionVariant = "amber" as const;
+  const sectionVariant = "red" as const;
 
   // Helper function to generate link classes based on active state and variant
   const getLinkClasses = (linkPath: string) => {
     const baseClasses = "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2";
     let ringClass = "";
     let activeClasses = "";
-    if (sectionVariant === "amber") {
-      ringClass = "focus-visible:ring-amber-500";
-      activeClasses = "bg-amber-100 text-amber-900 hover:bg-amber-200";
+    if (sectionVariant === "red") {
+      ringClass = "focus-visible:ring-red-500";
+      activeClasses = "bg-red-100 text-red-900 hover:bg-red-200";
     }
     // You can add more variants here if needed
     const inactiveClasses = "text-gray-700 hover:bg-gray-50 hover:text-gray-900";
