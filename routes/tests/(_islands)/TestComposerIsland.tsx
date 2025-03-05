@@ -1,36 +1,13 @@
 import { useEffect, useState, useRef } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { IconArrowLeft, IconPlus, IconTrash2, IconImage, IconMessageCircle, type LucideProps } from "@tabler/icons-preact";
+import { IconMessageCircle, IconArrowLeft, IconPlus, IconTrash, IconImageInPicture, IconPhoto } from "@tabler/icons-preact";
 import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import * as testStore from "../../../components/tests/store.ts";
 import * as graphStore from "../../../components/graph/store.ts";
-import type { GraphNode } from "../../../islands/RightSidebar.tsx";
 import ChatHistory from "../../../components/chat/ChatHistory.tsx";
 import { addMessage } from "../../../components/chat/store.ts";
 import { startStream } from "../../../components/chat/stream.ts";
-
-// Safe wrapper for Lucide icons
-function SafeArrowLeft(props: LucideProps): VNode {
-  return <ArrowLeft {...props} />;
-}
-
-function SafePlus(props: LucideProps): VNode {
-  return <Plus {...props} />;
-}
-
-function SafeTrash2(props: LucideProps): VNode {
-  return <Trash2 {...props} />;
-}
-
-function SafeImage(props: LucideProps): VNode {
-  return <ImageIcon {...props} />;
-}
-
-function SafeMessageCircle(props: LucideProps): VNode {
-  return <MessageCircle {...props} />;
-}
-
 interface TestComposerIslandProps {
   testId?: string; // Optional for new tests
   nodeId?: string; // Optional for tests not associated with a node
@@ -634,23 +611,24 @@ Or for a single question:
         prompt += ` I already have ${test.questions.length} questions, so please make these different.`;
       }
       
-      prompt += "\n\nFormat your response as a JSON object with the following structure:";
-      prompt += "\n```json";
-      prompt += "\n{";
-      prompt += "\n  \"type\": \"test\",";
-      prompt += "\n  \"name\": \"" + test.name + "\",";
-      prompt += "\n  \"content\": \"" + (test.content || 'Test description') + "\",";
-      prompt += "\n  \"questions\": [";
-      prompt += "\n    {";
-      prompt += "\n      \"id\": \"unique_id\",";
-      prompt += "\n      \"type\": \"multiple_choice|true_false|short_answer\",";
-      prompt += "\n      \"question\": \"Question text\",";
-      prompt += "\n      \"options\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"],";
-      prompt += "\n      \"correctAnswer\": \"Correct answer or index\"";
-      prompt += "\n    }";
-      prompt += "\n  ]";
-      prompt += "\n}";
-      prompt += "\n```";
+      prompt += `
+Format your response as a JSON object with the following structure:
+\`\`\`json
+{
+  "type": "test",
+  "name": "${test.name}",
+  "content": "${test.content || 'Test description'}",
+  "questions": [
+    {
+      "id": "unique_id",
+      "type": "multiple_choice|true_false|short_answer",
+      "question": "Question text",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "correctAnswer": "Correct answer or index"
+    }
+  ]
+}
+\`\`\``;
 
       // Add user message to chat
       addMessage({ role: "user", content: prompt });
@@ -700,7 +678,7 @@ Or for a single question:
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="mb-8">
         <a href="/tests" class="inline-flex items-center text-blue-600 hover:text-blue-800">
-          <SafeArrowLeft class="w-5 h-5 mr-2" />
+          <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Tests
         </a>
       </div>
@@ -819,7 +797,7 @@ Or for a single question:
               <div class="text-center py-8 bg-gray-50 rounded-lg">
                 <p class="text-gray-500 mb-4">No questions added yet</p>
                 <Button variant="primary" onClick={addQuestion}>
-                  <SafePlus class="w-4 h-4 mr-2" />
+                  <IconPlus class="w-4 h-4 mr-2" />
                   Add First Question
                 </Button>
               </div>
@@ -835,7 +813,7 @@ Or for a single question:
                         class="text-red-500 hover:text-red-700"
                         aria-label={`Remove question ${questionIndex + 1}`}
                       >
-                        <SafeTrash2 class="w-5 h-5" />
+                        <IconTrash class="w-5 h-5" />
                       </button>
                     </div>
                     
@@ -858,7 +836,7 @@ Or for a single question:
                       {/* Image Upload Section */}
                       <div class="border border-dashed border-gray-300 rounded-lg p-4">
                         <div class="flex items-center justify-between mb-2">
-                          <label class="block text-sm font-medium text-gray-700">
+                          <label htmlFor={`question-${questionIndex}-image`} class="block text-sm font-medium text-gray-700">
                             Question Image (Optional)
                           </label>
                           
@@ -895,7 +873,7 @@ Or for a single question:
                             onClick={() => triggerImageUpload(questionIndex)}
                             class="w-full flex items-center justify-center py-3 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-100 transition-colors"
                           >
-                            <SafeImage class="w-5 h-5 mr-2 text-gray-400" />
+                            <IconPhoto class="w-5 h-5 mr-2 text-gray-400" />
                             <span class="text-gray-500">Click to upload an image</span>
                           </button>
                         )}
@@ -920,7 +898,7 @@ Or for a single question:
                       {/* Question Type Specific Fields */}
                       {question.type === "multiple_choice" && (
                         <div class="space-y-3">
-                          <label class="block text-sm font-medium text-gray-700">
+                          <label htmlFor={`question-${questionIndex}-options`} class="block text-sm font-medium text-gray-700">
                             Options
                           </label>
                           
@@ -950,7 +928,7 @@ Or for a single question:
                                   class="text-red-500 hover:text-red-700"
                                   aria-label={`Remove option ${optionIndex + 1}`}
                                 >
-                                  <SafeTrash2 class="w-4 h-4" />
+                                  <IconTrash class="w-4 h-4" />
                                 </button>
                               )}
                             </div>
@@ -961,7 +939,7 @@ Or for a single question:
                             onClick={() => addOption(questionIndex)}
                             class="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                           >
-                            <SafePlus class="w-4 h-4 mr-1" />
+                            <IconPlus class="w-4 h-4 mr-1" />
                             Add Option
                           </button>
                         </div>
@@ -969,7 +947,7 @@ Or for a single question:
                       
                       {question.type === "true_false" && (
                         <div>
-                          <label class="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor={`question-${questionIndex}-tf`} class="block text-sm font-medium text-gray-700 mb-2">
                             Correct Answer
                           </label>
                           <div class="flex items-center space-x-4">
@@ -1023,7 +1001,7 @@ Or for a single question:
                   onClick={addQuestion}
                   class="w-full py-3 border-2 border-gray-300 border-dashed rounded-lg text-gray-600 hover:bg-gray-100 transition-colors flex items-center justify-center"
                 >
-                  <SafePlus class="w-5 h-5 mr-2" />
+                  <IconPlus class="w-5 h-5 mr-2" />
                   Add Another Question
                 </button>
               </div>
@@ -1051,7 +1029,7 @@ Or for a single question:
             {/* Chat Header */}
             <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-medium text-gray-800 flex items-center gap-2">
-                <SafeMessageCircle size={18} class="text-blue-500" />
+                <IconMessageCircle size={18} class="text-blue-500" />
                 Test Assistant
               </h3>
               <button
@@ -1115,7 +1093,7 @@ Or for a single question:
             class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
             aria-label="Open chat"
           >
-            <SafeMessageCircle size={24} />
+            <IconMessageCircle size={24} />
           </button>
         )}
       </div>
