@@ -174,19 +174,7 @@ export default function ChatInput() {
 											class="w-full h-full object-cover"
 										/>
 										<div class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												class="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												strokeWidth="2"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											>
-												<title>Remove</title>
-												<path d="M18 6L6 18M6 6l12 12" />
-											</svg>
+											<IconX />
 										</div>
 									</button>
 								))}
@@ -248,7 +236,7 @@ export default function ChatInput() {
 					/>
 
 					<div class="flex items-center justify-between w-full border-t pt-2">
-						<div class="flex items-center space-x-2">
+						<div class="flex items-center gap-x-1">
 							<ImageUploadButton
 								onImagesUploaded={handleImagesUploaded}
 								class="image-upload-button"
