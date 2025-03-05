@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "$fresh/runtime.ts";
-
+import type { JSX } from "preact";
+import { IconMicrophone } from "@tabler/icons-preact";
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   lang: string;
@@ -42,7 +43,7 @@ function VoiceRecordButton({
   sttUrl: string;
   sttKey: string;
   sttModel: string;
-}) {
+}): JSX.Element {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -82,30 +83,38 @@ function VoiceRecordButton({
   }
 
   async function toggleRecording() {
+    console.log("Current recording state:", isRecording);
+    
     if (isRecording) {
       // Stop recording
       mediaRecorderRef.current?.stop();
       setIsRecording(false);
     } else {
-      // Start recording
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
-        });
-        audioChunksRef.current = [];
-        await sendAudioToServer(audioBlob);
-      };
-
-      mediaRecorder.start();
+      // Start recording - set state first
       setIsRecording(true);
+      
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunksRef.current.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: "audio/wav",
+          });
+          audioChunksRef.current = [];
+          await sendAudioToServer(audioBlob);
+        };
+
+        mediaRecorder.start();
+      } catch (error) {
+        console.error("Error starting recording:", error);
+        setIsRecording(false); // Reset state if there's an error
+      }
     }
   }
 
@@ -180,29 +189,7 @@ function VoiceRecordButton({
       type="button"
       aria-label={isRecording ? "Stop recording" : "Start recording"}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        class={`icon icon-tabler icons-tabler-outline icon-tabler-microphone ${
-          isRecording ? "text-white" : "text-blue-600"
-        }`}
-        aria-hidden="true"
-        role="img"
-      >
-        <title>Microphone</title>
-        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-        <path d="M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z" />
-        <path d="M5 10a7 7 0 0 0 14 0" />
-        <path d="M8 21l8 0" />
-        <path d="M12 17l0 4" />
-      </svg>
+      <IconMicrophone class={`icon ${isRecording ? "text-white" : "text-blue-600"}`} />
     </button>
   );
 }

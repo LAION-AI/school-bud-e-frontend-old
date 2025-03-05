@@ -1,4 +1,4 @@
-import { MessageSquare, Download, X } from "lucide-preact";
+import { IconMessageCircle, IconDownload, IconX } from "@tabler/icons-preact";
 import { useState } from "preact/hooks";
 import { chats } from "../../components/chat/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
@@ -25,7 +25,7 @@ export default function ChatList({
 
   return (
     <CollapsibleSection
-      icon={<MessageSquare size={20} />}
+      icon={<IconMessageCircle size={20} />}
       title="Chats"
       isCollapsed={isCollapsed}
       isExpanded={isExpanded}
@@ -37,8 +37,8 @@ export default function ChatList({
       {[...Object.keys(chats.value)
         .filter(key => key.startsWith("bude-chat-"))
         .sort((a, b) => {
-          const numA = parseInt(a.slice(10));
-          const numB = parseInt(b.slice(10));
+          const numA = Number.parseInt(a.slice(10));
+          const numB = Number.parseInt(b.slice(10));
           return numA - numB;
         })
         .map((key) => {
@@ -62,14 +62,14 @@ export default function ChatList({
                 onClick={onDownloadChat}
                 class="group-hover:text-gray-400 text-transparent p-2"
               >
-                <Download class="h-5 w-5" />
+                <IconDownload class="h-5 w-5" />
               </button>
               <button
                 type="button"
                 onClick={() => onDeleteChat(suffix)}
                 class="group-hover:text-gray-400 text-transparent p-2"
               >
-                <X size={24} />
+                <IconX size={24} />
               </button>
             </div>
           );

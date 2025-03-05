@@ -1,11 +1,6 @@
 import { useState } from "preact/hooks";
 import CollapsibleSection from "./CollapsibleSection.tsx";
-import { ListTodo } from "lucide-preact";
-import type { LucideProps } from "lucide-preact";
-import type { VNode } from "preact";
-
-// @ts-ignore: Suppressing linter error for ListTodo not being a valid JSX component
-const SafeListTodoIcon = (props: LucideProps): VNode => <ListTodo {...props} />;
+import { IconListCheck } from "@tabler/icons-preact";
 
 interface TestsSectionProps {
   isCollapsed: boolean;
@@ -36,7 +31,7 @@ export default function TestsSection({ isCollapsed, highlight }: TestsSectionPro
 
   return (
     <CollapsibleSection
-      icon={<SafeListTodoIcon />}
+      icon={<IconListCheck />}
       title="Tests"
       isCollapsed={isCollapsed}
       isExpanded={isExpanded}

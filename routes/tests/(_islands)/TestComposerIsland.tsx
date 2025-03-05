@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { ArrowLeft, Plus, Trash2, Image as ImageIcon, MessageCircle, type LucideProps } from "lucide-preact";
+import { IconArrowLeft, IconPlus, IconTrash2, IconImage, IconMessageCircle, type LucideProps } from "@tabler/icons-preact";
 import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import * as testStore from "../../../components/tests/store.ts";

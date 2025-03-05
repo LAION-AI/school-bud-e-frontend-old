@@ -1,11 +1,9 @@
-import { ChevronDown } from "lucide-preact";
-import type { LucideProps } from "lucide-preact";
+import { IconChevronDown } from "@tabler/icons-preact";
 
 import type { ComponentChildren, VNode } from "preact";
 import { useState, useEffect } from "preact/hooks";
 
-// @ts-ignore: Suppressing linter error for ChevronDown not being a valid JSX component
-const SafeChevronDown = (props: LucideProps): VNode => <ChevronDown {...props} />;
+const SafeChevronDown = (props: LucideProps): VNode => <IconChevronDown {...props} />;
 
 interface CollapsibleSectionProps {
   icon: ComponentChildren;

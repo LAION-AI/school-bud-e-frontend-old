@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { ArrowLeft, Trash2, Eye, type LucideProps } from "lucide-preact";
+import { IconArrowLeft, IconTrash2, IconEye, type LucideProps } from "@tabler/icons-preact";
 import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import { startStream } from "../../../components/chat/stream.ts";

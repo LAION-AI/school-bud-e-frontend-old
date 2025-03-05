@@ -1,7 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { ArrowRight, PlayCircle, Calendar, FileText, BookOpen, Tag, FileOutput, Edit, Plus } from "lucide-preact";
-import type { LucideProps } from "lucide-preact";
+import { IconArrowRight, IconPlayCircle, IconCalendar, IconFileText, IconBookOpen, IconTag, IconFileOutput, IconEdit, IconPlus } from "@tabler/icons-preact";
 import type { VNode } from "preact";
 import type { Test } from "../../../components/tests/store.ts";
 import * as graphStore from "../../../components/graph/store.ts";

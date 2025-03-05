@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { BookOpen, List } from "lucide-preact";
+import { IconBook, IconList } from "@tabler/icons-preact";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 
 export default function VideoNovelLink({ isCollapsed }: { isCollapsed: boolean }) {
@@ -11,7 +11,7 @@ export default function VideoNovelLink({ isCollapsed }: { isCollapsed: boolean }
 
   return (
     <CollapsibleSection
-      icon={<BookOpen class={`h-5 w-5 ${isCollapsed ? "" : "mr-2"}`} />}
+      icon={<IconBook class={`h-5 w-5 ${isCollapsed ? "" : "mr-2"}`} />}
       title="Video Novel"
       isCollapsed={isCollapsed}
       isExpanded={expanded}
@@ -27,7 +27,7 @@ export default function VideoNovelLink({ isCollapsed }: { isCollapsed: boolean }
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >
-          <List size={16} class={currentPath === "/graph/list" ? "text-amber-800" : "text-gray-600"} />
+          <IconList size={16} class={currentPath === "/graph/list" ? "text-amber-800" : "text-gray-600"} />
           <span>All Novels</span>
         </a>
       </CollapsibleSection>

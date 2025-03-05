@@ -1,4 +1,4 @@
-import { SidebarCloseIcon } from "lucide-preact";
+import { IconSquareToggleHorizontal} from "@tabler/icons-preact";
 
 interface SidebarHeaderProps {
   isCollapsed: boolean;
@@ -24,7 +24,7 @@ export default function SidebarHeader({ isCollapsed, setIsCollapsed }: SidebarHe
         }`}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        <SidebarCloseIcon
+        <IconSquareToggleHorizontal
           class={`h-5 w-5 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`}
           aria-hidden="true"
         />

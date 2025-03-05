@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { BookOpen, X, List } from "lucide-preact";
+import { IconBook, IconX, IconList } from "@tabler/icons-preact";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
 import { useComputed } from "@preact/signals";
@@ -23,7 +23,7 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
 
   return (
     <CollapsibleSection
-      icon={<BookOpen />}
+      icon={<IconBook />}
       title="Graphs"
       isCollapsed={isCollapsed}
       isExpanded={expanded}
@@ -42,7 +42,7 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >
-          <List size={16} class={currentPath === "/graph/list" ? "text-lime-800" : "text-gray-600"} />
+          <IconList size={16} class={currentPath === "/graph/list" ? "text-lime-800" : "text-gray-600"} />
           <span>All Graphs</span>
         </a>
 
@@ -67,7 +67,7 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
                     class="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-600 transition-all duration-200 outline-none rounded focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:opacity-100"
                     aria-label={`Delete graph ${graphs.value.get(graphId)?.name || graphId}`}
                   >
-                    <X size={16} />
+                    <IconX size={16} />
                   </button>
                 </div>
               ))}
