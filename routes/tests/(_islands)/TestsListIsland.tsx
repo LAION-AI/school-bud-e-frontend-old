@@ -1,47 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { Button } from "../../../components/Button.tsx";
-import { IconArrowRight, IconPlayCircle, IconCalendar, IconFileText, IconBookOpen, IconTag, IconFileOutput, IconEdit, IconPlus } from "@tabler/icons-preact";
-import type { VNode } from "preact";
+import { IconCalendar, IconTag, IconEdit, IconPlus, IconFileExport, IconBook, IconPlayerPlay } from "@tabler/icons-preact";
 import type { Test } from "../../../components/tests/store.ts";
 import * as graphStore from "../../../components/graph/store.ts";
-import type { GraphNode } from "../../../islands/RightSidebar.tsx";
-
-// Create safe wrappers for Lucide icons to work properly in JSX
-function SafeArrowRight(props: LucideProps): VNode {
-  return <ArrowRight {...props} />;
-}
-
-function SafePlayCircle(props: LucideProps): VNode {
-  return <PlayCircle {...props} />;
-}
-
-function SafeCalendar(props: LucideProps): VNode {
-  return <Calendar {...props} />;
-}
-
-function SafeFileText(props: LucideProps): VNode {
-  return <FileText {...props} />;
-}
-
-function SafeBookOpen(props: LucideProps): VNode {
-  return <BookOpen {...props} />;
-}
-
-function SafeTag(props: LucideProps): VNode {
-  return <Tag {...props} />;
-}
-
-function SafeFileOutput(props: LucideProps): VNode {
-  return <FileOutput {...props} />;
-}
-
-function SafeEdit(props: LucideProps): VNode {
-  return <Edit {...props} />;
-}
-
-function SafePlus(props: LucideProps): VNode {
-  return <Plus {...props} />;
-}
 
 // Format date to be more compact
 function formatDate(date: number | string | Date): string {
@@ -55,50 +16,50 @@ function formatDate(date: number | string | Date): string {
 
 // Format test data for document export
 function formatTestForDocExport(test: Test, nodeName: string): string {
-  let docContent = "# " + test.name + "\n\n";
+  let docContent = `# ${test.name}\n\n`;
   
   // Add metadata
-  docContent += "**Topic:** " + (nodeName || test.nodeId || 'N/A') + "\n";
-  docContent += "**Created:** " + formatDate(test.createdAt) + "\n";
-  docContent += "**Last Updated:** " + formatDate(test.lastUpdatedAt || test.createdAt) + "\n\n";
+  docContent += `**Topic:** ${nodeName || test.nodeId || 'N/A'}\n`;
+  docContent += `**Created:** ${formatDate(test.createdAt)}\n`;
+  docContent += `**Last Updated:** ${formatDate(test.lastUpdatedAt || test.createdAt)}\n\n`;
   
   // Add description if available
   if (test.content) {
-    docContent += "## Description\n" + test.content + "\n\n";
+    docContent += `## Description\n${test.content}\n\n`;
   }
   
   // Add questions
   docContent += "## Questions\n\n";
   
   test.questions.forEach((question, index) => {
-    docContent += "### Question " + (index + 1) + "\n" + question.question + "\n\n";
+    docContent += `### Question ${index + 1}\n${question.question}\n\n`;
     
     // Add image reference if available
     if (question.imageUrl) {
-      docContent += "[Image for Question " + (index + 1) + "]\n\n";
+      docContent += `[Image for Question ${index + 1}]\n\n`;
     }
     
     if (question.type === 'multiple_choice' && question.options) {
       docContent += "**Type:** Multiple Choice\n\n";
       question.options.forEach((option, optIndex) => {
-        docContent += String.fromCharCode(65 + optIndex) + ". " + option + "\n";
+        docContent += `${String.fromCharCode(65 + optIndex)}. ${option}\n`;
       });
-      docContent += "\n**Correct Answer:** ";
+      docContent += `\n**Correct Answer:** `;
       
       if (typeof question.correctAnswer === 'number' && question.options) {
         const answerLetter = String.fromCharCode(65 + question.correctAnswer);
-        docContent += answerLetter + ". " + question.options[question.correctAnswer] + "\n\n";
+        docContent += `${answerLetter}. ${question.options[question.correctAnswer]}\n\n`;
       } else if (Array.isArray(question.correctAnswer)) {
         const answerLetters = question.correctAnswer.map(
           (ans) => typeof ans === 'number' ? String.fromCharCode(65 + ans) : ans
         );
-        docContent += answerLetters.join(', ') + "\n\n";
+        docContent += `${answerLetters.join(', ')}\n\n`;
       } else {
-        docContent += question.correctAnswer + "\n\n";
+        docContent += `${question.correctAnswer}\n\n`;
       }
     } else if (question.type === 'true_false') {
       docContent += "**Type:** True/False\n\n";
-      docContent += "**Correct Answer:** " + question.correctAnswer + "\n\n";
+      docContent += `**Correct Answer:** ${question.correctAnswer}\n\n`;
     } else if (question.type === 'short_answer') {
       docContent += "**Type:** Short Answer\n\n";
       docContent += "**Correct Answer:** " + question.correctAnswer + "\n\n";
@@ -119,7 +80,7 @@ function exportTestToDocument(test: Test, nodeName: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = test.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + "_test.txt";
+  a.download = `${test.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_test.txt`;
   
   // Trigger the download without affecting browser history
   a.style.display = 'none';
@@ -135,16 +96,16 @@ function exportTestToDocument(test: Test, nodeName: string) {
 
 // Format test data for Google Docs export
 function formatTestForGoogleDocs(test: Test, nodeName: string): string {
-  let docContent = "# " + test.name + "\n\n";
+  let docContent = `# ${test.name}\n\n`;
   
   // Add metadata
-  docContent += "**Topic:** " + (nodeName || test.nodeId || 'N/A') + "\n";
-  docContent += "**Created:** " + formatDate(test.createdAt) + "\n";
-  docContent += "**Last Updated:** " + formatDate(test.lastUpdatedAt || test.createdAt) + "\n\n";
+  docContent += `**Topic:** ${nodeName || test.nodeId || 'N/A'}\n`;
+  docContent += `**Created:** ${formatDate(test.createdAt)}\n`;
+  docContent += `**Last Updated:** ${formatDate(test.lastUpdatedAt || test.createdAt)}\n\n`;
   
   // Add test description
   if (test.content) {
-    docContent += "## Description\n" + test.content + "\n\n";
+    docContent += `## Description\n${test.content}\n\n`;
   }
   
   // Add questions
@@ -599,7 +560,7 @@ export default function TestsListIsland() {
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Your Tests</h1>
         <Button variant="primary" onClick={handleCreateTest}>
-          <SafePlus class="w-4 h-4 mr-2" />
+          <IconPlus class="w-4 h-4 mr-2" />
           Create New Test
         </Button>
       </div>
@@ -612,7 +573,7 @@ export default function TestsListIsland() {
               Go to Graph
             </Button>
             <Button variant="secondary" onClick={handleCreateTest}>
-              <SafePlus class="w-4 h-4 mr-2" />
+              <IconPlus class="w-4 h-4 mr-2" />
               Create Test
             </Button>
           </div>
@@ -643,17 +604,17 @@ export default function TestsListIsland() {
                 
                 <div class="flex flex-wrap items-center gap-x-4 text-xs text-gray-500 mt-1">
                   <div class="flex items-center" title="Node">
-                    <SafeTag class="w-3 h-3 mr-1" />
+                    <IconTag class="w-3 h-3 mr-1" />
                     <span class="truncate max-w-[150px]">{nodesMap[test.nodeId || ''] || test.nodeId}</span>
                   </div>
                   
                   <div class="flex items-center" title="Last updated">
-                    <SafeCalendar class="w-3 h-3 mr-1" />
+                    <IconCalendar class="w-3 h-3 mr-1" />
                     <span>{test.lastUpdatedAt ? formatDate(test.lastUpdatedAt) : formatDate(test.createdAt)}</span>
                   </div>
                   
                   <div class="flex items-center" title="Question types">
-                    <SafeBookOpen class="w-3 h-3 mr-1" />
+                    <IconBook class="w-3 h-3 mr-1" />
                     <span>
                       {Array.from(new Set(test.questions.map(q => {
                         switch(q.type) {
@@ -676,7 +637,7 @@ export default function TestsListIsland() {
                   onClick={(e) => handleExportToDocument(e, test)}
                   aria-label="View Test Document"
                 >
-                  <SafeFileOutput class="w-5 h-5" />
+                  <IconFileExport class="w-5 h-5" />
                 </button>
                 
                 <button 
@@ -686,7 +647,7 @@ export default function TestsListIsland() {
                   onClick={(e) => handleEditTest(e, test.id)}
                   aria-label="Edit Test"
                 >
-                  <SafeEdit class="w-5 h-5" />
+                  <IconEdit class="w-5 h-5" />
                 </button>
                 
                 <button 
@@ -699,7 +660,7 @@ export default function TestsListIsland() {
                     handleStartTest(test.id);
                   }}
                 >
-                  <SafePlayCircle class="w-5 h-5" />
+                  <IconPlayerPlay class="w-5 h-5" />
                 </button>
               </div>
             </div>
