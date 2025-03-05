@@ -35,6 +35,7 @@ import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
 import * as $tests_index from "./routes/tests/index.tsx";
 import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
 import * as $video_novel_index from "./routes/video-novel/index.tsx";
+import * as $AIVoiceButton from "./islands/AIVoiceButton.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
@@ -59,6 +60,7 @@ import * as $WindowManager from "./islands/WindowManager.tsx";
 import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
 import * as $chat_ChatModeSelector from "./islands/chat/ChatModeSelector.tsx";
 import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
+import * as $chat_getLLMResponse from "./islands/chat/getLLMResponse.ts";
 import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
 import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
@@ -132,6 +134,7 @@ const manifest = {
     "./routes/video-novel/index.tsx": $video_novel_index,
   },
   islands: {
+    "./islands/AIVoiceButton.tsx": $AIVoiceButton,
     "./islands/ChatAgreement.tsx": $ChatAgreement,
     "./islands/ChatAgreementOrIsland.tsx": $ChatAgreementOrIsland,
     "./islands/ChatIsland.tsx": $ChatIsland,
@@ -156,6 +159,7 @@ const manifest = {
     "./islands/chat/ChatInput.tsx": $chat_ChatInput,
     "./islands/chat/ChatModeSelector.tsx": $chat_ChatModeSelector,
     "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
+    "./islands/chat/getLLMResponse.ts": $chat_getLLMResponse,
     "./islands/core/Tooltip.tsx": $core_Tooltip,
     "./islands/core/buttons/ChatSubmitButton.tsx":
       $core_buttons_ChatSubmitButton,

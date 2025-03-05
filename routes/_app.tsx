@@ -2,6 +2,7 @@ import type { AppProps } from "$fresh/server.ts";
 import { Partial } from "$fresh/runtime.ts";
 import Sidebar from "../islands/sidebar/index.tsx";
 import FloatingChat from "../islands/chat/FloatingChat.tsx";
+import AIVoiceButton from "../islands/AIVoiceButton.tsx";
 
 export default function App({ Component, url }: AppProps) {
 	const isArticle = url.pathname.startsWith("/articles");
@@ -35,6 +36,7 @@ export default function App({ Component, url }: AppProps) {
 								</Partial>
 							</div>
 							<FloatingChat />
+							<AIVoiceButton />
 						</>
 					)}
 				</div>

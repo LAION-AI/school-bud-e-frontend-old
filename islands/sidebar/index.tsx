@@ -118,6 +118,7 @@ export default function Sidebar({
 			</div>
 
 			<div class="p-3 pt-0">
+
 				<UserProfileSection isCollapsed={isCollapsed} lang={lang} />
 			</div>
 		</div>

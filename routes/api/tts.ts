@@ -202,10 +202,11 @@ async function textToSpeech(
             "Authorization": `Bearer ${useThisTtsKey}`,
           },
           body: JSON.stringify({
-            text: text,
+            voice: "alloy",
+            input: text,
             normalize: true,
             format: "mp3",
-            reference_id: useThisTtsModel,
+            model: useThisTtsModel,
             mp3_bitrate: 64,
             opus_bitrate: -1000,
             latency: "normal",
@@ -219,11 +220,10 @@ async function textToSpeech(
             Date.now() - startTime,
           );
           return Buffer.from(audioData);
-        } else {
-          console.error(
-            `Failed to synthesize speech. Status code: ${response.status}: ${response.statusText}`,
-          );
         }
+        console.error(
+          `Failed to synthesize speech. Status code: ${response.status}: ${response.statusText}`,
+        );
       }
     }
   } catch (error) {

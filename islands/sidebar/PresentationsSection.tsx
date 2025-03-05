@@ -19,7 +19,7 @@ export default function PresentationsSection({ isCollapsed }: PresentationsSecti
       onToggle={() => setIsExpanded(!isExpanded)}
       baseRoute="/presentations"
     >
-      <SidebarLink href="/presentations/generator">
+      <SidebarLink href="/presentations">
         Generate Presentation
       </SidebarLink>
     </CollapsibleSection>

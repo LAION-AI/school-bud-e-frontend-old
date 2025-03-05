@@ -2062,6 +2062,8 @@
     "https://esm.sh/@microsoft/fetch-event-source@2.0.1/denonext/fetch-event-source.mjs": "86ff6e1f7b6ef8472156069856f4d2a2dcdcd101bf7ac82a6704f0671fc05bee",
     "https://esm.sh/@tabler/icons-preact@3.30.0": "80ae3c6e39763c7bda818a1558c2bb571a2e913ffdbf8e3bef4af6d9b9d3e3d2",
     "https://esm.sh/@tabler/icons-preact@3.30.0/denonext/icons-preact.mjs": "669ed85bd2c8749a7db36108c2c18d2b3a5579b88df76b64463f20c973072278",
+    "https://esm.sh/lottie-web@5.12.2": "ca90965baf5b27c06b5d718c5fdd8653660a864becb8744165a0cf82dfc8dc3c",
+    "https://esm.sh/lottie-web@5.12.2/denonext/lottie-web.mjs": "a56ddbf4f996a4ef9905660721f3b321bf4e62bd6f9d13afe6a2ef33f1576cb1",
     "https://esm.sh/preact@10.22.0": "0fb9b89617c3a27b6be4eee74bd07b845e92900e6b7fdb757bc3a498a6ec9065",
     "https://esm.sh/preact@10.22.0/debug": "fb8d7b9ea5c7bbfb6cb9d9f9abfa31e8038b08ec623ec029f8feafbe6c5891e4",
     "https://esm.sh/preact@10.22.0/denonext/debug.mjs": "dfb39c01d509fab4948036bc2e6ad5ecd26ed5d7242e97be163ba575c815f01e",
