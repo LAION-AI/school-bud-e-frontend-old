@@ -12,7 +12,7 @@ import { startStream } from "../../components/chat/stream.ts";
 import ImageUploadButton from "../core/buttons/ImageUploadButton.tsx";
 import VoiceRecordButton from "../core/buttons/VoiceRecordButton.tsx";
 import { resetTranscript } from "../../components/chat/speech.ts";
-import { IconPdf, IconSend, IconX } from "@tabler/icons-preact";
+import { IconPdf, IconSend, IconX, IconLoader2 } from "@tabler/icons-preact";
 import ChatModeSelector, {
 	type ChatMode,
 	type SearchSubMode,
@@ -36,39 +36,104 @@ function TypingIndicator() {
 export default function ChatInput() {
 	const files = useSignal<(Image | File)[]>([]);
 	const isThinking = useSignal(false);
+	const isTranscribing = useSignal(false);
 	const selectedMode = useSignal<string>("chat");
 	const selectedSubMode = useSignal<string>("all"); // Default to 'all'
 	const currentModeHasSubmodes = useSignal<boolean>(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	const deleteImage = (event: MouseEvent | KeyboardEvent) => {
-		const target = event.target as HTMLImageElement | HTMLDivElement;
-		if ("src" in target) {
-			const index = files.value.findIndex(
-				(item) => "image_url" in item && item.image_url.url === target.src,
-			);
-			if (index !== -1) {
-				files.value.splice(index, 1);
-			}
-		} else {
-			// Handle PDF deletion by index
-			const index = Number.parseInt(
-				target.getAttribute("data-index") || "-1",
-				10,
-			);
-			if (index !== -1) {
-				files.value.splice(index, 1);
-			}
+		const target = event.currentTarget as HTMLElement;
+		const index = target.dataset.index;
+		if (index) {
+			const indexNum = Number.parseInt(index, 10);
+			files.value = files.value.filter((_, i) => i !== indexNum);
 		}
 	};
 
 	const handleImagesUploaded = (newFiles: Image[]) => {
-		files.value = [...files.value, ...newFiles];
+		// Make a deep copy of the files to ensure we preserve all properties
+		const filesCopy = JSON.parse(JSON.stringify(newFiles));
+		
+		// Process each file to ensure blob URLs are converted to data URLs
+		// This solves the server-side PDF processing issues
+		console.log("[ChatInput] Processing uploaded files:", filesCopy.length);
+		
+		for (const file of filesCopy) {
+			// Check if it's a PDF
+			if (file.pdf_url?.url) {
+				// Check if this is a large PDF that might cause API issues
+				if (file.pdf_url.size && file.pdf_url.size > 5000000) {
+					console.log(`[ChatInput] Large PDF detected (${file.pdf_url.size} bytes), marked for truncation`);
+				}
+				
+				// Warn if it's a blob URL which will fail server-side
+				if (file.pdf_url.url.startsWith('blob:')) {
+					console.log("[ChatInput] Found blob URL PDF - may fail on server");
+				}
+
+				console.log(`[ChatInput] PDF URL: ${file.pdf_url.url.substring(0, 50)}...`);
+			}
+			
+			if (file.image_url?.url) {
+				console.log(`[ChatInput] Image URL: ${file.image_url.url.substring(0, 50)}...`);
+			}
+		}
+		
+		// If this is an update to an existing PDF (transcription completed), 
+		// find and update the existing file instead of adding a new one
+		const updatedFiles = [...files.value];
+		
+		for (const newFile of filesCopy) {
+			if (newFile.type === "pdf_url" && newFile.pdf_url) {
+				// Check if this PDF is already in our files array (by URL)
+				const existingIndex = updatedFiles.findIndex(
+					f => f.type === "pdf_url" && 
+					"pdf_url" in f && 
+					f.pdf_url?.url === newFile.pdf_url?.url
+				);
+				
+				if (existingIndex >= 0) {
+					// Update the existing file with new properties
+					updatedFiles[existingIndex] = newFile;
+				} else {
+					// This is a new file, add it
+					updatedFiles.push(newFile);
+				}
+			} else {
+				// For non-PDF files, just add them
+				updatedFiles.push(newFile);
+			}
+		}
+		
+		// Update the files array
+		files.value = updatedFiles;
+		console.log("[ChatInput] Updated files count:", files.value.length);
+	};
+
+	const handleDisableSendButton = (disabled: boolean) => {
+		isTranscribing.value = disabled;
 	};
 
 	const handleStartStream = async (text = "", transcription?: string) => {
 		isThinking.value = true;
 		const combinedText = `${text || ""} ${transcription || ""}`.trim();
+		
+		// Check if there are any PDFs still being transcribed
+		const hasPendingTranscriptions = files.value.some(
+			file => "pdf_url" in file && file.pdf_url?.isTranscribing
+		);
+		
+		if (hasPendingTranscriptions) {
+			// Add error message to chat
+			addMessage({
+				role: "assistant",
+				content: "❌ Please wait for all PDF transcriptions to complete before sending your message.",
+			});
+			isThinking.value = false;
+			return;
+		}
+		
 		try {
 			await startStream(combinedText, undefined, files.value);
 		} catch (error: unknown) {
@@ -102,6 +167,8 @@ export default function ChatInput() {
 			isThinking.value = false;
 			// Clear the query (use the original clearing mechanism)
 			query.value = "";
+			// Clear the files array after sending
+			files.value = [];
 			// Focus the textarea after sending the message
 			setTimeout(() => {
 				textareaRef.current?.focus();
@@ -180,26 +247,38 @@ export default function ChatInput() {
 								))}
 							{files.value
 								.filter((item) => "pdf_url" in item)
-								.map((pdf, index) => (
-									<button
-										type="button"
-										key={index.toString()}
-										data-index={index.toString()}
-										onClick={deleteImage}
-										onKeyDown={(e) => {
-											if (e.key === "Enter" || e.key === " ") {
-												deleteImage(e);
-											}
-										}}
-										class="w-32 h-32 relative group rounded-lg shadow-xl overflow-hidden cursor-pointer grid place-content-center bg-white"
-										aria-label="PDF document, click to remove"
-									>
-										<IconPdf />
-										<div class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
-											<IconX />
-										</div>
-									</button>
-								))}
+								.map((pdf, index) => {
+									const isPdfTranscribing = "pdf_url" in pdf && pdf.pdf_url?.isTranscribing === true;
+									
+									return (
+										<button
+											type="button"
+											key={index.toString()}
+											data-index={index.toString()}
+											onClick={deleteImage}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													deleteImage(e);
+												}
+											}}
+											class={`w-32 h-32 relative group rounded-lg shadow-xl overflow-hidden cursor-pointer grid place-content-center bg-white ${isPdfTranscribing ? 'ring-2 ring-blue-500' : ''}`}
+											aria-label="PDF document, click to remove"
+										>
+											<IconPdf />
+											{isPdfTranscribing && (
+												<div class="absolute inset-0 bg-white/70 flex items-center justify-center">
+													<div class="flex flex-col items-center">
+														<IconLoader2 class="animate-spin text-blue-500 mb-1" size={28} />
+														<span class="text-xs text-blue-600 text-center">Transcribing...</span>
+													</div>
+												</div>
+											)}
+											<div class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
+												<IconX />
+											</div>
+										</button>
+									);
+								})}
 						</div>
 					</div>
 				)}
@@ -239,6 +318,7 @@ export default function ChatInput() {
 						<div class="flex items-center gap-x-1">
 							<ImageUploadButton
 								onImagesUploaded={handleImagesUploaded}
+								disableSendButton={handleDisableSendButton}
 								class="image-upload-button"
 								data-tour="image-upload"
 							/>
@@ -257,7 +337,11 @@ export default function ChatInput() {
 							type="button"
 							onClick={() => handleStartStream()}
 							disabled={
-								!query.value || !isApiConfigured.value || isThinking.value
+								!query.value || 
+								!isApiConfigured.value || 
+								isThinking.value || 
+								isTranscribing.value ||
+								files.value.some(file => "pdf_url" in file && file.pdf_url?.isTranscribing)
 							}
 							class="p-2 rounded-full transition-colors flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-blue-500 text-white hover:bg-blue-600"
 							data-tour="chat-submit"

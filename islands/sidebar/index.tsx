@@ -92,9 +92,15 @@ export default function Sidebar({
 						}
 					}}
 				>
-					<GamesSection 
+					<ChatList
 						isCollapsed={isCollapsed}
-						highlight={selectedSection === 'games'}
+						currentChatSuffix={currentChatSuffix}
+						onDownloadChat={onDownloadChat}
+						onDeleteChat={deleteChat}
+					/>
+					<TestsSection 
+						isCollapsed={isCollapsed}
+						highlight={selectedSection === 'tests'}
 					/>
 					<GraphsSection 
 						isCollapsed={isCollapsed}
@@ -103,15 +109,9 @@ export default function Sidebar({
 						isCollapsed={isCollapsed}
 					/>
 					<VideoNovelLink isCollapsed={isCollapsed} />
-					<TestsSection 
+					<GamesSection 
 						isCollapsed={isCollapsed}
-						highlight={selectedSection === 'tests'}
-					/>
-					<ChatList
-						isCollapsed={isCollapsed}
-						currentChatSuffix={currentChatSuffix}
-						onDownloadChat={onDownloadChat}
-						onDeleteChat={deleteChat}
+						highlight={selectedSection === 'games'}
 					/>
 					<TourProgressSidebarSection />
 				</nav>

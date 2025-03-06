@@ -16,7 +16,6 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
 		const value = (Array.from(graphs.value.keys()) as string[])
 			.sort((a, b) => b?.length - a?.length)
 			.slice(0, 59);
-		console.log(value);
 		return value;
 	});
 

@@ -77,7 +77,7 @@ export default function FloatingChat() {
   };
 
   return (
-    <div class="fixed bottom-4 right-4 z-50">
+    <div class="fixed bottom-4 right-10 z-50">
       {isOpen.value ? (
         <div
           class="bg-white rounded-lg shadow-xl w-96 h-[500px] flex flex-col overflow-hidden border border-gray-300"

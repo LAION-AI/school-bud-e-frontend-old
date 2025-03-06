@@ -16,6 +16,7 @@ import * as $api_images_pixelart from "./routes/api/images/pixelart.ts";
 import * as $api_papers from "./routes/api/papers.ts";
 import * as $api_presentations_generate from "./routes/api/presentations/generate.ts";
 import * as $api_stt from "./routes/api/stt.ts";
+import * as $api_transcribe_pdf from "./routes/api/transcribe-pdf.ts";
 import * as $api_tts from "./routes/api/tts.ts";
 import * as $api_wikipedia from "./routes/api/wikipedia.ts";
 import * as $chat_id_ from "./routes/chat/[id].tsx";
@@ -113,6 +114,7 @@ const manifest = {
     "./routes/api/papers.ts": $api_papers,
     "./routes/api/presentations/generate.ts": $api_presentations_generate,
     "./routes/api/stt.ts": $api_stt,
+    "./routes/api/transcribe-pdf.ts": $api_transcribe_pdf,
     "./routes/api/tts.ts": $api_tts,
     "./routes/api/wikipedia.ts": $api_wikipedia,
     "./routes/chat/[id].tsx": $chat_id_,

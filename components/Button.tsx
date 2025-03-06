@@ -2,7 +2,7 @@ import { JSX } from "preact";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 
 const variants = {
-    primary: "bg-green-400 text-white hover:bg-green-500 focus-visible:ring-green-500",
+    primary: "bg-green-500 text-white hover:bg-green-600 focus-visible:ring-green-500",
     secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500",
     outline: "border border-gray-200 hover:bg-gray-100 focus-visible:ring-gray-500",
     ghost: "hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500",
@@ -26,7 +26,7 @@ export interface ButtonProps extends Omit<JSX.HTMLAttributes<HTMLButtonElement>,
 }
 
 export function Button({
-    variant = "primary",
+    variant = "secondary",
     size = "md",
     isLoading = false,
     isFullWidth = false,
@@ -35,7 +35,7 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseStyles = "inline-flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+    const baseStyles = "inline-flex items-center justify-center rounded-md gap-2 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
 
     const widthClass = isFullWidth ? "w-full" : "";
 

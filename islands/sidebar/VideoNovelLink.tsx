@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { IconBook, IconList } from "@tabler/icons-preact";
+import { IconList, IconVideo } from "@tabler/icons-preact";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 
 export default function VideoNovelLink({ isCollapsed }: { isCollapsed: boolean }) {
@@ -11,7 +11,7 @@ export default function VideoNovelLink({ isCollapsed }: { isCollapsed: boolean }
 
   return (
     <CollapsibleSection
-      icon={<IconBook class={`h-5 w-5 ${isCollapsed ? "" : "mr-2"}`} />}
+      icon={<IconVideo class={`${isCollapsed ? "" : "mr-2"}`} />}
       title="Video Novel"
       isCollapsed={isCollapsed}
       isExpanded={expanded}

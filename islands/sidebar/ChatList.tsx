@@ -30,7 +30,6 @@ export default function ChatList({
       isCollapsed={isCollapsed}
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
-      baseRoute="/chat"
       routePattern={/^\/chat\/(\d+|new)$/}
       onRouteMatch={(match) => setActiveSuffix(match?.[1] || "")}
     >

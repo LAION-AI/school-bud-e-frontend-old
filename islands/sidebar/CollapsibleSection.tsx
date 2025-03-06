@@ -12,7 +12,7 @@ interface CollapsibleSectionProps {
   isExpanded: boolean;
   onToggle: () => void;
   children: ComponentChildren;
-  baseRoute: string;
+  baseRoute?: string;
   routePattern?: RegExp;
   onRouteMatch?: (match: RegExpMatchArray | null) => void;
   variant?: "amber" | "blue" | "red" | "purple" | "lime";
@@ -67,32 +67,6 @@ export default function CollapsibleSection({
     return "text-gray-500 group-hover:text-gray-700";
   };
 
-  const updateActiveAndExpanded = () => {
-    const path = globalThis.location?.pathname;
-    
-    let isCurrentlyActive = false;
-    let match: RegExpMatchArray | null = null;
-
-    if (routePattern) {
-      match = path?.match(routePattern) || null;
-      isCurrentlyActive = Boolean(match);
-    } else {
-      isCurrentlyActive = Boolean(path?.startsWith(baseRoute));
-    }
-
-    setIsActive(isCurrentlyActive);
-
-    if (!hasInitialized && isCurrentlyActive && !shouldBeExpanded) {
-      setShouldBeExpanded(true);
-      onToggle();
-    }
-    setHasInitialized(true);
-
-    if (onRouteMatch) {
-      onRouteMatch(match);
-    }
-  };
-
   // Run once on mount to check if this section should be active
   useEffect(() => {
     const checkActive = () => {
@@ -104,7 +78,7 @@ export default function CollapsibleSection({
       if (routePattern) {
         match = path?.match(routePattern) || null;
         isCurrentlyActive = Boolean(match);
-      } else {
+      } else if (baseRoute) {
         isCurrentlyActive = Boolean(path?.startsWith(baseRoute));
       }
   
@@ -147,7 +121,7 @@ export default function CollapsibleSection({
           if (!shouldBeExpanded && !isCollapsed) {
             const path = globalThis.location?.pathname;
             // Only navigate if we're not already on a path that starts with the baseRoute
-            if (!path?.startsWith(baseRoute)) {
+            if (baseRoute && !path?.startsWith(baseRoute)) {
               // Use preventDefault to avoid any default navigation
               e.preventDefault();
               // Use history.pushState instead of changing location.href to avoid page reload

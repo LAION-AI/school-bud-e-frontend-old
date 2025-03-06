@@ -1,4 +1,5 @@
 import { useState, useEffect } from "preact/hooks";
+import { IconPlus, IconTrash } from "@tabler/icons-preact";
 
 interface Configuration {
     name: string;
@@ -129,13 +130,13 @@ export default function ConfigurationSelector({
                                 class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-300"
                                 disabled={!selectedConfig}
                             >
-                                🗑️
+                                <IconTrash />
                             </button>
                             <button
                                 onClick={() => setShowNewConfig(true)}
                                 class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             >
-                                +
+                                <IconPlus />
                             </button>
                         </div>
                     </div>

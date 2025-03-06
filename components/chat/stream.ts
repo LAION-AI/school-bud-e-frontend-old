@@ -56,17 +56,68 @@ export const startStream = async (
         const messagesToSend: Message[] = [];
         const queryWithImages = [];
         if (images && images?.length !== 0) {
-            queryWithImages.push({ role: "user", content: currentQuery });
+            console.log("[Stream] Handling message with files:", images.length);
+            
+            // Create a properly structured message with text content
+            const textContent = { 
+              role: "user", 
+              content: [{ type: "text", text: currentQuery }]
+            };
+            
+            // Add the text message first
+            queryWithImages.push(textContent);
+            
+            // Process image objects
+            console.log("[Stream] Images to process:", images);
+            
+            // Create a single message with multiple content items including text and images/PDFs
+            const mediaContent: any[] = [];
+            mediaContent.push({ type: "text", text: currentQuery });
+            
+            // Add each image/PDF as a content item
             for (const img of images) {
-                queryWithImages.push({
-                    role: "user",
-                    content: [img],
-                });
+                console.log(`[Stream] Processing file object: ${JSON.stringify(img).substring(0, 100)}...`);
+                
+                // Check for in-progress transcriptions - these should not be sent
+                if (img.type === "pdf_url" && img.pdf_url?.isTranscribing) {
+                    console.warn("[Stream] Skipping PDF that is still being transcribed");
+                    continue;
+                }
+                
+                if (img.type === "image_url" && img.image_url) {
+                    mediaContent.push({
+                        type: "image_url",
+                        image_url: {
+                            url: img.image_url.url,
+                            detail: img.image_url.detail || "high",
+                            transcription: img.image_url.transcription
+                        }
+                    });
+                } 
+                else if (img.type === "pdf_url" && img.pdf_url) {
+                    // For PDFs, don't send the PDF URL to the server
+                    // Instead, just send the transcription as text
+                    if (img.pdf_url.transcription) {
+                        console.log("[Stream] Using PDF transcription instead of sending PDF URL");
+                        
+                        // Add the transcription as text
+                        mediaContent.push({
+                            type: "text",
+                            text: `[PDF Transcription]\n\n${img.pdf_url.transcription}`
+                        });
+                    } else {
+                        console.warn("[Stream] PDF has no transcription, skipping");
+                    }
+                }
             }
-
-            for (const query of queryWithImages) {
-                messagesToSend.push(query);
-            }
+            
+            // Add a single message with all content items
+            messagesToSend.push({ 
+                role: "user", 
+                content: mediaContent 
+            });
+            
+            console.log("[Stream] Final message structure:", JSON.stringify(messagesToSend).substring(0, 100) + "...");
         } else {
             messagesToSend.push({ role: "user", "content": currentQuery });
         }

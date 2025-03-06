@@ -208,19 +208,7 @@ function AIVoiceButton(): JSX.Element {
   };
 
   return (
-    <div 
-      className="fixed bottom-10 right-8" 
-      style={{ 
-        zIndex: 9999, 
-        width: "70px", 
-        height: "70px",
-        position: "fixed",
-        bottom: "6rem",
-        right: "2rem",
-        display: "block",
-        pointerEvents: "auto"
-      }}
-    >
+    <div className="fixed bottom-4 right-4 z-[9999] w-[70px] h-[70px] block pointer-events-auto">
       <button
         onClick={toggleRecording}
         disabled={!IS_BROWSER || buttonState === "processing" || buttonState === "responding"}

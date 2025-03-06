@@ -121,12 +121,18 @@ interface Window {
 }
 
 interface Image {
-  type: 'image_url';
-  image_url: {
+  type: 'image_url' | 'pdf_url';
+  image_url?: {
     url: string;
     detail: string;
+    size?: number;
   };
-  preview: string;
+  pdf_url?: {
+    url: string;
+    detail: string;
+    size?: number;
+  };
+  preview?: string;
 }
 
 interface File {
@@ -146,27 +152,6 @@ interface Message {
   role: string;
   content: string | (string | Image)[];
 }
-
-interface Image {
-  type: 'image_url';
-  image_url: {
-    url: string;
-    detail: string;
-  };
-  preview: string;
-}
-
-// interface AudioFileDict {
-//   [key: string]: HTMLAudioElement[];
-// }
-
-// const [audioFileDict, setAudioFileDict] = useState<
-// Record<number, Record<number, HTMLAudioElement>>
-// >({});
-
-// interface AudioFileDict {
-//   [key: string]: Record<number, HTMLAudioElement>;
-// }
 
 interface AudioItem {
   audio: HTMLAudioElement;

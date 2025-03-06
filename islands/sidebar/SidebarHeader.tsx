@@ -1,4 +1,4 @@
-import { IconSquareToggleHorizontal} from "@tabler/icons-preact";
+import { IconLayoutSidebarLeftCollapse } from "@tabler/icons-preact";
 
 interface SidebarHeaderProps {
   isCollapsed: boolean;
@@ -7,7 +7,7 @@ interface SidebarHeaderProps {
 
 export default function SidebarHeader({ isCollapsed, setIsCollapsed }: SidebarHeaderProps) {
   return (
-    <div class="flex justify-between py-4 relative">
+    <div class="flex justify-between px-3 py-4 relative">
       <img
         src="/logo.png"
         width="48"
@@ -24,8 +24,8 @@ export default function SidebarHeader({ isCollapsed, setIsCollapsed }: SidebarHe
         }`}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        <IconSquareToggleHorizontal
-          class={`h-5 w-5 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`}
+        <IconLayoutSidebarLeftCollapse
+          class={`h-6 w-6 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </button>

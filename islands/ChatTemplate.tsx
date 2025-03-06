@@ -161,7 +161,7 @@ function ChatTemplate({
 					<div class="h-full px-4 max-w-4xl mx-auto w-full">
 						{messages.value?.map((item, groupIndex) => (
 							<Message
-								key={groupIndex}
+								key={item.id}
 								item={item}
 								groupIndex={groupIndex}
 								currentEditIndex={currentEditIndex}
