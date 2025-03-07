@@ -1,0 +1,116 @@
+<Audiobook Narration>
+
+    <ASSIGN_VOICE>
+    STORYTELLER=This_is_the_voice_of_a_Knight_in_shining_armor_with_a_noble_voice_high_quality_professional_recording_high_quality_voice_acting;
+    JOHN=This_is_a_soft_melodic_bright_timbre_voice_with_a_high_pitched_pitch_belonging_to_a_young_adult_masculine_man;
+    JENNIFFER=This_is_a_soft_melodic_bright_timbre_voice_with_a_low_pitched_pitch_belonging_to_a_young_adult_feminine_woman;
+    NICOLE=This_is_a_harsh_rough_dark_timbre_voice_with_a_high_pitched_pitch_belonging_to_a_young_adult_feminine_woman;
+    BARBARA=This_is_a_soft_melodic_bright_timbre_voice_with_a_medium_pitched_pitch_belonging_to_a_elderly_feminine_woman;
+    HENRY=This_is_a_soft_melodic_dark_timbre_voice_with_a_high_pitched_pitch_belonging_to_a_elderly_masculine_man;
+    </ASSIGN_VOICE>
+
+    <IMAGE 1>
+    A sweeping aerial view of Bennington at dawn! Narrow roads wind among tall trees, and classic wooden homes show peeling paint and simple porches. Gentle early light reveals a quiet town, giving an impression of serenity with an undercurrent of hidden secrets! High-quality visual novel style. HQ WELLSHAPED ANIME
+    </IMAGE 1>
+
+    <STORYTELLER>
+    <Interest>
+    The morning sun glides over the rooftops of Bennington, unveiling a patchwork of old fences, winding lanes, and whispered curiosities lurking beneath everyday life.
+    </Interest>
+    <Contemplation>
+    In one modest house on the outskirts, a spark of youthful ambition meets an undercurrent of anxiety. This is the home of John and his older sister Jennifer, both on the cusp of defining their futures.
+    </Contemplation>
+    </STORYTELLER>
+
+    <IMAGE 2>
+    A young man of slender build stands in a modest bedroom. He has short brown hair that often spikes in random directions, wearing a faded t-shirt featuring an adventure movie motif. A worn leather-bound notebook sits on his desk, sketches of ancient maps visible. His posture shows quiet eagerness and slight uncertainty in his eyes. High-quality visual novel style. HQ WELLSHAPED ANIME
+    </IMAGE 2>
+    <JOHN>
+    <Contemplation>
+    "I keep daydreaming about hidden tombs and lost temples! But what if I never measure up to those heroes I admire...?"
+    </Contemplation>
+    </JOHN>
+
+    <STORYTELLER>
+    <Reflection>
+    John has devoured stories of archaeologists braving ancient depths since childhood. Yet, he quietly wonders if his courage will fail when true challenges arise.
+    </Reflection>
+    </STORYTELLER>
+
+    <IMAGE 3>
+    A young woman, slightly taller than her brother, sits at a cluttered desk. She has chestnut-brown hair pinned back, wearing simple jeans and a sweater. A thick medical textbook lies open before her, and her eyes show a mixture of determination and underlying dread. High-quality visual novel style. HQ WELLSHAPED ANIME
+    </IMAGE 3>
+    <JENNIFFER>
+    <Fear>
+    "I must not let them see how afraid I am... If I crack the mystery of aging, maybe I can silence this terror about death forever."
+    </Fear>
+    </JENNIFFER>
+
+    <STORYTELLER>
+    <Thoughtfulness>
+    For Jennifer, knowledge is both a sword and a shield. She immerses herself in medical research, pushing beyond ordinary limits to find answers that could grant more time... or so she hopes.
+    </Thoughtfulness>
+    </STORYTELLER>
+
+    <IMAGE 4>
+    A cozy living room. Barbara, an average-built woman with kind brown eyes, stands near a floral sofa, wearing a pastel blouse. Henry, her husband with graying hair, gazes out the window, a curious spark in his expression. The mood suggests quiet family bonds and subtle worries. High-quality visual novel style. HQ WELLSHAPED ANIME
+    </IMAGE 4>
+    <STORYTELLER>
+    <Warmth>
+    Before leaving for their 25th anniversary getaway at a nearby wellness retreat, Barbara and Henry felt reassured, hoping the short trip would refresh their spirits.
+    </Warmth>
+    <SubtleUnease>
+    Yet, a glimmer of concern lingered beneath their smiles, an intuition that their children were juggling more than mere academic stress.
+    </SubtleUnease>
+    </STORYTELLER>
+
+    <IMAGE 5>
+    Late night scene. Empty plastic cups and plates scattered about a modest living room. A clock reads 4:00 a.m. John, in a casual hoodie, peers out the window. Across the street looms the Old Victorian House. High-quality visual novel style. HQ WELLSHAPED ANIME
+    </IMAGE 5>
+    <STORYTELLER>
+    <LowTension>
+    That evening, John and Jennifer hosted a friendly gathering. Music and chatter mingled with soft laughter, yet Nicole left soon after arriving, citing a sudden headache.
+    </LowTension>
+    <Concern>
+    Long after midnight, while tidying the last remnants of the party, John noticed a dim silhouette guiding Nicole into a waiting car outside the Old Victorian House.
+    </Concern>
+    <Curiosity>
+    The car slipped away into the shadows, leaving John uncertain whether he had just witnessed something mundane or something far more unsettling.
+    </Curiosity>
+    </STORYTELLER>
+
+    <JOHN>
+    <Doubt>
+    "Why would Nicole vanish at this hour...? And who was that person with her...?"
+    </Doubt>
+    </JOHN>
+
+    </Audiobook Narration>
+<Audiobook Narration>
+                    <IMAGE 6>
+                    A bright lecture hall with rows of seats. John, a lean figure with short brown hair, gathers his notes at the back. Nicole, slightly hunched, sits near the front. The bandage at her neck peeks through her hair. High-quality visual novel style. HQ WELLSHAPED ANIME
+                    </IMAGE 6>
+                    <STORYTELLER>
+                    <Contemplation>
+                    Morning light pours into the lecture hall as eager students file out. Only John and Nicole linger, bound by unspoken questions and a quiet tension.
+                    </Contemplation>
+                    </STORYTELLER>
+
+                    <JOHN>
+                    <Nervousness>
+                    "I should at least ask if she feels alright... right?"
+                    </Nervousness>
+                    </JOHN>
+
+                    <NICOLE>
+                    <Guarded>
+                    "I just need to get through this day, no more complications... no more questions..."
+                    </Guarded>
+                    </NICOLE>
+
+                    <STORYTELLER>
+                    <Anticipation>
+                    Their silent moment holds the promise of answers—yet neither voice dares to break it. Outside, a gentle breeze rustles the aging campus trees, as though reminding them that time waits for no one.
+                    </Anticipation>
+                    </STORYTELLER>
+                </Audiobook Narration>

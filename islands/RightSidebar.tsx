@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Game } from "../components/Game.tsx";
+import { Game } from "../islands/Game.tsx";
 import { Graph } from "../components/Graph.tsx";
 import { createGraph, saveCurrentGraph, saveGraph } from "../components/graph/store.ts";
 
@@ -93,7 +93,6 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const collapsed = urlParams.get("rcollapsed");
-      console.log(window.location.search);
       return collapsed === "true";
     }
     return false;
@@ -337,7 +336,6 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                         <button
                           type="button"
                           onClick={() => {
-                            debugger;
                             saveGraph(mostSignificantNode, lastGraph.items)
                           }}
                           class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"

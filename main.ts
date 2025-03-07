@@ -10,4 +10,8 @@ import { start } from "$fresh/server.ts";
 import manifest from "./fresh.gen.ts";
 import config from "./fresh.config.ts";
 
+// Your regular console.logs will now be captured
+console.log("Server started successfully");
+console.error("Database connection failed");
+
 await start(manifest, config);

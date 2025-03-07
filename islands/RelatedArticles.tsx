@@ -1,8 +1,7 @@
-
 export default function RelatedArticles({relatedArticles: articles, ...params}: { count: number, offset?: number, size?: 'large' | 'small', relatedArticles: Article[] }) {
     if (articles.length === 0) {
         return (<div className="group cursor-pointer">
-            <div className=" overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105   dark:bg-gray-800">
+            <div className=" overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105">
                 <a
                     className="relative block aspect-video"
                     href="/article"
@@ -35,15 +34,15 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                             </span>
                         </a>
                     </div>
-                    <h2 className="text-lg font-semibold leading-snug tracking-tight mt-2    dark:text-white">
+                    <h2 className="text-lg font-semibold leading-snug tracking-tight mt-2">
                         <a href="/post/architectural-engineering-wonders-of-the-modern-era-for-your-inspiration">
-                            <span className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 hover:bg-[length:100%_3px] group-hover:bg-[length:100%_10px] dark:from-purple-800 dark:to-purple-900">
+                            <span className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 hover:bg-[length:100%_3px] group-hover:bg-[length:100%_10px]">
                                 Title
                             </span>
                         </a>
                     </h2>
                     <div className="hidden">
-                        <p className="mt-2 line-clamp-3 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="mt-2 line-clamp-3 text-sm text-gray-500">
                             <a href="/post/architectural-engineering-wonders-of-the-modern-era-for-your-inspiration">
                                 Reinvention often comes in spurts, after a long period of
                                 silence. Just as modern architecture recently enjoyed a
@@ -52,7 +51,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                             </a>
                         </p>
                     </div>
-                    <div className="mt-3 flex items-center space-x-3 text-gray-500 dark:text-gray-400">
+                    <div className="mt-3 flex items-center space-x-3 text-gray-500">
                         <a href="/author/mario-sanchez">
                             <div className="flex items-center gap-3">
                                 <div className="relative h-5 w-5 flex-shrink-0">
@@ -80,7 +79,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                                 <span className="truncate text-sm">Mario Sanchez</span>
                             </div>
                         </a>
-                        <span className="text-xs text-gray-300 dark:text-gray-600">
+                        <span className="text-xs text-gray-300">
                             •
                         </span>
                         <time
@@ -109,7 +108,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
             {articles.slice(from, to).map((article) => (
 
                 <div className="group cursor-pointer">
-                    <div className=" overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105   dark:bg-gray-800">
+                    <div className=" overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105">
                         <a
                             className={`relative block ${params.size === "small" ? "aspect-square" : "aspect-video"}`}
                             href={article.path}
@@ -141,15 +140,15 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                                     </span>
                                 </a>
                             </div>
-                            <h2 className="text-lg font-semibold leading-snug tracking-tight mt-2    dark:text-white">
+                            <h2 className="text-lg font-semibold leading-snug tracking-tight mt-2">
                                 <a href={article.path}>
-                                    <span className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 hover:bg-[length:100%_3px] group-hover:bg-[length:100%_10px] dark:from-purple-800 dark:to-purple-900">
+                                    <span className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 hover:bg-[length:100%_3px] group-hover:bg-[length:100%_10px]">
                                         {article.title}
                                     </span>
                                 </a>
                             </h2>
                             <div className="hidden">
-                                <p className="mt-2 line-clamp-3 text-sm text-gray-500 dark:text-gray-400">
+                                <p className="mt-2 line-clamp-3 text-sm text-gray-500">
                                     <a href={article.path}>
                                         Reinvention often comes in spurts, after a long period of
                                         silence. Just as modern architecture recently enjoyed a
@@ -158,7 +157,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                                     </a>
                                 </p>
                             </div>
-                            <div className="mt-3 flex items-center space-x-3 text-gray-500 dark:text-gray-400">
+                            <div className="mt-3 flex items-center space-x-3 text-gray-500">
                                 <a href="/author/mario-sanchez">
                                     <div className="flex items-center gap-3">
                                         <div className="relative h-5 w-5 flex-shrink-0">
@@ -186,7 +185,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                                         <span className="truncate text-sm">Mario Sanchez</span>
                                     </div>
                                 </a>
-                                <span className="text-xs text-gray-300 dark:text-gray-600">
+                                <span className="text-xs text-gray-300">
                                     •
                                 </span>
                                 <time

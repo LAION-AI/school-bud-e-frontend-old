@@ -28,26 +28,15 @@ export default function LearningPathsGraph({
 		})(),
 	);
 
-	const graph = graphStore.graphs.peek().get(name || "");
-	// graph ??= graphStore.graphs.peek().get()
-
-	// Load graph data from localStorage
-	const savedGraph = localStorage.getItem("savedGraph");
-	if (savedGraph) {
-		try {
-			const parsedGraph = JSON.parse(savedGraph);
-			if (graph) {
-				graphStore.graphData.value = graph;
-			} else {
-				graphStore.graphData.value = parsedGraph;
-			}
-		} catch (error) {
-			console.error("Error loading saved graph:", error);
+	useEffect(() => {
+		if (name) {
+			// If we have a name, load that specific graph
+			graphStore.loadGraph(name);
+		} else {
+			// If no name is provided, use a sample graph
+			graphStore.graphData.value = sampleGraph;
 		}
-	} else {
-		// Optionally, load a sample graph if no saved data exists
-		graphStore.graphData.value = sampleGraph;
-	}
+	}, [name]);
 
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {

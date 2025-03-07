@@ -1,23 +1,14 @@
-// ###############
-// ### IMPORTS ###
-// ###############
-
 // The ChatIsland component is responsible for managing the chat messages and audio playback.
-import ChatTemplate from "../components/ChatTemplate.tsx";
+import ChatTemplate from "./ChatTemplate.tsx";
 import ChatWarning from "../components/Warning.tsx";
 
 // Necessary for streaming service
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState, useRef } from "preact/hooks";
 
 // // Import necessary types from Preact
-import Sidebar from "./Sidebar.tsx";
 import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
-import { autoScroll, chatSuffix, currentEditIndex, deleteAllChats, handleRefreshAction, messages, saveChatsToLocalFile, startNewChat } from "../components/chat/store.ts";
-
-// ###############
-// ## / IMPORTS ##
-// ###############
-
+import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
+import { initTourGuide, startTour } from "../utils/tourGuide.ts";
 
 // Define the AudioItem interface if not already defined
 interface AudioItem {
@@ -28,33 +19,23 @@ interface AudioItem {
 // Define the AudioFileDict type if not already defined
 type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
-export default function ChatIsland({ lang }: { lang: string }) {
+export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   // Necessary to load the chat messages from localStorage only once
+  useEffect(() => {
+    const chatKey = `bude-chat-${id}`;
+    if (!(chatKey in chats.value)) {
+      chats.value = { ...chats.value, [chatKey]: [] };
+    }
+    chatSuffix.value = id;
+  }, [id]);
 
   // dictionary containg audio files for each groupIndex for the current chat
   const [audioFileDict, setAudioFileDict] = useState<AudioFileDict>({});
 
-  // used for STT in VoiceRecordButton
-  const [resetTranscript, setResetTranscript] = useState(0);
+  const [isStreamComplete] = useState(true);
+  const [setIsSettingsOpen] = useState(false);
+  const tourInitialized = useRef(false);
 
-  // General settings
-  const [isStreamComplete, setIsStreamComplete] = useState(true);
-
-
-  // Add useEffect for loading settings
-
-  // #################
-  // ### useEffect ###
-  // #################
-  // Explanation: If a value changes, the useEffect hook is called. This is useful for side effects like fetching data or updating the DOM.
-
-  // 2. useEffect [isStreamComplete]: Save chat messages to localStorage when the stream is complete
-  // 3. useEffect [messages]: Automatic scrolling to last message on incoming messages
-  // 4. useEffect [currentChatSuffix]: Load messages from localStorage when the chat suffix changes
-  // 5. useEffect [audioFileDict, readAlways, stopList.value]: Play incoming audio files when readAlways is true
-
-
-  // 2. useEffect [isStreamComplete]
   useEffect(() => {
     const lastMessage = messages.value[messages.value.length - 1];
     if (isStreamComplete && lastMessage) {
@@ -84,13 +65,10 @@ export default function ChatIsland({ lang }: { lang: string }) {
     }
   }, [isStreamComplete]);
 
-
-
-  // 5. useEffect [audioFileDict, readAlways, stopList.value]
   useEffect(() => {
     if (!readAlways) return;
 
-    Object.entries(audioFileDict).forEach(([groupIndex, groupAudios]) => {
+    for (const [groupIndex, groupAudios] of Object.entries(audioFileDict)) {
       const nextUnplayedIndex = findNextUnplayedAudio(groupAudios);
 
       if (nextUnplayedIndex === null) return;
@@ -118,15 +96,23 @@ export default function ChatIsland({ lang }: { lang: string }) {
       }
 
       if (stopList.value.includes(Number(groupIndex))) {
-        (Object.values(groupAudios) as AudioItem[]).forEach((item) => {
+        for (const item of Object.values(groupAudios) as AudioItem[]) {
           if (!(item as AudioItem).audio.paused) {
             (item as AudioItem).audio.pause();
             (item as AudioItem).audio.currentTime = 0;
           }
-        });
+        }
       }
-    });
+    };
   }, [audioFileDict, readAlways, stopList.value]);
+
+  // Initialize tour guide on client-side only once
+  useEffect(() => {
+    if (typeof window !== "undefined" && !tourInitialized.current) {
+      initTourGuide();
+      tourInitialized.current = true;
+    }
+  }, []);
 
   // Helper functions for audio playback
   const findNextUnplayedAudio = (
@@ -171,28 +157,20 @@ export default function ChatIsland({ lang }: { lang: string }) {
     setAudioFileDict({ ...audioFileDict });
   };
 
+  const handleOpenSettings = () => {
+    setIsSettingsOpen(true);
+  };
+  
   // MAIN CONTENT THAT IS RENDERED
   return (
-    <div class="grid grid-cols-[auto_1fr_auto] w-full h-screen">
-      {/* <Sidebar
-        currentChatSuffix={chatSuffix.value}
-        onChatSelect={(suffix) => chatSuffix.value = (suffix)}
-        onDownloadChat={saveChatsToLocalFile}
-        onNewChat={startNewChat}
-        lang={lang}
-        onDeleteAllChats={deleteAllChats}
-      /> */}
+    <div class="flex w-full h-screen">
       <ChatTemplate
         messages={messages.value}
         currentEditIndex={currentEditIndex.value}
         audioFileDict={audioFileDict}
         onRefreshAction={handleRefreshAction}
         onEditAction={() => { }}
-        onSpeakAtGroupIndexAction={() => { }}
-        onImageChange={() => { }}
-        handleImagesUploaded={() => { }}
-        onUploadActionToMessages={() => { }}
-        resetTranscript={resetTranscript}
+        onOpenSettings={handleOpenSettings}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>

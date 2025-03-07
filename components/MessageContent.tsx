@@ -1,5 +1,6 @@
-import { renderTextWithLinksAndBold } from "../utils/textUtils.tsx";
+import { renderTextWithLinksAndBold } from "../routes/api/(_utils)/textUtils.tsx";
 import { GraphLoadingState } from "./GraphLoadingState.tsx";
+import { IconLoader2 } from "@tabler/icons-preact";
 
 // Define supported content types
 type ContentType = "text" | "image_url" | "pdf_url";
@@ -39,6 +40,12 @@ interface ContentItem {
   image_url?: { url: string };
 }
 
+interface Segment {
+  type: "text" | "json" | "graph" | "webresult" | "game";
+  status?: "loading" | "completed";
+  content?: string;
+  code?: string;
+}
 
 /**
  * Processes a string looking for a graph JSON block.
@@ -48,8 +55,11 @@ interface ContentItem {
  *   or "completed" if it has)
  * - (If complete) any text after the graph block.
  */
-function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: string): GraphSegment[] {
-  const segments: GraphSegment[] = [];
+function processGraphSegments(
+  types: ("graph" | "webresult" | "game" | "json")[],
+  text: string
+): Segment[] {
+  const segments: Segment[] = [];
   let currentPosition = 0;
 
   while (currentPosition < text.length) {
@@ -58,7 +68,7 @@ function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: 
 
     // Find the earliest occurrence of any type's opening marker
     for (const type of types) {
-      const openMarker = "```" + type;
+      const openMarker = `\`\`\`${type}`;
       const index = text.indexOf(openMarker, currentPosition);
       if (index !== -1 && (earliestIndex === -1 || index < earliestIndex)) {
         earliestIndex = index;
@@ -80,27 +90,25 @@ function processGraphSegments(types: ('graph' | 'webresult' | ' game')[], text: 
       });
     }
 
-    const openMarker = "```" + matchedType;
+    const openMarker = `\`\`\`${matchedType}`;
     const closeMarker = "```";
     const closeIndex = text.indexOf(closeMarker, earliestIndex + openMarker.length);
 
-
     if (closeIndex === -1) {
       // Incomplete block: mark as loading
-      segments.push({ type: matchedType, status: "loading" });
+      segments.push({ type: matchedType || "text", status: "loading" });
       break; // Stop processing as we hide everything after
+    } 
+
+    if (matchedType === " game") {
+      const code = text.substring(earliestIndex + openMarker.length, closeIndex);
+
+      segments.push({ type: "game", status: "completed", code });
+      currentPosition = closeIndex + closeMarker.length;
     } else {
-      if (matchedType === " game") {
-        const code = text.substring(earliestIndex + openMarker.length, closeIndex);
-
-        segments.push({ type: " game", status: "completed", code });
-        currentPosition = closeIndex + closeMarker.length;
-      } else {
-
-        // Complete block: mark as completed
-        segments.push({ type: matchedType, status: "completed" });
-        currentPosition = closeIndex + closeMarker.length;
-      }
+      // Complete block: mark as completed
+      segments.push({ type: matchedType || "text", status: "completed" });
+      currentPosition = closeIndex + closeMarker.length;
     }
   }
 
@@ -133,7 +141,8 @@ export function MessageContent({ content }: MessageContentProps) {
                 {renderTextWithLinksAndBold(seg.content)}
               </span>
             );
-          } else if (seg.type === "json" || seg.type === "webresult" || seg.type === " game") {
+          } 
+          if (seg.type === "json" || seg.type === "webresult" || seg.type === "game") {
             return (
               <GraphLoadingState
                 key={idx}
@@ -156,8 +165,13 @@ export function MessageContent({ content }: MessageContentProps) {
         {(content as {
           type: string;
           text: string;
-          image_url: { url: string };
-          pdf_url?: { url: string };
+          image_url: { url: string; transcription?: string };
+          pdf_url?: { 
+            url: string;
+            size?: number;
+            transcription?: string;
+            isTranscribing?: boolean;
+          };
         }[]).map((item, contentIndex) => {
           if (item.type === "text") {
             const segments = processGraphSegments(['graph', 'webresult', 'game'], item.text);
@@ -170,7 +184,8 @@ export function MessageContent({ content }: MessageContentProps) {
                         {renderTextWithLinksAndBold(seg.content)}
                       </span>
                     );
-                  } else if (["json", "webresult", "game"].includes(seg.type)) {
+                  } 
+                  if (["json", "webresult", "game"].includes(seg.type)) {
                     return (
                       <GraphLoadingState
                         key={idx}
@@ -183,26 +198,90 @@ export function MessageContent({ content }: MessageContentProps) {
                 })}
               </span>
             );
-          } else if (item.type === "image_url") {
+          } 
+          if (item.type === "image_url") {
             return (
               <img
                 key={contentIndex}
                 src={item.image_url.url}
-                alt="User uploaded image"
+                alt="User Upload"
                 className="max-w-full h-auto rounded-lg shadow-sm"
               />
             );
-          } else if (item.type === "pdf_url") {
-            return (
-              <object
-                key={contentIndex}
-                data={item.pdf_url.url}
-                type="application/pdf"
-                className="w-full h-[600px] rounded-lg shadow-sm"
-              >
-                <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
-              </object>
-            );
+          } 
+          if (item.type === "pdf_url" && item.pdf_url) {
+            // Use a more reliable approach for rendering PDFs
+            const pdfUrl = item.pdf_url.url;
+            // Safely check for size property
+            const isLarge = item.pdf_url.size !== undefined && item.pdf_url.size > 1000000;
+            
+            console.log("[MessageContent] Rendering PDF with URL type:", 
+              pdfUrl?.substring(0, 30) + "...", 
+              "Size:", item.pdf_url.size || "unknown");
+
+            // Check if the PDF is being transcribed
+            if (item.pdf_url.isTranscribing) {
+              return (
+                <div key={contentIndex} className="pdf-container w-full">
+                  <div className="pdf-info text-sm text-gray-500 mb-2 flex items-center">
+                    <IconLoader2 className="animate-spin mr-2" size={16} />
+                    <span>Transcribing PDF... Please wait</span>
+                  </div>
+                  <object
+                    data={pdfUrl}
+                    type="application/pdf"
+                    className="w-full h-[600px] rounded-lg shadow-sm opacity-50"
+                  >
+                    <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
+                  </object>
+                </div>
+              );
+            }
+
+            // Check if we have a transcription
+            if (item.pdf_url.transcription) {
+              // Check if the transcription is an error message
+              const isError = item.pdf_url.transcription.startsWith("Error:") || 
+                              item.pdf_url.transcription.startsWith("Transcription failed:") ||
+                              item.pdf_url.transcription.startsWith("Transcription error:");
+              
+              return (
+                <div key={contentIndex} className="pdf-container w-full">
+                  <div className={`pdf-info text-sm ${isError ? 'text-red-500' : 'text-gray-500'} mb-2`}>
+                    {isError ? 'PDF Transcription Error' : 'PDF Document (Transcribed)'}
+                  </div>
+                  <div className={`pdf-transcription border ${isError ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}>
+                    {renderTextWithLinksAndBold(item.pdf_url.transcription)}
+                  </div>
+                  {/* PDF viewer toggle button */}
+                  <details className="pdf-viewer-toggle">
+                    <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
+                      Show/Hide PDF Viewer
+                    </summary>
+                    <div className="mt-3">
+                      <object
+                        data={pdfUrl}
+                        type="application/pdf"
+                        className={`w-full h-[600px] rounded-lg shadow-sm ${isLarge ? 'large-pdf' : ''}`}
+                      >
+                        <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
+                      </object>
+                      
+                      {/* Download link */}
+                      <a 
+                        href={pdfUrl}
+                        download="document.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block mt-2 text-blue-500 hover:underline"
+                      >
+                        {isLarge ? "Download large PDF" : "Download PDF"}
+                      </a>
+                    </div>
+                  </details>
+                </div>
+              );
+            }
           }
           return null;
         })}

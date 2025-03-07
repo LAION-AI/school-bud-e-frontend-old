@@ -34,3 +34,6 @@ ai-tasks-server/writing_cheat_sheet
 ai-tasks-server/output_video.xml
 ai-tasks-server/emottsvoices.tar
 ai-tasks-server/.python-version
+ai-tasks-server/sessions.json
+ai-tasks-server/trace.json
+__pycache__

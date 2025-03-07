@@ -1,4 +1,4 @@
-import { type Config } from "tailwindcss";
+import type { Config } from "tailwindcss";
 
 export default {
   content: [
@@ -7,6 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: {
+          50: "#e6f7fa",
+          100: "#cceff5",
+          200: "#99dfeb",
+          300: "#66cfe1",
+          400: "#33bfd7",
+          500: "#2BBDE5",
+          600: "#2297b7",
+          700: "#1a7189",
+          800: "#114c5c",
+          900: "#09262e",
+        },
         "surface": "#fff" // in School Bud-E: "#f4eecf",
       },
       borderColor: {

@@ -1,26 +1,27 @@
 import { Head } from "$fresh/runtime.ts";
-import { Handlers, PageProps } from "$fresh/server.ts";
-import { useEffect } from "preact/hooks";
-import { chatSuffix } from "../../components/chat/store.ts";
+import type { Handlers, PageProps } from "$fresh/server.ts";
 import ChatIsland from "../../islands/ChatIsland.tsx";
+
 export const handler: Handlers = {
-    async GET(_, ctx) {
-        return ctx.render(null);
+    GET(_, ctx) {
+        const { id } = ctx.params;
+        // Validate that the chat exists or is a valid new chat ID
+        if (!/^\d+$/.test(id) && id !== "new") {
+            return new Response("Invalid chat ID", { status: 400 });
+        }
+        return ctx.render({ id });
     },
 };
 
 export default function ChatPage({ params }: PageProps) {
     const { id } = params;
-    // Set the current chat suffix based on the route parameter so that ChatIsland displays the correct chat.
-    useEffect(() => {
-        chatSuffix.value = id;
-    }, [id]);
+
     return (
         <>
             <Head>
                 <title>Chat {id} - School Bud-E</title>
             </Head>
-            <ChatIsland lang="en" />
+            <ChatIsland key={id} lang="en" id={id} />
         </>
     );
 }

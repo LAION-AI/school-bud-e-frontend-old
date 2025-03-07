@@ -131,6 +131,80 @@ For more details, refer to the following files:
 - `islands/ChatIsland.tsx`
 - `components/ChatTemplate.tsx`
 
+## Organizing Components in Deno Fresh
+
+In Deno Fresh projects, organizing components effectively is crucial for maintainability and clarity. Components are categorized based on their interactivity and usage scope. Here's a structured approach to guide you:
+
+### 1. Structuring the `islands/` Folder
+
+- **Purpose:** The `islands/` directory is designated for components that require client-side interactivity. These components are rendered on the server and then hydrated on the client, enabling dynamic behavior.
+- **Organization:** Fresh allows organizing the `islands/` folder with subdirectories to group related components, enhancing maintainability.
+
+  ```
+  islands/
+  ├── user/
+  │   ├── ProfileEditor.tsx
+  │   └── AvatarUploader.tsx
+  └── dashboard/
+      ├── StatsChart.tsx
+      └── Notifications.tsx
+  ```
+
+### 2. Determining Component Placement
+
+To decide whether a component belongs in `components/` or `islands/`, and whether it should be shared or route-specific, consider the following criteria:
+
+- **Interactivity Needs:**
+  - *Non-interactive Components:* Purely presentational components that don't require client-side JavaScript should be placed in `components/`.
+  - *Interactive Components:* Components involving client-side interactions should reside in `islands/`.
+
+- **Usage Scope:**
+  - *Shared Components:* Components used across multiple routes should be placed in the global `components/` or `islands/` directory, depending on their interactivity.
+  - *Route-specific Components:* Components specific to a particular route can be colocated within that route's directory using private route groups.
+
+    ```
+    routes/
+    ├── blog/
+    │   ├── (_components)/
+    │   │   └── Comment.tsx
+    │   ├── (_islands)/
+    │   │   └── CommentForm.tsx
+    │   └── [id].tsx
+    ```
+
+### 3. Component Placement Decision Matrix
+
+| Interactivity Level | Usage Scope     | Parent Component | Child Component | Placement Recommendation                                   |
+|---------------------|-----------------|------------------|-----------------|-----------------------------------------------------------|
+| Non-interactive     | Shared          | N/A              | N/A             | Place in `components/`                                     |
+| Non-interactive     | Route-specific  | N/A              | N/A             | Colocate in route's `(_components)/` folder               |
+| Interactive         | Shared          | N/A              | N/A             | Place in `islands/`                                        |
+| Interactive         | Route-specific  | N/A              | N/A             | Colocate in route's `(_islands)/` folder                  |
+| Non-interactive     | Shared          | Interactive      | Non-interactive | Parent in `islands/`, Child in `components/`              |
+| Non-interactive     | Route-specific  | Interactive      | Non-interactive | Parent in route's `(_islands)/`, Child in `(_components)/`|
+| Interactive         | Shared          | Non-interactive  | Interactive     | Parent in `components/`, Child in `islands/`              |
+| Interactive         | Route-specific  | Non-interactive  | Interactive     | Parent in `(_components)/`, Child in `(_islands)/`        |
+
+### 4. Additional Considerations
+
+- **Colocation:**
+  For components specific to certain routes, consider colocating them using private route groups. Fresh allows the use of route groups by enclosing folder names in parentheses. If the folder name starts with an underscore, Fresh will ignore that folder when generating routes.
+
+  ```
+  routes/
+  ├── shop/
+  │   ├── (_components)/
+  │   │   └── ProductCard.tsx
+  │   ├── (_islands)/
+  │   │   └── AddToCartButton.tsx
+  │   └── index.tsx
+  ```
+
+- **Shared Components:**
+  If an interactive component (island) is used across multiple routes, place it in the global `islands/` directory to promote reusability.
+
+By thoughtfully organizing your components based on their interactivity and usage context, you can maintain a clean and efficient codebase in your Deno Fresh project.
+
 ## 🤝 Contributing
 
 We welcome contributions to School Bud-E! Please join our [Discord server](https://discord.com/invite/eq3cAMZtCC) or contact us at <contact@laion.ai> to get involved.

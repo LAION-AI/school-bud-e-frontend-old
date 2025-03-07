@@ -25,55 +25,169 @@ export function loadSavedGraphs() {
   const savedGraphsJson = localStorage.getItem("savedGraphs");
   if (savedGraphsJson) {
     try {
-      const savedGraphs = JSON.parse(savedGraphsJson);
-      graphs.value = new Map(Object.entries(savedGraphs));
+      const savedGraphs = JSON.parse(savedGraphsJson) as Record<string, GraphJson>;
+      const entries = Object.entries(savedGraphs);
+      graphs.value = new Map(entries);
+      
+      // If we have any graphs but no current graph is selected, load the first one
+      if (entries.length > 0 && !currentGraphId.value) {
+        loadGraph(entries[0][0]);
+      }
     } catch (e) {
       console.error("Error loading saved graphs:", e);
     }
+  } else {
+    // If no saved graphs, create a default one
+    createDefaultGraph();
   }
+}
+
+// Create a default graph if none exists
+function createDefaultGraph() {
+  // Create a default graph with a sample node
+  const sampleItems = [
+    {
+      item: "Welcome to Your Graph",
+      childItems: ["Add more nodes", "Connect nodes"],
+      position: { x: 200, y: 200 }
+    },
+    {
+      item: "Add more nodes",
+      position: { x: 100, y: 300 }
+    },
+    {
+      item: "Connect nodes",
+      position: { x: 300, y: 300 }
+    }
+  ];
+  
+  const defaultGraphId = saveGraph("My Graph", sampleItems);
+  loadGraph(defaultGraphId);
 }
 
 // Save graphs to localStorage
 export function saveGraphs() {
   if (typeof window === "undefined") return;
   
-  const graphsObj = Object.fromEntries(graphs.value);
+  // Convert Map to a plain object for JSON serialization
+  const graphsObj = Array.from(graphs.value.entries()).reduce((obj, [key, value]) => {
+    obj[key] = value;
+    return obj;
+  }, {} as Record<string, GraphJson>);
+  
   localStorage.setItem("savedGraphs", JSON.stringify(graphsObj));
 }
 
-// Create a new graph
-export function createGraph(name: string) {
+export function saveGraph(name: string, items = []) {
+  if (!name || typeof name !== 'string') {
+    throw new Error('Graph name must be a non-empty string');
+  }
+
+  if (!Array.isArray(items)) {
+    throw new Error('Items must be an array');
+  }
+
   const newGraph: GraphJson = {
     type: "graph",
-    items: [],
-    name
+    items: JSON.parse(JSON.stringify(items)), // Deep copy the items
+    name,
   };
+
   const id = crypto.randomUUID();
-  graphs.value.set(id, newGraph);
+  const updatedGraphs = new Map(graphs.value);
+  updatedGraphs.set(id, newGraph);
+  graphs.value = updatedGraphs;
   saveGraphs();
   return id;
 }
 
+// Create a new graph
+export function createGraph(name: string) {
+    return saveGraph(name, [])
+}
+
+// Delete a graph
+export function deleteGraph(id: string) {
+  // Get the graph before deleting it
+  const graphToDelete = graphs.value.get(id);
+
+  // Clear current graph if it's the one being deleted
+  if (currentGraphId.value === id) {
+    currentGraphId.value = null;
+    graphData.value = null;
+  }
+
+  // Delete from main graphs map
+  const updatedGraphs = new Map(graphs.value);
+  updatedGraphs.delete(id);
+  graphs.value = updatedGraphs;
+
+  // Remove from recent graphs if present
+  if (graphToDelete) {
+    recentGraphs.value = recentGraphs.value.filter(g => g !== graphToDelete);
+  }
+
+  // Save changes to localStorage
+  saveGraphs();
+}
+
 // Load a specific graph
 export function loadGraph(id: string) {
+  console.log("Loading graph:", id);
   const graph = graphs.value.get(id);
   if (graph) {
     currentGraphId.value = id;
-    graphData.value = graph;
     
-    // Update recent graphs (move the loaded graph to the front)
-    const existingIndex = recentGraphs.value.findIndex(g => g === graph);
-    if (existingIndex !== -1) {
-      recentGraphs.value.splice(existingIndex, 1);
+    // Create a deep copy of the graph to prevent shared references
+    const graphCopy = JSON.parse(JSON.stringify(graph)) as GraphJson;
+    
+    // Ensure items array exists and has the correct structure
+    if (!graphCopy.items) {
+      graphCopy.items = [];
     }
-    recentGraphs.value = [graph, ...recentGraphs.value.slice(0, 4)];
+    
+    // Ensure all items have a position
+    for (let i = 0; i < graphCopy.items.length; i++) {
+      const item = graphCopy.items[i];
+      if (!item.position) {
+        console.log(`Assigning position to item: ${item.item}`);
+        // Create a grid-like layout for nodes without positions
+        const row = Math.floor(i / 5);
+        const col = i % 5;
+        item.position = {
+          x: 100 + col * 150,
+          y: 100 + row * 150
+        };
+      }
+    }
+    
+    console.log(`Graph loaded with ${graphCopy.items.length} items:`, graphCopy);
+    
+    // Update the graphData signal with the properly structured data
+    graphData.value = graphCopy;
+  } else {
+    console.error("Graph not found:", id);
+    
+    // If trying to load a non-existent graph, load the first available or create default
+    if (graphs.value.size > 0) {
+      const firstGraphId = Array.from(graphs.value.keys())[0];
+      console.log("Loading first available graph instead:", firstGraphId);
+      loadGraph(firstGraphId);
+    } else {
+      console.log("No graphs available, creating default graph");
+      createDefaultGraph();
+    }
   }
 }
 
 // Save current graph (update the graphs Map and persist it)
 export function saveCurrentGraph() {
   if (currentGraphId.value && graphData.value) {
-    graphs.value.set(currentGraphId.value, graphData.value);
+    const updatedGraphs = new Map(graphs.value);
+    // Create a deep copy of the graph data before saving
+    const graphToSave = JSON.parse(JSON.stringify(graphData.value));
+    updatedGraphs.set(currentGraphId.value, graphToSave);
+    graphs.value = updatedGraphs;
     saveGraphs();
   }
 }

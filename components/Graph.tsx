@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import cytoscape from "cytoscape";
 import { GraphNode } from "../islands/RightSidebar.tsx";
 
@@ -14,22 +14,28 @@ interface GraphProps {
 export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false, height = "400px", zoomingEnabled = true}: GraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
+  const [isPositioning, setIsPositioning] = useState(true);
 
   // Convert graph data to Cytoscape format
   const convertGraphData = (items: GraphNode[]): cytoscape.ElementDefinition[] => {
     const elements: cytoscape.ElementDefinition[] = [];
     const nodeSet = new Set<string>();
-    console.log(items)
 
     items.forEach((node) => {
       if (!nodeSet.has(node.item)) {
-        elements.push({
-          data: {
-            id: node.item,
-            label: node.item,
-            ...(isRoot && { type: "root" })
-          }
-        });
+        // If position is saved, use it, otherwise let the layout algorithm position it
+        const nodeData: Record<string, unknown> = {
+          id: node.item,
+          label: node.item,
+          ...(isRoot && { type: "root" })
+        };
+        
+        // If node has position data, use it
+        if (node.position && node.position.x !== undefined && node.position.y !== undefined) {
+          nodeData.position = { x: node.position.x, y: node.position.y };
+        }
+        
+        elements.push({ data: nodeData });
         nodeSet.add(node.item);
       }
       node.childItems?.forEach((child) => {
@@ -56,8 +62,27 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
     return elements;
   };
 
+  // Function to save node positions back to the graph data
+  const saveNodePositions = (cy: cytoscape.Core) => {
+    cy.nodes().forEach((node: cytoscape.NodeSingular) => {
+      const nodeId = node.id();
+      const position = node.position();
+      
+      // Find the node in graphData and update its position
+      const graphNode = graphData.find(n => n.item === nodeId);
+      if (graphNode) {
+        if (!graphNode.position) {
+          graphNode.position = { x: 0, y: 0 };
+        }
+        graphNode.position.x = position.x;
+        graphNode.position.y = position.y;
+      }
+    });
+  };
+
   useEffect(() => {
     if (containerRef.current) {
+      setIsPositioning(true);
       const elements = convertGraphData(graphData);
 
       // Create Cytoscape instance
@@ -110,6 +135,15 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
         layout: {
           name: "cose",
           animate: true,
+          // Listen for layout events
+          ready: function() {
+            // Layout is initialized but not started
+          },
+          stop: function() {
+            // Layout is complete
+            saveNodePositions(cy);
+            setIsPositioning(false);
+          }
         },
       });
 
@@ -117,7 +151,7 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
       cyRef.current = cy;
 
       // Handle node selection
-      cy.on("tap", "node", (event) => {
+      cy.on("tap", "node", (event: cytoscape.EventObject) => {
         const node = event.target;
         const nodeId = node.data("id");
 
@@ -139,10 +173,20 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
   }, [graphData, selectedNodeId, isRoot]);
 
   return (
-    <div
-      ref={containerRef}
-      class="border rounded bg-gray-50"
-      style={{ width: "100%", height }}
-    />
+    <div class="relative border rounded bg-gray-50" style={{ width: "100%", height }}>
+      {isPositioning && (
+        <div class="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-80 z-10">
+          <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-2"></div>
+            <p class="text-gray-700">Calculating optimal node positions...</p>
+          </div>
+        </div>
+      )}
+      <div
+        ref={containerRef}
+        class="w-full h-full"
+        style={{ opacity: isPositioning ? "0.3" : "1", transition: "opacity 0.3s ease-in-out" }}
+      />
+    </div>
   );
 }

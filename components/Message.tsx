@@ -1,4 +1,4 @@
-import { JSX } from "preact";
+import type { JSX } from "preact";
 import { MessageContent } from "./MessageContent.tsx";
 import EditIcon from "./icons/EditIcon.tsx";
 import RefreshIcon from "./icons/RefreshIcon.tsx";
@@ -44,18 +44,18 @@ export function Message({
         class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${item.role === "user" ? "text-blue-600" : "text-gray-600"}`}
       >
         {groupIndex !== 0 && (
-          <button onClick={() => onEditAction(groupIndex)}>
+          <button onClick={() => onEditAction(groupIndex)} type="button">
             <EditIcon isActive={currentEditIndex === groupIndex} />
           </button>
         )}
 
         {item.role !== "user" && groupIndex !== 0 && (
-          <button onClick={() => onRefreshAction(groupIndex)}>
+          <button onClick={() => onRefreshAction(groupIndex)} type="button">
             <RefreshIcon />
           </button>
         )}
         {item.role !== "user" && (
-          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)}>
+          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button">
             <SpeakIcon
               isPlaying={
                 audioFileDict[groupIndex] &&
@@ -71,6 +71,7 @@ export function Message({
           Object.keys(audioFileDict[groupIndex]).length > 0 && (
             <button
               onClick={() => onDownloadAudio(audioFileDict[groupIndex])}
+              type="button"
             >
               <DownloadIcon />
             </button>
@@ -78,7 +79,7 @@ export function Message({
       </span>
       <div
         class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${item.role === "user"
-          ? "bg-blue-100 ml-auto"
+          ? "bg-blue-100 rounded-tr-md ml-auto"
           : "bg-gray-50"
           } p-4`}
       >

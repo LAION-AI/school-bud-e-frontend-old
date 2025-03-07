@@ -1,6 +1,6 @@
-import { Handlers } from "$fresh/server.ts";
-import { join } from "https://deno.land/std@0.201.0/path/mod.ts";
-import KvStorage from "../../utils/kv_storage.ts"; // Modified import
+import type { Handlers } from "$fresh/server.ts";
+import KvStorage from "./(_utils)/kv_storage.ts";
+import type { SavedGame, SavedGamesData } from "../../types/formats.ts";
 
 interface GameData {
   code: string;
@@ -8,21 +8,7 @@ interface GameData {
   points?: number;
 }
 
-interface SavedGame {
-  id: string;
-  name: string;
-  code: string;
-  timestamp: string;
-  totalPoints: number;
-}
-
-interface SavedGamesData {
-  games: SavedGame[];
-}
-
-// const savedGamesPath = join(Deno.cwd(), "static", "saved-games.json"); // No longer needed
-// const kvStorage = new KvStorage<SavedGamesData>(savedGamesPath); // No longer needed
-const kvStorage = new KvStorage(); // Initialize KvStorage without path
+const kvStorage = new KvStorage();
 
 export const handler: Handlers = {
   async PUT(req: Request) {
@@ -38,7 +24,7 @@ export const handler: Handlers = {
         });
       }
 
-      let savedGames: SavedGamesData | null = await kvStorage.read();
+      const savedGames = await kvStorage.read();
       if (!savedGames) {
         return new Response(JSON.stringify({
           success: false,
@@ -67,7 +53,7 @@ export const handler: Handlers = {
 
       // Update points if provided
       if (typeof payload.points === 'number') {
-        savedGames.games[gameIndex].totalPoints += payload.points;
+        savedGames.games[gameIndex].points += payload.points;
       }
       await kvStorage.write(savedGames);
 
@@ -98,17 +84,14 @@ export const handler: Handlers = {
         return new Response("Invalid game data", { status: 400 });
       }
 
-      let savedGames: SavedGamesData | null = await kvStorage.read();
-      if (!savedGames) {
-        savedGames = { games: [] }; // Initialize if file doesn't exist or is empty
-      }
+      const savedGames = await kvStorage.read() || { games: [] };
 
       const newGame: SavedGame = {
         id: crypto.randomUUID(),
         name: payload.name,
         code: payload.code,
         timestamp: new Date().toISOString(),
-        totalPoints: payload.points || 0
+        points: payload.points || 0
       };
 
       savedGames.games.push(newGame);
@@ -134,20 +117,29 @@ export const handler: Handlers = {
     }
   },
   async GET(_req) {
+    console.log("[API] GET /api/game - Starting request");
     try {
+      console.log("[API] Reading from KV storage...");
       const savedGames = await kvStorage.read();
+
       if (!savedGames || !savedGames.games) {
-        return new Response(JSON.stringify([]), { // Return empty array if no games
+        console.log("[API] No games found or invalid format, returning empty array");
+        return new Response(JSON.stringify([]), {
           status: 200,
           headers: { "Content-Type": "application/json" }
         });
       }
-      return new Response(JSON.stringify(Object.values(savedGames.games)), {
+
+      console.log("[API] Games array found. Length:", savedGames.games.length);
+      
+      const response = new Response(JSON.stringify(savedGames.games), {
         status: 200,
         headers: { "Content-Type": "application/json" }
       });
+      
+      return response;
     } catch (error) {
-      console.error("Error listing games:", error);
+      console.error("[API] Error in GET handler:", error);
       return new Response(JSON.stringify({
         success: false,
         error: error instanceof Error ? error.message : String(error)
@@ -165,7 +157,7 @@ export const handler: Handlers = {
         return new Response("Invalid game ID", { status: 400 });
       }
 
-      let savedGames: SavedGamesData | null = await kvStorage.read();
+      const savedGames = await kvStorage.read();
       if (!savedGames) {
         return new Response(JSON.stringify({ success: false, error: "No games data found" }), {
           status: 404,
@@ -173,8 +165,7 @@ export const handler: Handlers = {
         });
       }
 
-      const updatedGames = savedGames.games.filter(game => game.id !== gameId);
-      savedGames.games = updatedGames;
+      savedGames.games = savedGames.games.filter(game => game.id !== gameId);
       await kvStorage.write(savedGames);
 
       return new Response(JSON.stringify({ success: true }), {

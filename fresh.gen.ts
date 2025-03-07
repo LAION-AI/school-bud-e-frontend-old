@@ -4,88 +4,224 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
-import * as $_middleware from "./routes/_middleware.ts";
+import * as $_layout from "./routes/_layout.tsx";
 import * as $about from "./routes/about.tsx";
 import * as $api_audio_button from "./routes/api/audio-button.ts";
 import * as $api_bildungsplan from "./routes/api/bildungsplan.ts";
-import * as $api_chat from "./routes/api/chat.ts";
+import * as $api_chat_index from "./routes/api/chat/index.ts";
 import * as $api_chat_recent_graphs from "./routes/api/chat/recent-graphs.ts";
 import * as $api_game from "./routes/api/game.ts";
-import * as $api_google_colab from "./routes/api/google-colab.ts";
+import * as $api_generate_video from "./routes/api/generate/video.ts";
 import * as $api_images_pixelart from "./routes/api/images/pixelart.ts";
 import * as $api_papers from "./routes/api/papers.ts";
+import * as $api_presentations_generate from "./routes/api/presentations/generate.ts";
 import * as $api_stt from "./routes/api/stt.ts";
+import * as $api_transcribe_pdf from "./routes/api/transcribe-pdf.ts";
 import * as $api_tts from "./routes/api/tts.ts";
 import * as $api_wikipedia from "./routes/api/wikipedia.ts";
-import * as $articles_path_ from "./routes/articles/[...path].tsx";
-import * as $articles_index from "./routes/articles/index.tsx";
 import * as $chat_id_ from "./routes/chat/[id].tsx";
 import * as $demo from "./routes/demo.tsx";
 import * as $games_id_ from "./routes/games/[id].tsx";
-import * as $google_colab from "./routes/google-colab.tsx";
-import * as $google_drive_video from "./routes/google-drive-video.tsx";
+import * as $games_list from "./routes/games/list.tsx";
 import * as $graph_name_ from "./routes/graph/[name].tsx";
+import * as $graph_list from "./routes/graph/list.tsx";
 import * as $index from "./routes/index.tsx";
-import * as $lernpfade from "./routes/lernpfade.tsx";
-import * as $profile from "./routes/profile.tsx";
-import * as $saved_games from "./routes/saved-games.tsx";
+import * as $presentations_generator from "./routes/presentations/generator.tsx";
+import * as $presentations_index from "./routes/presentations/index.tsx";
+import * as $presentations_preview from "./routes/presentations/preview.tsx";
+import * as $press from "./routes/press.tsx";
+import * as $settings from "./routes/settings.tsx";
+import * as $signin from "./routes/signin.tsx";
+import * as $tests_check from "./routes/tests/check.tsx";
+import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
+import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
+import * as $tests_index from "./routes/tests/index.tsx";
+import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
+import * as $video_novel_index from "./routes/video-novel/index.tsx";
+import * as $AIVoiceButton from "./islands/AIVoiceButton.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
-import * as $GameDetail from "./islands/GameDetail.tsx";
+import * as $ChatTemplate from "./islands/ChatTemplate.tsx";
+import * as $Game from "./islands/Game.tsx";
+import * as $GamePage from "./islands/GamePage.tsx";
+import * as $GamesList from "./islands/GamesList.tsx";
+import * as $GraphList from "./islands/GraphList.tsx";
 import * as $Header from "./islands/Header.tsx";
 import * as $LearningPathsGraph from "./islands/LearningPathsGraph.tsx";
 import * as $Menu from "./islands/Menu.tsx";
+import * as $Modal from "./islands/Modal.tsx";
+import * as $PresentationGeneratorIsland from "./islands/PresentationGeneratorIsland.tsx";
+import * as $PresentationPreviewIsland from "./islands/PresentationPreviewIsland.tsx";
+import * as $PresentationsListIsland from "./islands/PresentationsListIsland.tsx";
 import * as $RelatedArticles from "./islands/RelatedArticles.tsx";
 import * as $RightSidebar from "./islands/RightSidebar.tsx";
-import * as $Sidebar from "./islands/Sidebar.tsx";
+import * as $StoryEditor from "./islands/StoryEditor.tsx";
+import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
-import * as $saved_games_1 from "./islands/saved-games.tsx";
+import * as $WindowManager from "./islands/WindowManager.tsx";
+import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
+import * as $chat_ChatModeSelector from "./islands/chat/ChatModeSelector.tsx";
+import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
+import * as $chat_getLLMResponse from "./islands/chat/getLLMResponse.ts";
+import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
+import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
+import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
+import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
+import * as $navbar_index from "./islands/navbar/index.tsx";
+import * as $settings_BasicSettings from "./islands/settings/BasicSettings.tsx";
+import * as $settings_ChatAPISettings from "./islands/settings/ChatAPISettings.tsx";
+import * as $settings_ConfigurationSelector from "./islands/settings/ConfigurationSelector.tsx";
+import * as $settings_STTSettings from "./islands/settings/STTSettings.tsx";
+import * as $settings_Settings from "./islands/settings/Settings.tsx";
+import * as $settings_TTSSettings from "./islands/settings/TTSSettings.tsx";
+import * as $settings_TokenUsage from "./islands/settings/TokenUsage.tsx";
+import * as $settings_VLMSettings from "./islands/settings/VLMSettings.tsx";
+import * as $sidebar_ChatList from "./islands/sidebar/ChatList.tsx";
+import * as $sidebar_CollapsibleSection from "./islands/sidebar/CollapsibleSection.tsx";
+import * as $sidebar_GamesSection from "./islands/sidebar/GamesSection.tsx";
+import * as $sidebar_GraphsSection from "./islands/sidebar/GraphsSection.tsx";
+import * as $sidebar_PresentationsSection from "./islands/sidebar/PresentationsSection.tsx";
+import * as $sidebar_SidebarHeader from "./islands/sidebar/SidebarHeader.tsx";
+import * as $sidebar_SidebarLink from "./islands/sidebar/SidebarLink.tsx";
+import * as $sidebar_TestsSection from "./islands/sidebar/TestsSection.tsx";
+import * as $sidebar_UserProfileSection from "./islands/sidebar/UserProfileSection.tsx";
+import * as $sidebar_VideoNovelLink from "./islands/sidebar/VideoNovelLink.tsx";
+import * as $sidebar_index from "./islands/sidebar/index.tsx";
+import * as $signin_ApiKeySetup from "./islands/signin/ApiKeySetup.tsx";
+import * as $signin_SignInFlow from "./islands/signin/SignInFlow.tsx";
+import * as $signin_UserTypeSelector from "./islands/signin/UserTypeSelector.tsx";
+import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions.tsx";
+import * as $tests_islands_TestComposerIsland from "./routes/tests/(_islands)/TestComposerIsland.tsx";
+import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
+import * as $tests_islands_TestsListIsland from "./routes/tests/(_islands)/TestsListIsland.tsx";
+import * as $video_novel_islands_VideoNovelIsland from "./routes/video-novel/(_islands)/VideoNovelIsland.tsx";
+import * as $video_novel_islands_components_CreateStoryModal from "./routes/video-novel/(_islands)/components/CreateStoryModal.tsx";
+import * as $video_novel_islands_components_SettingsPanel from "./routes/video-novel/(_islands)/components/SettingsPanel.tsx";
+import * as $video_novel_islands_components_StoryLibrary from "./routes/video-novel/(_islands)/components/StoryLibrary.tsx";
+import * as $video_novel_islands_components_VideoControls from "./routes/video-novel/(_islands)/components/VideoControls.tsx";
+import * as $video_novel_islands_components_VideoPlayer from "./routes/video-novel/(_islands)/components/VideoPlayer.tsx";
+import * as $video_novel_islands_components_types from "./routes/video-novel/(_islands)/components/types.ts";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
-    "./routes/_middleware.ts": $_middleware,
+    "./routes/_layout.tsx": $_layout,
     "./routes/about.tsx": $about,
     "./routes/api/audio-button.ts": $api_audio_button,
     "./routes/api/bildungsplan.ts": $api_bildungsplan,
-    "./routes/api/chat.ts": $api_chat,
+    "./routes/api/chat/index.ts": $api_chat_index,
     "./routes/api/chat/recent-graphs.ts": $api_chat_recent_graphs,
     "./routes/api/game.ts": $api_game,
-    "./routes/api/google-colab.ts": $api_google_colab,
+    "./routes/api/generate/video.ts": $api_generate_video,
     "./routes/api/images/pixelart.ts": $api_images_pixelart,
     "./routes/api/papers.ts": $api_papers,
+    "./routes/api/presentations/generate.ts": $api_presentations_generate,
     "./routes/api/stt.ts": $api_stt,
+    "./routes/api/transcribe-pdf.ts": $api_transcribe_pdf,
     "./routes/api/tts.ts": $api_tts,
     "./routes/api/wikipedia.ts": $api_wikipedia,
-    "./routes/articles/[...path].tsx": $articles_path_,
-    "./routes/articles/index.tsx": $articles_index,
     "./routes/chat/[id].tsx": $chat_id_,
     "./routes/demo.tsx": $demo,
     "./routes/games/[id].tsx": $games_id_,
-    "./routes/google-colab.tsx": $google_colab,
-    "./routes/google-drive-video.tsx": $google_drive_video,
+    "./routes/games/list.tsx": $games_list,
     "./routes/graph/[name].tsx": $graph_name_,
+    "./routes/graph/list.tsx": $graph_list,
     "./routes/index.tsx": $index,
-    "./routes/lernpfade.tsx": $lernpfade,
-    "./routes/profile.tsx": $profile,
-    "./routes/saved-games.tsx": $saved_games,
+    "./routes/presentations/generator.tsx": $presentations_generator,
+    "./routes/presentations/index.tsx": $presentations_index,
+    "./routes/presentations/preview.tsx": $presentations_preview,
+    "./routes/press.tsx": $press,
+    "./routes/settings.tsx": $settings,
+    "./routes/signin.tsx": $signin,
+    "./routes/tests/check.tsx": $tests_check,
+    "./routes/tests/compose/[id].tsx": $tests_compose_id_,
+    "./routes/tests/compose/index.tsx": $tests_compose_index,
+    "./routes/tests/index.tsx": $tests_index,
+    "./routes/tests/view/[id].tsx": $tests_view_id_,
+    "./routes/video-novel/index.tsx": $video_novel_index,
   },
   islands: {
+    "./islands/AIVoiceButton.tsx": $AIVoiceButton,
     "./islands/ChatAgreement.tsx": $ChatAgreement,
     "./islands/ChatAgreementOrIsland.tsx": $ChatAgreementOrIsland,
     "./islands/ChatIsland.tsx": $ChatIsland,
-    "./islands/GameDetail.tsx": $GameDetail,
+    "./islands/ChatTemplate.tsx": $ChatTemplate,
+    "./islands/Game.tsx": $Game,
+    "./islands/GamePage.tsx": $GamePage,
+    "./islands/GamesList.tsx": $GamesList,
+    "./islands/GraphList.tsx": $GraphList,
     "./islands/Header.tsx": $Header,
     "./islands/LearningPathsGraph.tsx": $LearningPathsGraph,
     "./islands/Menu.tsx": $Menu,
+    "./islands/Modal.tsx": $Modal,
+    "./islands/PresentationGeneratorIsland.tsx": $PresentationGeneratorIsland,
+    "./islands/PresentationPreviewIsland.tsx": $PresentationPreviewIsland,
+    "./islands/PresentationsListIsland.tsx": $PresentationsListIsland,
     "./islands/RelatedArticles.tsx": $RelatedArticles,
     "./islands/RightSidebar.tsx": $RightSidebar,
-    "./islands/Sidebar.tsx": $Sidebar,
+    "./islands/StoryEditor.tsx": $StoryEditor,
+    "./islands/TourGuideInitializer.tsx": $TourGuideInitializer,
     "./islands/UserProfile.tsx": $UserProfile,
-    "./islands/saved-games.tsx": $saved_games_1,
+    "./islands/WindowManager.tsx": $WindowManager,
+    "./islands/chat/ChatInput.tsx": $chat_ChatInput,
+    "./islands/chat/ChatModeSelector.tsx": $chat_ChatModeSelector,
+    "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
+    "./islands/chat/getLLMResponse.ts": $chat_getLLMResponse,
+    "./islands/core/Tooltip.tsx": $core_Tooltip,
+    "./islands/core/buttons/ChatSubmitButton.tsx":
+      $core_buttons_ChatSubmitButton,
+    "./islands/core/buttons/ImageUploadButton.tsx":
+      $core_buttons_ImageUploadButton,
+    "./islands/core/buttons/VoiceRecordButton.tsx":
+      $core_buttons_VoiceRecordButton,
+    "./islands/navbar/index.tsx": $navbar_index,
+    "./islands/settings/BasicSettings.tsx": $settings_BasicSettings,
+    "./islands/settings/ChatAPISettings.tsx": $settings_ChatAPISettings,
+    "./islands/settings/ConfigurationSelector.tsx":
+      $settings_ConfigurationSelector,
+    "./islands/settings/STTSettings.tsx": $settings_STTSettings,
+    "./islands/settings/Settings.tsx": $settings_Settings,
+    "./islands/settings/TTSSettings.tsx": $settings_TTSSettings,
+    "./islands/settings/TokenUsage.tsx": $settings_TokenUsage,
+    "./islands/settings/VLMSettings.tsx": $settings_VLMSettings,
+    "./islands/sidebar/ChatList.tsx": $sidebar_ChatList,
+    "./islands/sidebar/CollapsibleSection.tsx": $sidebar_CollapsibleSection,
+    "./islands/sidebar/GamesSection.tsx": $sidebar_GamesSection,
+    "./islands/sidebar/GraphsSection.tsx": $sidebar_GraphsSection,
+    "./islands/sidebar/PresentationsSection.tsx": $sidebar_PresentationsSection,
+    "./islands/sidebar/SidebarHeader.tsx": $sidebar_SidebarHeader,
+    "./islands/sidebar/SidebarLink.tsx": $sidebar_SidebarLink,
+    "./islands/sidebar/TestsSection.tsx": $sidebar_TestsSection,
+    "./islands/sidebar/UserProfileSection.tsx": $sidebar_UserProfileSection,
+    "./islands/sidebar/VideoNovelLink.tsx": $sidebar_VideoNovelLink,
+    "./islands/sidebar/index.tsx": $sidebar_index,
+    "./islands/signin/ApiKeySetup.tsx": $signin_ApiKeySetup,
+    "./islands/signin/SignInFlow.tsx": $signin_SignInFlow,
+    "./islands/signin/UserTypeSelector.tsx": $signin_UserTypeSelector,
+    "./routes/chat/(_islands)/ChatActions.tsx": $chat_islands_ChatActions,
+    "./routes/tests/(_islands)/TestComposerIsland.tsx":
+      $tests_islands_TestComposerIsland,
+    "./routes/tests/(_islands)/TestViewIsland.tsx":
+      $tests_islands_TestViewIsland,
+    "./routes/tests/(_islands)/TestsListIsland.tsx":
+      $tests_islands_TestsListIsland,
+    "./routes/video-novel/(_islands)/VideoNovelIsland.tsx":
+      $video_novel_islands_VideoNovelIsland,
+    "./routes/video-novel/(_islands)/components/CreateStoryModal.tsx":
+      $video_novel_islands_components_CreateStoryModal,
+    "./routes/video-novel/(_islands)/components/SettingsPanel.tsx":
+      $video_novel_islands_components_SettingsPanel,
+    "./routes/video-novel/(_islands)/components/StoryLibrary.tsx":
+      $video_novel_islands_components_StoryLibrary,
+    "./routes/video-novel/(_islands)/components/VideoControls.tsx":
+      $video_novel_islands_components_VideoControls,
+    "./routes/video-novel/(_islands)/components/VideoPlayer.tsx":
+      $video_novel_islands_components_VideoPlayer,
+    "./routes/video-novel/(_islands)/components/types.ts":
+      $video_novel_islands_components_types,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

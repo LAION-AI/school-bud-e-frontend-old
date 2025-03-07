@@ -1,29 +1,22 @@
 import { computed, signal } from "@preact/signals";
+import type { SavedGame } from "../../types/formats.ts";
 
 interface GameData {
   code: string;
   name?: string;
 }
 
-interface SavedGame {
-  id: string;
-  name: string;
-  code: string;
-  timestamp: string;
-  totalPoints: number;
-}
-
 // Game state signals
 export const currentGame = signal<SavedGame | null>(null);
 export const savedGames = signal<SavedGame[]>([]);
-export const isLoading = signal(false);
+export const isLoading = signal<boolean>(false);
 export const error = signal<string | null>(null);
 
 // Computed signals
 export const hasGames = computed(() => savedGames.value.length > 0);
-export const totalPoints = computed(() => currentGame.value?.totalPoints ?? 0);
+export const points = computed(() => currentGame.value?.points ?? 0);
 export const totalPointsAcrossAllGames = computed(() => {
-  return savedGames.value.reduce((total, game) => total + game.totalPoints, 0);
+  return savedGames.value.reduce((total, game) => total + (game.points || 0), 0);
 });
 
 // Game progress computation
@@ -31,26 +24,43 @@ export const getGameProgress = (gameName: string) => {
   const game = savedGames.value.find(g => g.name === gameName);
   if (!game) return 0;
   // Assuming 100 points is full progress
-  return Math.min(game.totalPoints / 100, 1);
+  return Math.min((game.points || 0) / 100, 1);
 };
 
 // API functions
 export async function fetchGames() {
+  console.log("[Store] Starting fetchGames");
   isLoading.value = true;
-  error.value = null;
-
   try {
+    console.log("[Store] Making fetch request to /api/game");
     const response = await fetch("/api/game");
-    const data = await response.json();
-
-    if (Array.isArray(data)) {
-      savedGames.value = data;
-    } else {
-      throw new Error("Invalid response format");
+    console.log("[Store] Response status:", response.status);
+    console.log("[Store] Response headers:", Object.fromEntries(response.headers.entries()));
+    
+    const responseText = await response.text();
+    
+    if (!responseText) {
+      console.log("[Store] Empty response received");
+      savedGames.value = [];
+      return;
     }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "Failed to fetch games";
-    console.error("Error fetching games:", err);
+
+    try {
+      const data = JSON.parse(responseText);
+      console.log("[Store] Parsed data:", data);
+      if (Array.isArray(data)) {
+        savedGames.value = data;
+      } else {
+        console.log("[Store] Unexpected data format:", data);
+        savedGames.value = [];
+      }
+    } catch (parseError) {
+      console.error("[Store] JSON parse error:", parseError);
+      savedGames.value = [];
+    }
+  } catch (error) {
+    console.error("[Store] Fetch error:", error);
+    savedGames.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -71,9 +81,8 @@ export async function saveGame(gameData: GameData) {
     if (data.success && data.game) {
       savedGames.value = [...savedGames.value, data.game];
       return data.game;
-    } else {
-      throw new Error(data.error || "Failed to save game");
     }
+    throw new Error(data.error || "Failed to save game");
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Failed to save game";
     console.error("Error saving game:", err);
@@ -103,9 +112,8 @@ export async function updateGame(id: string, code: string) {
         currentGame.value = data.game;
       }
       return data.game;
-    } else {
-      throw new Error(data.error || "Failed to update game");
     }
+    throw new Error(data.error || "Failed to update game");
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Failed to update game";
     console.error("Error updating game:", err);
@@ -131,9 +139,8 @@ export async function deleteGame(id: string) {
         currentGame.value = null;
       }
       return true;
-    } else {
-      throw new Error(data.error || "Failed to delete game");
     }
+    throw new Error(data.error || "Failed to delete game");
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Failed to delete game";
     console.error("Error deleting game:", err);
@@ -169,21 +176,26 @@ if (typeof window !== "undefined") {
       const { id, points } = event.detail;
 
       // Update the game in savedGames
-      savedGames.value = savedGames.value.map((game) =>
-        game.id === id
-          ? { ...game, totalPoints: game.totalPoints + points }
-          : game
-      );
+      savedGames.value = savedGames.value.map((game) => {
+        if (game.id === id) {
+          return {
+            ...game,
+            points: (game.points || 0) + points,
+          };
+        }
+        return game;
+      });
 
       // Update currentGame if it's the one being modified
-      if (currentGame.value?.id === id) {
+      if (currentGame.value && currentGame.value.id === id) {
         currentGame.value = {
           ...currentGame.value,
-          totalPoints: currentGame.value?.totalPoints + points,
+          points: (currentGame.value.points || 0) + points,
         };
       }
+      
       // Play a sound
-      audio.volume = 1
+      audio.volume = 1;
       audio.play();
     }) as EventListener,
   );

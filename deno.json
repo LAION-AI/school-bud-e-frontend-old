@@ -1,37 +1,38 @@
 {
-  "lock": false,
-  "tasks": {
-    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
-    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
-    "manifest": "deno task cli manifest $(pwd)",
-    "start": "deno run -A --watch=routes/ dev.ts",
-    "build": "deno run -A dev.ts build",
-    "build:audio-button": "deno run -A build-audio-button.ts",
-    "preview": "deno run -A main.ts",
-    "update": "deno run -A -r https://fresh.deno.dev/update ."
-  },
-  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
-  "exclude": ["**/_fresh/*"],
   "imports": {
+    "$std/": "https://deno.land/std@0.216.0/",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
-    "cytoscape": "npm:cytoscape@^3.31.0",
-    "cytoscape-automove": "npm:cytoscape-automove@^1.10.3",
-    "ioredis": "npm:ioredis@^5.5.0",
-    "keydb": "npm:keydb@^0.1.10",
-    "preact": "https://esm.sh/preact@10.22.0",
-    "preact/": "https://esm.sh/preact@10.22.0/",
+    "@nozbe/watermelondb": "npm:@nozbe/watermelondb@^0.27.1",
+    "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
+    "preact": "https://esm.sh/preact@10.26.4",
+    "preact/": "https://esm.sh/preact@10.26.4/",
     "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
-    "react-force-graph-2d": "npm:react-force-graph-2d@^1.27.0",
+    "rxdb": "npm:rxdb@^16.8.0",
+    "rxjs": "npm:rxjs@^7.8.2",
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
-    "$std/": "https://deno.land/std@0.216.0/",
-    "zod": "npm:zod@^3.24.1"
+    "tiktoken": "npm:tiktoken@^1.0.20",
+    "shepherd.js": "npm:shepherd.js@14.5.0",
+    "cytoscape": "npm:cytoscape@3.28.1",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
+  },
+  "tasks": {
+    "test": "deno test -A",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "cypress": "deno run -A npm:cypress@latest open"
   },
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },
+  "react": ["./node_modules/@types/preact"],
+  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
+  "exclude": ["**/_fresh/*"],
   "nodeModulesDir": "auto"
 }

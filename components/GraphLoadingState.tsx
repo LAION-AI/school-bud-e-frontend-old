@@ -1,4 +1,5 @@
-import { JSX } from "preact";
+import type { JSX } from "preact";
+import { IconCheck, IconLoader } from "@tabler/icons-preact";
 
 interface GraphLoadingStateProps {
   isLoading: boolean;
@@ -25,26 +26,13 @@ export function GraphLoadingState({ isLoading, isComplete, type }: GraphLoadingS
     <div class="flex items-center justify-center p-4 space-x-2 border rounded-md">
       {isLoading && !isComplete && (
         <>
-          <div class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent"></div>
+          <IconLoader class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent" />
           <span class="text-gray-700">Generating {subject}...</span>
         </>
       )}
       {!isLoading && isComplete && (
         <>
-          <svg
-            class="w-6 h-6 text-green-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+          <IconCheck />
           <span class="text-gray-700">{subject} generated successfully</span>
         </>
       )}

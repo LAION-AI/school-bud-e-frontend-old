@@ -16,18 +16,14 @@ export const resetTranscript = signal(0); // used for STT in Voice Record Button
 export const toggleReadAlways = (value: boolean) => {
     readAlways.value = value;
     if (!value) {
-        (Object.values(audioFileDict) as Record<number, AudioItem>[]).forEach(
-            (group) => {
-                (Object.values(group) as AudioItem[]).forEach(
-                    (item: AudioItem) => {
-                        if (!item.audio.paused) {
-                            item.audio.pause();
-                            item.audio.currentTime = 0;
-                        }
-                    },
-                );
-            },
-        );
+        for (const group of audioFileDict.value) {
+            for (const item of group) {
+                if (!item.audio.paused) {
+                    item.audio.pause();
+                    item.audio.currentTime = 0;
+                }
+            }
+        }
         stopList.value = Object.keys(audioFileDict).map(Number);
     }
 };
@@ -173,9 +169,9 @@ const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
             ? messages.value[groupIndex][0]
             : messages.value[groupIndex];
         console.log("lastMessage", lastMessage);
-        const parsedLastMessage = Array.isArray(lastMessage["content"])
-            ? lastMessage["content"].join("")
-            : lastMessage["content"];
+        const parsedLastMessage = Array.isArray(lastMessage.content)
+            ? lastMessage.content.join("")
+            : lastMessage.content;
         if (parsedLastMessage === "") return;
         getTTS(
             parsedLastMessage as string,
