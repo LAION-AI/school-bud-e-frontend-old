@@ -3,7 +3,6 @@ fish_audio_sdk==2025.2.11
 ipython==8.12.3
 loguru==0.7.3
 markitdown==0.0.1a4
-moviepy==2.1.2
 multiprocessing_logging==0.3.4
 numpy==1.24.3
 protobuf==5.29.3

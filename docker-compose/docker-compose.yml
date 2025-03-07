@@ -23,7 +23,7 @@ services:
       context: ../ai-tasks-server
       dockerfile: Dockerfile
     ports:
-      - "8083:8000"
+      - "8083:8083"
     env_file:
       - .env
     volumes:
