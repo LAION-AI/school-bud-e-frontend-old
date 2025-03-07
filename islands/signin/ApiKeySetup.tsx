@@ -45,7 +45,7 @@ export default function ApiKeySetup({ userType, onComplete, onBack, lang = "en" 
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "1. Aus dem Store kaufen" : "1. Buy from Store"}
+            {lang === "de" ? "1. Aus dem Store von budeai.com kaufen" : "1. Buy from Store of budeai.com"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"
@@ -64,7 +64,7 @@ export default function ApiKeySetup({ userType, onComplete, onBack, lang = "en" 
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "2. Kostenlos (5 Minuten)" : "2. Free (5 minutes)"}
+            {lang === "de" ? "2. Kostenlos (5 Minuten, nicht Datenschutzkonform)" : "2. Free (5 minutes, not GDPR compliant)"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"

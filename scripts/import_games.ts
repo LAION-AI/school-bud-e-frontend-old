@@ -3,7 +3,7 @@ import type { SavedGamesData } from "../types/formats.ts";
 
 async function importGames() {
   const redis = new Redis({
-    host: "localhost",
+    host: "keydb",
     port: 6379,
     password: 'mypassword',
   });

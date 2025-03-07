@@ -38,7 +38,7 @@ export default function WelcomeBanner({ onOpenSettings, onStartTour }: WelcomeBa
         </button>
         <button
           onClick={onStartTour}
-          className="relative bg-white hover:bg-gray-50 text-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"
+          className="relative bg-white hover:bg-gray-50 text-primary-600 border border-indigo-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"
           data-tour="start-tour-button"
         >
           <span className="mr-2">{content.tourButton}</span>

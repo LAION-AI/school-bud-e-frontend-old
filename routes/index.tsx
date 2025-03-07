@@ -19,7 +19,7 @@ export default function Home(req: Request) {
               <div class="sm:text-center lg:text-left">
                 <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                   <span class="block">School Bud-E</span>
-                  <span class="block text-indigo-600">{lang === "de" ? "Dein KI-Lernbegleiter" : "Your AI Learning Companion"}</span>
+                  <span class="block text-primary-600">{lang === "de" ? "Dein KI-Lernbegleiter" : "Your AI Learning Companion"}</span>
                 </h1>
                 <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                   {lang === "de" 
@@ -61,7 +61,7 @@ export default function Home(req: Request) {
       <div class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="lg:text-center">
-            <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">
+            <h2 class="text-base text-primary-600 font-semibold tracking-wide uppercase">
               {lang === "de" ? "Funktionen" : "Features"}
             </h2>
             <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -170,7 +170,7 @@ export default function Home(req: Request) {
           </p>
           <a
             href="/signin"
-            class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto"
+            class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-indigo-50 sm:w-auto"
           >
             {lang === "de" ? "Jetzt starten" : "Get Started"}
           </a>

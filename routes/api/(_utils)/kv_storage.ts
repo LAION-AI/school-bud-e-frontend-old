@@ -7,7 +7,7 @@ class KvStorage {
   init() {
     console.log("[KV] Initializing Redis client...");
     this.redisClient = new Redis({
-      host: "localhost",
+      host: "keydb",
       port: 6379,
       password: 'mypassword',
       retryStrategy: (times: number) => {

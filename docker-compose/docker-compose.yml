@@ -11,7 +11,23 @@ services:
       - .env
     volumes:
       - ./app:/school-bud-e-frontend
-    command: sh -c "apt-get update && apt-get install -y git && git config --global --add safe.directory /school-bud-e-frontend && cd /school-bud-e-frontend && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/main; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && deno task build && deno task preview"
+    command: sh -c "apt-get update && apt-get install -y git && git config --global --add safe.directory /school-bud-e-frontend && cd /school-bud-e-frontend && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && deno task build && deno task preview"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  task-server:
+    image: python:3.11-slim
+    container_name: task-server
+    build:
+      context: ../ai-tasks-server
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8000"
+    env_file:
+      - .env
+    volumes:
+      - ../ai-tasks-server:/app
     networks:
       - app-network
     restart: unless-stopped
@@ -29,6 +45,63 @@ services:
     networks:
       - app-network
 
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: umami
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://umami:umami@db:5432/umami
+      - DATABASE_TYPE=postgresql
+      - HASH_SALT=random-string
+      - JWT_SECRET=random-string
+    depends_on:
+      - db
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: umami-db
+    environment:
+      - POSTGRES_USER=umami
+      - POSTGRES_PASSWORD=umami
+      - POSTGRES_DB=umami
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  keydb:
+    image: eqalpha/keydb:latest
+    container_name: keydb
+    ports:
+      - "6379:6379"
+    volumes:
+      - keydb-data:/data
+    command: keydb-server --appendonly yes
+    networks:
+      - app-network
+    restart: unless-stopped
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  umami-db-data:
+  uptime-kuma-data:
+  keydb-data:

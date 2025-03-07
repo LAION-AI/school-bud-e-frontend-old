@@ -37,12 +37,14 @@ import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
 import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
 import * as $tests_index from "./routes/tests/index.tsx";
 import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
+import * as $tutorials from "./routes/tutorials.tsx";
 import * as $video_novel_index from "./routes/video-novel/index.tsx";
 import * as $AIVoiceButton from "./islands/AIVoiceButton.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
 import * as $ChatTemplate from "./islands/ChatTemplate.tsx";
+import * as $FAQButton from "./islands/FAQButton.tsx";
 import * as $Game from "./islands/Game.tsx";
 import * as $GamePage from "./islands/GamePage.tsx";
 import * as $GamesList from "./islands/GamesList.tsx";
@@ -141,6 +143,7 @@ const manifest = {
     "./routes/tests/compose/index.tsx": $tests_compose_index,
     "./routes/tests/index.tsx": $tests_index,
     "./routes/tests/view/[id].tsx": $tests_view_id_,
+    "./routes/tutorials.tsx": $tutorials,
     "./routes/video-novel/index.tsx": $video_novel_index,
   },
   islands: {
@@ -149,6 +152,7 @@ const manifest = {
     "./islands/ChatAgreementOrIsland.tsx": $ChatAgreementOrIsland,
     "./islands/ChatIsland.tsx": $ChatIsland,
     "./islands/ChatTemplate.tsx": $ChatTemplate,
+    "./islands/FAQButton.tsx": $FAQButton,
     "./islands/Game.tsx": $Game,
     "./islands/GamePage.tsx": $GamePage,
     "./islands/GamesList.tsx": $GamesList,

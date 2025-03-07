@@ -2,7 +2,7 @@ import { Redis } from "npm:ioredis";
 
 async function checkRedis() {
   const redis = new Redis({
-    host: "localhost",
+    host: "keydb",
     port: 6379,
     password: 'mypassword',
   });
