@@ -1,6 +1,6 @@
 import { useState, useEffect } from "preact/hooks";
 import { IS_BROWSER } from "$fresh/runtime.ts";
-import { IconTrash } from "@tabler/icons-preact";
+import { IconEye, IconTrash } from "@tabler/icons-preact";
 
 interface PresentationItem {
   id: string;

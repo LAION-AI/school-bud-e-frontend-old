@@ -161,10 +161,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     setIsSettingsOpen(true);
   };
   
-  const handleStartTour = () => {
-    startTour("basics");
-  };
-
   // MAIN CONTENT THAT IS RENDERED
   return (
     <div class="flex w-full h-screen">
@@ -175,7 +171,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         onRefreshAction={handleRefreshAction}
         onEditAction={() => { }}
         onOpenSettings={handleOpenSettings}
-        onStartTour={handleStartTour}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>

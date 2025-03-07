@@ -113,11 +113,11 @@ export default function Sidebar({
 						isCollapsed={isCollapsed}
 						highlight={selectedSection === 'games'}
 					/>
-					<TourProgressSidebarSection />
 				</nav>
 			</div>
 
 			<div class="p-3 pt-0">
+				<TourProgressSidebarSection />
 
 				<UserProfileSection isCollapsed={isCollapsed} lang={lang} />
 			</div>
