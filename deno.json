@@ -29,7 +29,7 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
+    "jsxImportSource": "preact"
   },
   "react": ["./node_modules/@types/preact"],
   "lint": { "rules": { "tags": ["fresh", "recommended"] } },

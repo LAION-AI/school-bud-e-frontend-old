@@ -11,7 +11,7 @@ export default function App({ Component, url }: AppProps) {
 	const isPressPage = pathname === "/press";
 	const isSignInPage = pathname === "/signin";
 	
-	const showSidebar = !isHomePage && !isPressPage && !isSignInPage && !isSignUpPage;
+	const showSidebar = !isHomePage && !isPressPage && !isSignInPage;
 	const showNavbar = !isSignInPage;
 	
 	const lang = 

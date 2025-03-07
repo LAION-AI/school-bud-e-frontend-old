@@ -88,6 +88,9 @@ import * as $sidebar_TestsSection from "./islands/sidebar/TestsSection.tsx";
 import * as $sidebar_UserProfileSection from "./islands/sidebar/UserProfileSection.tsx";
 import * as $sidebar_VideoNovelLink from "./islands/sidebar/VideoNovelLink.tsx";
 import * as $sidebar_index from "./islands/sidebar/index.tsx";
+import * as $signin_ApiKeySetup from "./islands/signin/ApiKeySetup.tsx";
+import * as $signin_SignInFlow from "./islands/signin/SignInFlow.tsx";
+import * as $signin_UserTypeSelector from "./islands/signin/UserTypeSelector.tsx";
 import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions.tsx";
 import * as $tests_islands_TestComposerIsland from "./routes/tests/(_islands)/TestComposerIsland.tsx";
 import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
@@ -195,6 +198,9 @@ const manifest = {
     "./islands/sidebar/UserProfileSection.tsx": $sidebar_UserProfileSection,
     "./islands/sidebar/VideoNovelLink.tsx": $sidebar_VideoNovelLink,
     "./islands/sidebar/index.tsx": $sidebar_index,
+    "./islands/signin/ApiKeySetup.tsx": $signin_ApiKeySetup,
+    "./islands/signin/SignInFlow.tsx": $signin_SignInFlow,
+    "./islands/signin/UserTypeSelector.tsx": $signin_UserTypeSelector,
     "./routes/chat/(_islands)/ChatActions.tsx": $chat_islands_ChatActions,
     "./routes/tests/(_islands)/TestComposerIsland.tsx":
       $tests_islands_TestComposerIsland,
