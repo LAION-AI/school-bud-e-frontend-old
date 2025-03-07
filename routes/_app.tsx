@@ -3,9 +3,14 @@ import { Partial } from "$fresh/runtime.ts";
 import Sidebar from "../islands/sidebar/index.tsx";
 import FloatingChat from "../islands/chat/FloatingChat.tsx";
 import AIVoiceButton from "../islands/AIVoiceButton.tsx";
+import Navbar from "../islands/navbar/index.tsx";
 
 export default function App({ Component, url }: AppProps) {
-	const isArticle = url.pathname.startsWith("/articles");
+	const noSidebar =
+		(url.searchParams.get("lang") as string) !== undefined &&
+		url.searchParams.get("lang") !== null
+			? url.searchParams.get("lang")
+			: "de";
 
 	const handleDownloadChat = () => {
 		console.log("Download chat not yet implemented");
@@ -20,9 +25,16 @@ export default function App({ Component, url }: AppProps) {
 				<link rel="stylesheet" href="/styles.css" />
 			</head>
 			<body f-client-nav>
-				<div class="h-screen flex">
-					{isArticle ? (
-						<Component />
+				<div class="h-screen flex flex-col">
+					{noSidebar ? (
+						<>
+							<Navbar lang={noSidebar} />
+							<Partial name="main-content">
+								<div class="flex-1">
+									<Component />
+								</div>
+							</Partial>
+						</>
 					) : (
 						<>
 							<Sidebar
@@ -30,7 +42,7 @@ export default function App({ Component, url }: AppProps) {
 								onDownloadChat={handleDownloadChat}
 								lang="en"
 							/>
-							<div class="flex-1">
+							<div class="flex-1 overflow-hidden">
 								<Partial name="main-content">
 									<Component />
 								</Partial>

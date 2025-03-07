@@ -199,7 +199,6 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 							} else if (data.type === "file") {
 								addLog(`File data received: ${JSON.stringify(data.data)}`);
 
-								debugger;
 								// Check if data.data is a string (old format) or an object (new format)
 								if (typeof data.data === "string") {
 									// Old format - data.data is just the filename

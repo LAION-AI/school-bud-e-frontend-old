@@ -185,7 +185,6 @@ export default function Settings({
     updatedSettings[key as keyof typeof settings.value] = value;
     newSettings.value = updatedSettings;
   }
-  console.log(updateSettings);
 
   // Get capability explanation
   function getCapabilityExplanation(capability: string) {

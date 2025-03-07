@@ -123,7 +123,6 @@ export function initTourGuide() {
   // Load completed tours from localStorage
   const completedToursJson = localStorage.getItem("shepherd-completed-tours");
   let completedTours: string[] = [];
-    debugger;
   if (completedToursJson) {
     try {
       completedTours = JSON.parse(completedToursJson);

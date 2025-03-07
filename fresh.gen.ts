@@ -29,7 +29,9 @@ import * as $index from "./routes/index.tsx";
 import * as $presentations_generator from "./routes/presentations/generator.tsx";
 import * as $presentations_index from "./routes/presentations/index.tsx";
 import * as $presentations_preview from "./routes/presentations/preview.tsx";
+import * as $press from "./routes/press.tsx";
 import * as $settings from "./routes/settings.tsx";
+import * as $signin from "./routes/signin.tsx";
 import * as $tests_check from "./routes/tests/check.tsx";
 import * as $tests_compose_id_ from "./routes/tests/compose/[id].tsx";
 import * as $tests_compose_index from "./routes/tests/compose/index.tsx";
@@ -66,6 +68,7 @@ import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
 import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
 import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
+import * as $navbar_index from "./islands/navbar/index.tsx";
 import * as $settings_BasicSettings from "./islands/settings/BasicSettings.tsx";
 import * as $settings_ChatAPISettings from "./islands/settings/ChatAPISettings.tsx";
 import * as $settings_ConfigurationSelector from "./islands/settings/ConfigurationSelector.tsx";
@@ -127,7 +130,9 @@ const manifest = {
     "./routes/presentations/generator.tsx": $presentations_generator,
     "./routes/presentations/index.tsx": $presentations_index,
     "./routes/presentations/preview.tsx": $presentations_preview,
+    "./routes/press.tsx": $press,
     "./routes/settings.tsx": $settings,
+    "./routes/signin.tsx": $signin,
     "./routes/tests/check.tsx": $tests_check,
     "./routes/tests/compose/[id].tsx": $tests_compose_id_,
     "./routes/tests/compose/index.tsx": $tests_compose_index,
@@ -169,6 +174,7 @@ const manifest = {
       $core_buttons_ImageUploadButton,
     "./islands/core/buttons/VoiceRecordButton.tsx":
       $core_buttons_VoiceRecordButton,
+    "./islands/navbar/index.tsx": $navbar_index,
     "./islands/settings/BasicSettings.tsx": $settings_BasicSettings,
     "./islands/settings/ChatAPISettings.tsx": $settings_ChatAPISettings,
     "./islands/settings/ConfigurationSelector.tsx":
