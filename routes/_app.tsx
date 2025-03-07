@@ -6,10 +6,18 @@ import AIVoiceButton from "../islands/AIVoiceButton.tsx";
 import Navbar from "../islands/navbar/index.tsx";
 
 export default function App({ Component, url }: AppProps) {
-	const noSidebar =
-		(url.searchParams.get("lang") as string) !== undefined &&
+	const pathname = new URL(url.href).pathname;
+	const isHomePage = pathname === "/" || pathname === "/index";
+	const isPressPage = pathname === "/press";
+	const isSignInPage = pathname === "/signin";
+	
+	const showSidebar = !isHomePage && !isPressPage && !isSignInPage && !isSignUpPage;
+	const showNavbar = !isSignInPage;
+	
+	const lang = 
+		url.searchParams.get("lang") !== undefined &&
 		url.searchParams.get("lang") !== null
-			? url.searchParams.get("lang")
+			? url.searchParams.get("lang") as string
 			: "de";
 
 	const handleDownloadChat = () => {
@@ -25,15 +33,17 @@ export default function App({ Component, url }: AppProps) {
 				<link rel="stylesheet" href="/styles.css" />
 			</head>
 			<body f-client-nav>
-				<div class="h-screen flex flex-col">
-					{noSidebar ? (
+				<div class="h-screen flex">
+					{!showSidebar ? (
 						<>
-							<Navbar lang={noSidebar} />
+						<div class="flex flex-col flex-1">
 							<Partial name="main-content">
+							{showNavbar && <Navbar lang={lang} />}
 								<div class="flex-1">
 									<Component />
 								</div>
 							</Partial>
+						</div>
 						</>
 					) : (
 						<>
@@ -42,7 +52,7 @@ export default function App({ Component, url }: AppProps) {
 								onDownloadChat={handleDownloadChat}
 								lang="en"
 							/>
-							<div class="flex-1 overflow-hidden">
+							<div class="flex-1">
 								<Partial name="main-content">
 									<Component />
 								</Partial>

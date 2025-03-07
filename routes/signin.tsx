@@ -10,7 +10,7 @@ export default function SignIn(req: Request) {
     : "de";
 
   return (
-    <div class="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-4rem)] w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 w-full h-screen">
       {/* Left side - Settings */}
       <div class="overflow-y-auto">
         <div class="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -55,23 +55,19 @@ export default function SignIn(req: Request) {
       </div>
 
       {/* Right side - Image */}
-      <div class="hidden lg:block relative">
-        <img
-          src={asset("/lines.svg")}
-          alt="School Bud-E"
-          class="absolute inset-0 h-full w-full object-cover"
-        />
-        <div class="absolute inset-0 bg-indigo-600 bg-opacity-20 flex items-center justify-center">
-          <div class="text-center max-w-md mx-auto p-6 bg-white bg-opacity-90 rounded-lg shadow-lg">
-            <h2 class="text-3xl font-bold text-indigo-700 mb-4">
-              {lang === "de" ? "Willkommen bei School Bud-E" : "Welcome to School Bud-E"}
-            </h2>
-            <p class="text-gray-700">
-              {lang === "de" 
-                ? "Konfiguriere deine Einstellungen, um dein Lernerlebnis zu personalisieren."
-                : "Configure your settings to personalize your learning experience."}
-            </p>
+      <div class="hidden lg:block relative bg-primary-500">
+        <div class="flex flex-col items-center justify-center h-full p-8">
+          <div class="w-48 h-48 relative">
+            <img
+              src={asset("/logo.png")}
+              alt="School Bud-E"
+              class="w-full h-full object-contain"
+            />
           </div>
+          <h2 class="text-4xl font-bold text-white mt-8">bud-e</h2>
+          <p class="text-xl text-white mt-4">
+            {lang === "de" ? "Lerne was immer du willst." : "Learn whatever you want."}
+          </p>
         </div>
       </div>
     </div>
