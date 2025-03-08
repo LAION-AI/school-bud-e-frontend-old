@@ -4,6 +4,7 @@ export default {
   content: [
     "{routes,islands,components}/**/*.{ts,tsx}",
   ],
+  darkMode: "media",
   theme: {
     extend: {
       colors: {
@@ -19,10 +20,18 @@ export default {
           800: "#114c5c",
           900: "#09262e",
         },
-        "surface": "#fff" // in School Bud-E: "#f4eecf",
+        "surface": {
+          DEFAULT: "#fff",
+          dark: "#1a1a1a"
+        },
+        "content": {
+          DEFAULT: "#000",
+          dark: "#fff"
+        }
       },
       borderColor: {
-        DEFAULT: "#e6e7e7", // in School Bud-E: "rgb(214, 201, 161)",
+        DEFAULT: "#e6e7e7",
+        dark: "#333333"
       },
       keyframes: {
         fadeIn: {

@@ -7,7 +7,7 @@ import fitz  # PyMuPDF
 import io
 from PIL import Image
 
-def use_markitdown(pdf_bytes):
+def use_markitdown(pdf_bytes, base_url="https://api.groq.com/openai/v1", api_key=settings.MARKITDOWN_VLM_API_KEY, llm_model="llama-3.2-90b-vision-preview"):
     if not pdf_bytes:
         raise HTTPException(status_code=400, detail="No PDF data received.")
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
@@ -15,11 +15,11 @@ def use_markitdown(pdf_bytes):
         tmp_path = tmp.name
 
     client = OpenAI(
-        base_url='https://api.groq.com/openai/v1',
-        api_key=settings.MARKITDOWN_VLM_API_KEY,
+        base_url=base_url,
+        api_key=api_key,
     )
 
-    md = MarkItDown(llm_client=client, llm_model="llama-3.2-90b-vision-preview")
+    md = MarkItDown(llm_client=client, llm_model=llm_model)
     result = md.convert(tmp_path)
     print(result.text_content)
     

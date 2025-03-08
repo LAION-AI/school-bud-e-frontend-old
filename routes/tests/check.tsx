@@ -5,43 +5,43 @@ export default function CheckTestsPage() {
     <div class="container mx-auto px-6 py-8 max-w-4xl">
       <div class="overflow-hidden">
         <div class="pb-5">
-          <h1 class="text-3xl font-bold">Check Tests</h1>
-          <p class="mt-2">Upload and verify test answers</p>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Check Tests</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-300">Upload and verify test answers</p>
         </div>
         
         <div class="space-y-6">
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Upload Documents</h2>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Upload Documents</h2>
             <form class="space-y-4">
               <div>
-                <label htmlFor="test-pdf" class="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="test-pdf" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Test Document (PDF)
                 </label>
                 <input
                   id="test-pdf"
                   type="file"
                   accept=".pdf"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white"
                 />
               </div>
               <div>
-                <label htmlFor="answers-pdf" class="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="answers-pdf" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Answer Sheet (PDF)
                 </label>
                 <input
                   id="answers-pdf"
                   type="file"
                   accept=".pdf"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white"
                 />
               </div>
               <div>
-                <label htmlFor="grading-scheme" class="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="grading-scheme" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Grading Scheme
                 </label>
                 <select
                   id="grading-scheme"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white"
                 >
                   <option value="points">Points Based</option>
                   <option value="percentage">Percentage Based</option>
@@ -54,9 +54,9 @@ export default function CheckTestsPage() {
             </form>
           </div>
 
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Results</h2>
-            <div class="text-gray-600">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+            <div class="text-gray-600 dark:text-gray-400">
               Upload your documents to see the results here.
             </div>
           </div>

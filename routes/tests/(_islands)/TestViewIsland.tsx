@@ -4,7 +4,7 @@ import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import { startStream } from "../../../components/chat/stream.ts";
 import { addMessage, messages } from "../../../components/chat/store.ts";
-import { IconArrowLeft, IconEye, IconTrash } from "@tabler/icons-preact";
+import { IconArrowLeft, IconEye, IconTrash, IconX } from "@tabler/icons-preact";
 
 
 interface TestViewIslandProps {
@@ -505,32 +505,32 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
   };
 
   if (loading) {
-    return <div class="container mx-auto px-6 py-10">Loading test...</div>;
+    return <div class="container mx-auto px-6 py-10 text-gray-600 dark:text-gray-400">Loading test...</div>;
   }
 
   if (!test) {
-    return <div class="container mx-auto px-6 py-10">Test not found</div>;
+    return <div class="container mx-auto px-6 py-10 text-gray-600 dark:text-gray-400">Test not found</div>;
   }
 
   return (
     <div class="container mx-auto px-6 py-10 max-w-4xl">
       <div class="mb-8">
-        <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
           <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Graph
         </a>
       </div>
       
       <div class="mb-12">
-        <h1 class="text-4xl font-bold mb-4">{test.name}</h1>
+        <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">{test.name}</h1>
         <div class="flex justify-between items-start mb-6">
-          <p class="text-gray-600">Created from node: {test.nodeId}</p>
+          <p class="text-gray-600 dark:text-gray-400">Created from node: {test.nodeId}</p>
           
           <div class="flex items-center space-x-4">
             {submission && !revisitMode && (
               <button
                 onClick={showTestResults}
-                class="text-blue-500 hover:text-blue-700 flex items-center"
+                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
                 aria-label="View submissions"
                 type="button"
               >
@@ -542,7 +542,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             {!showDeleteConfirm ? (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                class="text-red-500 hover:text-red-700 flex items-center"
+                class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center"
                 aria-label="Delete test"
                 type="button"
               >
@@ -578,70 +578,208 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
         </div>
         
         {showResults && (
-          <div class="mb-10 py-6 px-8 bg-blue-50 rounded-lg border-l-4 border-l-blue-500">
-            <h2 class="text-2xl font-bold mb-3">Test Results</h2>
-            {checkingShortAnswers ? (
-              <div class="flex items-center">
-                <svg 
-                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <span>Evaluating short answers with AI...</span>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Test Results</h2>
+              <button
+                onClick={() => setShowResults(false)}
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              >
+                <IconX class="w-6 h-6" />
+              </button>
+            </div>
+
+            <div class="mb-6">
+              <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="text-center">
+                  <div class="text-4xl font-bold text-green-500">{score.correct}</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">Correct</div>
+                </div>
+                <div class="text-4xl text-gray-300 dark:text-gray-600">/</div>
+                <div class="text-center">
+                  <div class="text-4xl font-bold text-gray-700 dark:text-gray-300">{score.total}</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                </div>
               </div>
-            ) : (
-              <p class="text-xl">
-                You scored <span class="font-bold">{score.correct}</span> out of <span class="font-bold">{score.total}</span> 
-                ({Math.round((score.correct / score.total) * 100)}%)
-              </p>
-            )}
+            </div>
+
+            <div class="space-y-6">
+              {test.questions.map((question, index) => (
+                <div key={index} class="p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+                  <h3 class="font-medium text-gray-900 dark:text-white mb-2">
+                    Question {index + 1}: {question.question}
+                  </h3>
+                  
+                  {question.type === "multiple_choice" && question.options && (
+                    <div class="ml-4 space-y-2">
+                      {question.options.map((option, optIndex) => {
+                        const isSelected = (selectedAnswers[index] as string[])?.includes(option);
+                        const isCorrect = Array.isArray(question.correctAnswer)
+                          ? question.correctAnswer.includes(optIndex)
+                          : question.correctAnswer === optIndex;
+                        
+                        return (
+                          <div
+                            key={optIndex}
+                            class={`flex items-center p-2 rounded ${
+                              isSelected
+                                ? isCorrect
+                                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                                  : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                                : isCorrect && showResults
+                                ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                          >
+                            <span class="ml-2">{option}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {question.type === "true_false" && (
+                    <div class="ml-4 space-y-2">
+                      {["True", "False"].map((option) => {
+                        const isSelected = selectedAnswers[index] === option;
+                        const isCorrect = question.correctAnswer === option;
+                        
+                        return (
+                          <div
+                            key={option}
+                            class={`flex items-center p-2 rounded ${
+                              isSelected
+                                ? isCorrect
+                                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                                  : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                                : isCorrect && showResults
+                                ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                          >
+                            <span class="ml-2">{option}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {question.type === "short_answer" && (
+                    <div class="ml-4">
+                      <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Your Answer:
+                        </label>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
+                          {selectedAnswers[index] || "No answer provided"}
+                        </div>
+                      </div>
+                      {showResults && (
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Correct Answer:
+                          </label>
+                          <div class="p-2 rounded bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200">
+                            {question.correctAnswer}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
         
-        {showResults && submission && renderDetailedResults()}
-        
         {!showResults && (
-          <div>
-            {test.questions.map((question, index) => renderQuestion(question, index))}
-          </div>
-        )}
-        
-        {!showResults && (
-          <div class="mt-8 flex justify-between">
-            <Button
-              onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
-              disabled={currentQuestionIndex === 0}
-              class="px-6 py-3 text-lg"
-            >
-              Previous
-            </Button>
-            
-            {currentQuestionIndex < test.questions.length - 1 ? (
-              <Button
-                onClick={() => {
-                  setCurrentQuestionIndex(Math.min(test.questions.length - 1, currentQuestionIndex + 1));
-                }}
-                class="px-6 py-3 text-lg"
-              >
-                Next
+          <div class="space-y-6">
+            {test.questions.map((question, index) => (
+              <div key={index} class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-4">
+                  Question {index + 1}: {question.question}
+                </h3>
+
+                {question.type === "multiple_choice" && question.options && (
+                  <div class="space-y-2">
+                    {question.options.map((option, optIndex) => (
+                      <button
+                        key={optIndex}
+                        onClick={() => handleAnswerSelect(index, option)}
+                        class={`w-full text-left p-3 rounded-lg border transition-colors ${
+                          (selectedAnswers[index] as string[])?.includes(option)
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                            : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {question.type === "true_false" && (
+                  <div class="space-y-2">
+                    {["True", "False"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => handleAnswerSelect(index, option)}
+                        class={`w-full text-left p-3 rounded-lg border transition-colors ${
+                          selectedAnswers[index] === option
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                            : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {question.type === "short_answer" && (
+                  <div>
+                    <textarea
+                      value={selectedAnswers[index] as string}
+                      onChange={(e) => handleAnswerSelect(index, (e.target as HTMLTextAreaElement).value)}
+                      class="w-full p-3 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      rows={4}
+                      placeholder="Enter your answer here..."
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div class="flex justify-end space-x-4">
+              <Button variant="outline" onClick={() => window.location.href = "/tests"}>
+                Cancel
               </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                class="px-6 py-3 text-lg bg-green-600 hover:bg-green-700"
-                type="submit"
-              >
-                Submit Test
+              <Button onClick={handleSubmit} disabled={checkingShortAnswers}>
+                {checkingShortAnswers ? "Checking answers..." : "Submit Test"}
               </Button>
-            )}
+            </div>
           </div>
         )}
       </div>
+
+      {showDeleteConfirm && (
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Delete Test</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to delete this test? This action cannot be undone.
+            </p>
+            <div class="flex justify-end space-x-4">
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={handleDeleteTest}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

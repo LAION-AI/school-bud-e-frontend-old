@@ -564,38 +564,42 @@ export default function TestsListIsland() {
 	};
 
 	return (
-		<div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
-			<div class="container mx-auto px-6 py-8 max-w-4xl">
-				<div class="flex justify-between items-center mb-6">
-					<h1 class="text-3xl font-bold">Your Tests</h1>
-					<Button variant="primary" onClick={handleCreateTest}>
-						<IconPlus class="w-4 h-4 mr-2" />
-						Create New Test
+		<div class="container mx-auto px-6 py-10">
+			<div class="flex justify-between items-center mb-8">
+				<div>
+					<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tests</h1>
+					<p class="mt-2 text-gray-600 dark:text-gray-400">Create and manage your tests</p>
+				</div>
+				<div class="flex gap-4">
+					<Button onClick={handleCreateTest}>
+						<IconPlus class="w-5 h-5 mr-2" />
+						Create Test
+					</Button>
+					<Button variant="outline" onClick={handleGoToGraph}>
+						<IconBook class="w-5 h-5 mr-2" />
+						Go to Graph
 					</Button>
 				</div>
+			</div>
 
-				{tests.length === 0 ? (
-					<div class="my-8">
-						<p class="text-lg text-gray-700 mb-6">
-							No tests have been created yet. Select a node in the graph to
-							create a test or create one directly.
-						</p>
-						<div class="flex gap-4">
-							<Button variant="primary" onClick={handleGoToGraph}>
-								Go to Graph
-							</Button>
-							<Button variant="secondary" onClick={handleCreateTest}>
-								<IconPlus class="w-4 h-4 mr-2" />
-								Create Test
-							</Button>
-						</div>
+			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+				{loading ? (
+					<div class="text-gray-600 dark:text-gray-400">Loading tests...</div>
+				) : tests.length === 0 ? (
+					<div class="text-center py-12">
+						<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No tests yet</h3>
+						<p class="text-gray-600 dark:text-gray-400 mb-4">Get started by creating your first test</p>
+						<Button onClick={handleCreateTest}>
+							<IconPlus class="w-5 h-5 mr-2" />
+							Create Test
+						</Button>
 					</div>
 				) : (
 					<div class="space-y-3">
 						{tests.map((test) => (
 							<div
 								key={test.id}
-								class="group border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
+								class="group border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
 								onClick={() => handleStartTest(test.id)}
 								role="button"
 								aria-label={`Take test: ${test.name}`}
@@ -608,59 +612,31 @@ export default function TestsListIsland() {
 							>
 								<div class="flex-1 min-w-0 mr-4">
 									<div class="flex items-center gap-2 flex-wrap">
-										<h2 class="text-lg font-bold text-gray-800 group-hover:text-blue-700">
+										<h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400">
 											{test.name}
 										</h2>
-										<span class="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded-full">
+										<span class="bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
 											{test.questions.length} q
 										</span>
 									</div>
-
-									<div class="flex flex-wrap items-center gap-x-4 text-xs text-gray-500 mt-1">
-										<div class="flex items-center" title="Node">
-											<IconTag class="w-3 h-3 mr-1" />
-											<span class="truncate max-w-[150px]">
-												{nodesMap[test.nodeId || ""] || test.nodeId}
+									<div class="mt-1 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+										<span class="flex items-center gap-1">
+											<IconCalendar class="w-4 h-4" />
+											{formatDate(test.createdAt)}
+										</span>
+										{test.nodeId && (
+											<span class="flex items-center gap-1">
+												<IconTag class="w-4 h-4" />
+												{nodesMap[test.nodeId] || test.nodeId}
 											</span>
-										</div>
-
-										<div class="flex items-center" title="Last updated">
-											<IconCalendar class="w-3 h-3 mr-1" />
-											<span>
-												{test.lastUpdatedAt
-													? formatDate(test.lastUpdatedAt)
-													: formatDate(test.createdAt)}
-											</span>
-										</div>
-
-										<div class="flex items-center" title="Question types">
-											<IconBook class="w-3 h-3 mr-1" />
-											<span>
-												{Array.from(
-													new Set(
-														test.questions.map((q) => {
-															switch (q.type) {
-																case "multiple_choice":
-																	return "MC";
-																case "true_false":
-																	return "T/F";
-																case "short_answer":
-																	return "SA";
-																default:
-																	return q.type;
-															}
-														}),
-													),
-												).join(", ")}
-											</span>
-										</div>
+										)}
 									</div>
 								</div>
 
 								<div class="flex-shrink-0 flex items-center gap-2">
 									<button
 										type="button"
-										class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
+										class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-2 rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
 										title="View Test Document"
 										onClick={(e) => handleExportToDocument(e, test)}
 										aria-label="View Test Document"
@@ -669,7 +645,7 @@ export default function TestsListIsland() {
 									</button>
 
 									<a
-										class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
+										class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-2 rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
 										title="Edit Test"
 										href={`/tests/compose/${test.id}`}
 										aria-label="Edit Test"
@@ -679,10 +655,9 @@ export default function TestsListIsland() {
 
 									<button
 										type="button"
-										class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-blue-100 group-hover:bg-blue-600 p-2 rounded-full text-blue-600 group-hover:text-white transition-colors"
+										class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-blue-100 dark:bg-blue-900 group-hover:bg-blue-600 dark:group-hover:bg-blue-700 p-2 rounded-full text-blue-600 dark:text-blue-400 group-hover:text-white dark:group-hover:text-white transition-colors"
 										title="Take Test"
 										onClick={(e) => {
-											// Prevent the click from triggering twice
 											e.stopPropagation();
 											handleStartTest(test.id);
 										}}

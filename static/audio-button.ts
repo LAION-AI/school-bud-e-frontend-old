@@ -111,6 +111,13 @@ export class AudioButton extends HTMLElement {
         text-align: center;
       }
 
+      @media (prefers-color-scheme: dark) {
+        .modal-content {
+          background-color: #1a1a1a;
+          color: white;
+        }
+      }
+
       .avatar {
         width: 100px;
         height: 100px;

@@ -4,7 +4,7 @@
 
 html,
 body {
-  @apply bg-surface overscroll-none;
+  @apply bg-surface text-content dark:bg-surface-dark dark:text-content-dark overscroll-none;
 }
 
 #phaser-game>canvas {
@@ -236,4 +236,29 @@ body.shepherd-active {
 
 .shepherd-element[data-popper-placement^='right'] {
   margin-left: 16px;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .shepherd-element {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+
+  .shepherd-text {
+    color: #fff;
+  }
+
+  .shepherd-arrow:before {
+    background: #1a1a1a;
+  }
+
+  .shepherd-button-secondary {
+    color: #fff;
+    border-color: #fff;
+  }
+
+  .shepherd-button-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 }

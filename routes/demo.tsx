@@ -62,9 +62,29 @@ export default function Demo() {
                 gap: 20px;
                 margin: 20px 0;
             }
+
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: #1a1a1a;
+                    color: #fff;
+                }
+
+                .demo-section {
+                    border-color: #333;
+                }
+
+                h1, h2 {
+                    color: #fff;
+                }
+
+                .config-example {
+                    background-color: #2a2a2a;
+                    color: #fff;
+                }
+            }
           `}
         </style>
-        <script type="module" src="/audio-button.min.js"></script>
+        <script type="module" src="/audio-button.min.js" />
         <script type="module">
           {`
             import { AudioButton } from '/audio-button.min.js';
@@ -88,21 +108,21 @@ export default function Demo() {
 
           <div class="config-example">
             <pre>
-              {`<!-- Minified version -->
-<script type="module" src="/audio-button.min.js"></script>
+              {`{/* Minified version */}
+<script type="module" src="/audio-button.min.js" />
 
-<!-- Development version -->
-<script type="module" src="/audio-button.ts"></script></pre>`}
+{/* Development version */}
+<script type="module" src="/audio-button.ts" />`}
             </pre>
           </div>
 
           <p>Then initialize the button with your desired configuration:</p>
           <div class="config-example">
             <pre>const button = new AudioButton({"{"}
-              id: 'my-button',      // Optional: Replace existing element
-              color: '#4A90E2',     // Custom color
-              size: 'medium',       // small, medium, or large
-              position: 'bottom-right'  // bottom-right, bottom-left, top-right, top-left
+              id: 'my-button',      {/* Optional: Replace existing element */}
+              color: '#4A90E2',     {/* Custom color */}
+              size: 'medium',       {/* small, medium, or large */}
+              position: 'bottom-right'  {/* bottom-right, bottom-left, top-right, top-left */}
               {"}"});</pre>
           </div>
         </div>
