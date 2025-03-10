@@ -2,9 +2,9 @@ import { Redis } from "npm:ioredis";
 
 async function checkRedis() {
   const redis = new Redis({
-    host: "keydb",
+    host: Deno.env.get("KEYDB_HOST"),
     port: 6379,
-    password: 'mypassword',
+    password: Deno.env.get("KEYDB_PASSWORD"),
   });
 
   try {

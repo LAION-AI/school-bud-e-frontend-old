@@ -7,9 +7,9 @@ class KvStorage {
   init() {
     console.log("[KV] Initializing Redis client...");
     this.redisClient = new Redis({
-      host: "keydb",
+      host: Deno.env.get("KEYDB_HOST"),
       port: 6379,
-      password: 'mypassword',
+      password: Deno.env.get("KEYDB_PASSWORD"),
       retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);
         return delay;

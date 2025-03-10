@@ -2,16 +2,11 @@ services:
   school-bud-e-frontend:
     image: denoland/deno:latest
     container_name: school-bud-e-frontend
-    build:
-      context: .
-      dockerfile: Dockerfile
     expose:
       - "8000:8000"
     env_file:
       - .env
-    volumes:
-      - ./app:/school-bud-e-frontend
-    command: sh -c "apt-get update && apt-get install -y git && git config --global --add safe.directory /school-bud-e-frontend && cd /school-bud-e-frontend && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && deno task build && deno task preview"
+    command: sh -c "apt-get update && apt-get install -y git && mkdir -p /school-bud-e-frontend && git config --global --add safe.directory /school-bud-e-frontend && cd /school-bud-e-frontend && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && deno task build && deno task preview"
     restart: unless-stopped
     depends_on:
       - keydb
@@ -20,16 +15,12 @@ services:
   task-server:
     image: python:3.11-slim
     container_name: task-server
-    build:
-      context: ../ai-tasks-server
-      dockerfile: Dockerfile
     expose:
       - "8083"
     env_file:
       - .env
-    volumes:
-      - ../ai-tasks-server:/app
     restart: unless-stopped
+    command: sh -c "apt-get update && apt-get install -y git && mkdir -p /school-bud-e-frontend/ai-task-server && git config --global --add safe.directory /school-bud-e-frontend/ai-task-server && cd /school-bud-e-frontend/ai-task-server && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && pip install --no-cache-dir -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8083 --reload --log-level debug"
 
   caddy:
     image: caddy:latest
@@ -82,8 +73,8 @@ services:
   keydb:
     image: eqalpha/keydb:latest
     container_name: keydb
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     volumes:
       - keydb-data:/data
     command: keydb-server --appendonly yes
