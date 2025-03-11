@@ -72,8 +72,11 @@ import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUp
 import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
 import * as $navbar_index from "./islands/navbar/index.tsx";
 import * as $settings_BasicSettings from "./islands/settings/BasicSettings.tsx";
+import * as $settings_Capabilities from "./islands/settings/Capabilities.tsx";
 import * as $settings_ChatAPISettings from "./islands/settings/ChatAPISettings.tsx";
 import * as $settings_ConfigurationSelector from "./islands/settings/ConfigurationSelector.tsx";
+import * as $settings_ModelManager from "./islands/settings/ModelManager.tsx";
+import * as $settings_ModelSelector from "./islands/settings/ModelSelector.tsx";
 import * as $settings_STTSettings from "./islands/settings/STTSettings.tsx";
 import * as $settings_Settings from "./islands/settings/Settings.tsx";
 import * as $settings_TTSSettings from "./islands/settings/TTSSettings.tsx";
@@ -183,9 +186,12 @@ const manifest = {
       $core_buttons_VoiceRecordButton,
     "./islands/navbar/index.tsx": $navbar_index,
     "./islands/settings/BasicSettings.tsx": $settings_BasicSettings,
+    "./islands/settings/Capabilities.tsx": $settings_Capabilities,
     "./islands/settings/ChatAPISettings.tsx": $settings_ChatAPISettings,
     "./islands/settings/ConfigurationSelector.tsx":
       $settings_ConfigurationSelector,
+    "./islands/settings/ModelManager.tsx": $settings_ModelManager,
+    "./islands/settings/ModelSelector.tsx": $settings_ModelSelector,
     "./islands/settings/STTSettings.tsx": $settings_STTSettings,
     "./islands/settings/Settings.tsx": $settings_Settings,
     "./islands/settings/TTSSettings.tsx": $settings_TTSSettings,
