@@ -1,24 +1,27 @@
+import { useComputed } from "@preact/signals";
+import { IconBook, IconList, IconX } from "@tabler/icons-preact";
 import { useState } from "preact/hooks";
-import { IconBook, IconX, IconList } from "@tabler/icons-preact";
+import { deleteGraph, graphs } from "../../components/graph/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
-import { useComputed } from "@preact/signals";
-import { graphs, deleteGraph } from "../../components/graph/store.ts";
 
-export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean }) {
+export default function GraphsSection({
+  isCollapsed,
+}: {
+  isCollapsed: boolean;
+}) {
   const [expanded, setExpanded] = useState(() => {
     const path = globalThis.location?.pathname;
     return path?.startsWith("/graph");
   });
   const [currentPath, setCurrentPath] = useState("");
 
-	const lastThreeGraphs = useComputed(() => {
-		const value = (Array.from(graphs.value.keys()) as string[])
-			.sort((a, b) => b?.length - a?.length)
-			.slice(0, 59);
-		return value;
-	});
-
+  const lastThreeGraphs = useComputed(() => {
+    const value = (Array.from(graphs.value.keys()) as string[])
+      .sort((a, b) => b?.length - a?.length)
+      .slice(0, 59);
+    return value;
+  });
 
   return (
     <CollapsibleSection
@@ -37,11 +40,16 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
           href="/graph/list"
           class={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-lime-500 ${
             currentPath === "/graph/list"
-              ? "bg-lime-100 text-lime-900 hover:bg-lime-200" 
+              ? "bg-lime-100 text-lime-900 hover:bg-lime-200"
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >
-          <IconList size={16} class={currentPath === "/graph/list" ? "text-lime-800" : "text-gray-600"} />
+          <IconList
+            size={16}
+            class={
+              currentPath === "/graph/list" ? "text-lime-800" : "text-gray-600"
+            }
+          />
           <span>All Graphs</span>
         </a>
 
@@ -64,7 +72,9 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
                     type="button"
                     onClick={() => deleteGraph(graphId)}
                     class="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-600 transition-all duration-200 outline-none rounded focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:opacity-100"
-                    aria-label={`Delete graph ${graphs.value.get(graphId)?.name || graphId}`}
+                    aria-label={`Delete graph ${
+                      graphs.value.get(graphId)?.name || graphId
+                    }`}
                   >
                     <IconX size={16} />
                   </button>
@@ -76,4 +86,4 @@ export default function GraphsSection({ isCollapsed }: { isCollapsed: boolean })
       </div>
     </CollapsibleSection>
   );
-} 
+}

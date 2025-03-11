@@ -1,0 +1,16 @@
+services:
+  school-bud-e-frontend:
+    volumes:
+      - ..:/school-bud-e-frontend
+      - deno-cache:/deno-dir
+    command: sh -c "cd /school-bud-e-frontend && deno task start"
+
+  task-server:
+    volumes:
+      - ../ai-task-server:/school-bud-e-frontend/ai-task-server
+      - python-packages:/usr/local/lib/python3.11/site-packages
+    command: sh -c "cd /school-bud-e-frontend/ai-task-server && pip install --no-cache-dir -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8083 --reload --log-level debug"
+
+volumes:
+  deno-cache:
+  python-packages:

@@ -1,16 +1,22 @@
-import { useState } from "preact/hooks";
-import { IconDeviceGamepad, IconDeviceGamepad2, IconList, IconX } from "@tabler/icons-preact";
-import type { VNode } from "preact";
-import CollapsibleSection from "./CollapsibleSection.tsx";
 import { useComputed } from "@preact/signals";
-import { savedGames, deleteGame } from "../../components/games/store.ts";
+import { IconDeviceGamepad2, IconList, IconX } from "@tabler/icons-preact";
+import type { VNode } from "preact";
+import { useState } from "preact/hooks";
+import { deleteGame, savedGames } from "../../components/games/store.ts";
+import CollapsibleSection from "./CollapsibleSection.tsx";
 
 // @ts-ignore: Suppressing linter error for List not being a valid JSX component
 const SafeListIcon = (props: LucideProps): VNode => <IconList {...props} />;
 // @ts-ignore: Suppressing linter error for X not being a valid JSX component
 const SafeXIcon = (props: LucideProps): VNode => <IconX {...props} />;
 
-export default function GamesSection({ isCollapsed, highlight }: { isCollapsed: boolean, highlight: boolean }) {
+export default function GamesSection({
+  isCollapsed,
+  highlight,
+}: {
+  isCollapsed: boolean;
+  highlight: boolean;
+}) {
   const [expanded, setExpanded] = useState(() => {
     const path = globalThis.location?.pathname;
     return path?.startsWith("/games");
@@ -20,7 +26,10 @@ export default function GamesSection({ isCollapsed, highlight }: { isCollapsed: 
 
   const recentGames = useComputed(() => {
     return savedGames.value
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 5);
   });
 
@@ -40,11 +49,18 @@ export default function GamesSection({ isCollapsed, highlight }: { isCollapsed: 
           href="/games/list"
           class={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-purple-500 ${
             currentPath === "/games/list"
-              ? "bg-purple-100 text-purple-900 hover:bg-purple-200" 
+              ? "bg-purple-100 text-purple-900 hover:bg-purple-200"
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >
-          <SafeListIcon size={16} class={currentPath === "/games/list" ? "text-purple-800" : "text-gray-600"} />
+          <SafeListIcon
+            size={16}
+            class={
+              currentPath === "/games/list"
+                ? "text-purple-800"
+                : "text-gray-600"
+            }
+          />
           <span>All Games</span>
         </a>
 
@@ -60,13 +76,15 @@ export default function GamesSection({ isCollapsed, highlight }: { isCollapsed: 
                     href={`/games/${game.id}`}
                     class={`flex-1 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-purple-500 ${
                       currentPath === `/games/${game.id}`
-                        ? "bg-purple-100 text-purple-900 hover:bg-purple-200" 
+                        ? "bg-purple-100 text-purple-900 hover:bg-purple-200"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   >
                     <div class="flex items-center justify-between">
                       <span class="truncate">{game.name}</span>
-                      <span class="text-xs text-gray-500 ml-2">{game.points}p</span>
+                      <span class="text-xs text-gray-500 ml-2">
+                        {game.points}p
+                      </span>
                     </div>
                   </a>
                   <button
@@ -85,4 +103,4 @@ export default function GamesSection({ isCollapsed, highlight }: { isCollapsed: 
       </div>
     </CollapsibleSection>
   );
-} 
+}

@@ -1,5 +1,5 @@
 import type { ComponentChildren } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 interface SidebarLinkProps {
   href: string;
@@ -8,7 +8,12 @@ interface SidebarLinkProps {
   className?: string;
 }
 
-export default function SidebarLink({ href, isActive: propIsActive, children, className = "" }: SidebarLinkProps) {
+export default function SidebarLink({
+  href,
+  isActive: propIsActive,
+  children,
+  className = "",
+}: SidebarLinkProps) {
   const [isActive, setIsActive] = useState(propIsActive);
 
   useEffect(() => {
@@ -21,20 +26,20 @@ export default function SidebarLink({ href, isActive: propIsActive, children, cl
     updateActive();
 
     // Listen for route changes
-    globalThis.addEventListener('popstate', updateActive);
-    return () => globalThis.removeEventListener('popstate', updateActive);
+    globalThis.addEventListener("popstate", updateActive);
+    return () => globalThis.removeEventListener("popstate", updateActive);
   }, [href, propIsActive]);
 
   return (
     <a
       href={href}
       class={`block px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-amber-500 ${
-        isActive 
-          ? "bg-amber-100 text-amber-900 hover:bg-amber-200" 
+        isActive
+          ? "bg-amber-100 text-amber-900 hover:bg-amber-200"
           : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
       } ${className}`}
     >
       {children}
     </a>
   );
-} 
+}
