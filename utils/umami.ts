@@ -1,3 +1,5 @@
+const UMAMI_URL = Deno.env.get("UMAMI_URL") || "http://umami:3000";
+
 export async function trackPageView(req: Request) {
   try {
     const url = new URL(req.url);
@@ -10,7 +12,7 @@ export async function trackPageView(req: Request) {
     };
 
     // Fire and forget - don't await
-    fetch("http://umami:3000/api/collect", {
+    fetch(`${UMAMI_URL}/api/collect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -18,4 +20,4 @@ export async function trackPageView(req: Request) {
   } catch {
     // Silently fail if tracking fails
   }
-} 
+}
