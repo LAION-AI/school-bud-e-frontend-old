@@ -4,14 +4,14 @@ import { useState } from "preact/hooks";
 import { chats } from "../../components/chat/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
-import type { Translations } from "./sidebar.translations.d.ts";
+import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface ChatListProps {
   isCollapsed: boolean;
   currentChatSuffix: string;
   onDownloadChat: () => void;
   onDeleteChat: (suffix: string) => void;
-  translations: Translations[keyof Translations];
+  translations: typeof translations[keyof typeof translations];
 }
 
 export default function ChatList({

@@ -8,7 +8,6 @@ import SidebarHeader from "./SidebarHeader.tsx";
 import TestsSection from "./TestsSection.tsx";
 import UserProfileSection from "./UserProfileSection.tsx";
 import VideoNovelLink from "./VideoNovelLink.tsx";
-import type { TranslationContent, Translations } from "./sidebar.translations.d.ts";
 import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarProps {
@@ -22,7 +21,7 @@ export default function Sidebar({
   lang = "en",
   onDownloadChat,
 }: SidebarProps) {
-  const t = translations[lang as keyof Translations] as TranslationContent;
+  const t = translations[lang as keyof typeof translations];
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     const urlParams = new URLSearchParams(globalThis.location?.search);
     const collapsed = urlParams.get("collapsed");
@@ -79,7 +78,7 @@ export default function Sidebar({
 
   return (
     <div
-      class={`sidebar bg-white rounded-2xl shadow-lg h-full flex flex-col transition-all duration-300 ease-in-out relative ${
+      class={`sidebar bg-white rounded-2xl shadow-lg h-full flex flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
         isCollapsed ? "w-0 overflow-hidden" : "w-[21rem]"
       }`}
     >

@@ -20,6 +20,7 @@ import * as $api_transcribe_pdf from "./routes/api/transcribe-pdf.ts";
 import * as $api_tts from "./routes/api/tts.ts";
 import * as $api_wikipedia from "./routes/api/wikipedia.ts";
 import * as $chat_id_ from "./routes/chat/[id].tsx";
+import * as $chat_index from "./routes/chat/index.tsx";
 import * as $demo from "./routes/demo.tsx";
 import * as $games_id_ from "./routes/games/[id].tsx";
 import * as $games_list from "./routes/games/list.tsx";
@@ -63,6 +64,7 @@ import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
 import * as $UserProfile from "./islands/UserProfile.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
 import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
+import * as $chat_ChatListPage from "./islands/chat/ChatListPage.tsx";
 import * as $chat_ChatModeSelector from "./islands/chat/ChatModeSelector.tsx";
 import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
 import * as $chat_getLLMResponse from "./islands/chat/getLLMResponse.ts";
@@ -70,6 +72,7 @@ import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
 import * as $core_buttons_ImageUploadButton from "./islands/core/buttons/ImageUploadButton.tsx";
 import * as $core_buttons_VoiceRecordButton from "./islands/core/buttons/VoiceRecordButton.tsx";
+import * as $navbar_BottomNavigation from "./islands/navbar/BottomNavigation.tsx";
 import * as $navbar_index from "./islands/navbar/index.tsx";
 import * as $settings_BasicSettings from "./islands/settings/BasicSettings.tsx";
 import * as $settings_Capabilities from "./islands/settings/Capabilities.tsx";
@@ -130,6 +133,7 @@ const manifest = {
     "./routes/api/tts.ts": $api_tts,
     "./routes/api/wikipedia.ts": $api_wikipedia,
     "./routes/chat/[id].tsx": $chat_id_,
+    "./routes/chat/index.tsx": $chat_index,
     "./routes/demo.tsx": $demo,
     "./routes/games/[id].tsx": $games_id_,
     "./routes/games/list.tsx": $games_list,
@@ -175,6 +179,7 @@ const manifest = {
     "./islands/UserProfile.tsx": $UserProfile,
     "./islands/WindowManager.tsx": $WindowManager,
     "./islands/chat/ChatInput.tsx": $chat_ChatInput,
+    "./islands/chat/ChatListPage.tsx": $chat_ChatListPage,
     "./islands/chat/ChatModeSelector.tsx": $chat_ChatModeSelector,
     "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
     "./islands/chat/getLLMResponse.ts": $chat_getLLMResponse,
@@ -185,6 +190,7 @@ const manifest = {
       $core_buttons_ImageUploadButton,
     "./islands/core/buttons/VoiceRecordButton.tsx":
       $core_buttons_VoiceRecordButton,
+    "./islands/navbar/BottomNavigation.tsx": $navbar_BottomNavigation,
     "./islands/navbar/index.tsx": $navbar_index,
     "./islands/settings/BasicSettings.tsx": $settings_BasicSettings,
     "./islands/settings/Capabilities.tsx": $settings_Capabilities,

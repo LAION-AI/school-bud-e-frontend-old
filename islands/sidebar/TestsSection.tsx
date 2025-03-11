@@ -1,13 +1,13 @@
 import { IconListCheck } from "@tabler/icons-preact";
 import { useState } from "preact/hooks";
 import CollapsibleSection from "./CollapsibleSection.tsx";
-import type { Translations } from "./sidebar.translations.d.ts";
+import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface TestsSectionProps {
   isCollapsed: boolean;
   highlight?: boolean;
   lang: string;
-  translations: Translations[keyof Translations];
+  translations: typeof translations[keyof typeof translations];
 }
 
 export default function TestsSection({

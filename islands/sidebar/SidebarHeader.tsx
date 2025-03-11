@@ -1,10 +1,10 @@
 import { IconLayoutSidebarLeftCollapse } from "@tabler/icons-preact";
-import type { Translations } from "./sidebar.translations.d.ts";
+import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarHeaderProps {
   isCollapsed: boolean;
   setIsCollapsed: (value: boolean | ((prev: boolean) => boolean)) => void;
-  translations: Translations[keyof Translations];
+  translations: typeof translations[keyof typeof translations];
 }
 
 export default function SidebarHeader({

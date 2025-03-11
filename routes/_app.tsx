@@ -2,6 +2,7 @@ import { Partial } from "$fresh/runtime.ts";
 import type { AppProps } from "$fresh/server.ts";
 import AIVoiceButton from "../islands/AIVoiceButton.tsx";
 import FloatingChat from "../islands/chat/FloatingChat.tsx";
+import BottomNavigation from "../islands/navbar/BottomNavigation.tsx";
 import Navbar from "../islands/navbar/index.tsx";
 import Sidebar from "../islands/sidebar/index.tsx";
 
@@ -13,6 +14,7 @@ export default function App({ Component, url }: AppProps) {
 
   const showSidebar = !isHomePage && !isPressPage && !isSignInPage;
   const showNavbar = !isSignInPage;
+  const showBottomNav = !isHomePage && !isPressPage && !isSignInPage;
 
   const lang =
     url.searchParams.get("lang") !== undefined &&
@@ -54,11 +56,14 @@ export default function App({ Component, url }: AppProps) {
               />
               <div class="flex-1">
                 <Partial name="main-content">
-                  <Component />
+                  <div class="pb-16 md:pb-0">
+                    <Component />
+                  </div>
                 </Partial>
               </div>
               <FloatingChat />
               <AIVoiceButton />
+              {showBottomNav && <BottomNavigation lang={lang} />}
             </>
           )}
         </div>
