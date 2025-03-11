@@ -5,6 +5,8 @@ import { settings } from "../../components/chat/store.ts";
 import Capabilities from "./Capabilities.tsx";
 import ModelManager from "./ModelManager.tsx";
 import TokenUsage from "./TokenUsage.tsx";
+import type { Translations } from "./settings.translations.d.ts";
+import translations from "./settings.translations.json" with { type: "json" };
 
 interface Model {
   id: string;
@@ -15,19 +17,13 @@ interface Model {
   capabilities: string[];
 }
 
-interface ChangeEvent {
-  target: {
-    name: string;
-    value: string;
-  };
-}
-
 const STORAGE_KEYS = {
   MODELS: "bud-e-models",
   SELECTED_MODELS: "bud-e-selected-models",
 } as const;
 
 export default function Settings({ lang = "en" }: { lang?: string }) {
+  const t = (translations as Translations)[lang as keyof Translations];
   const newSettings = useSignal({
     ...settings.value,
   });
@@ -333,7 +329,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
-            {lang === "de" ? "Allgemein" : "General"}
+            {t.general}
           </button>
           <button
             type="button"
@@ -346,7 +342,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
-            {lang === "de" ? "Token-Nutzung" : "Token Usage"}
+            {t.tokenUsage}
           </button>
         </nav>
       </div>
@@ -362,16 +358,10 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-blue-800">
-                  {lang === "de"
-                    ? "KI-Modelle konfigurieren"
-                    : "Configure AI Models"}
+                  {t.configureAiModels}
                 </h3>
                 <div className="mt-2 text-sm text-blue-700">
-                  <p>
-                    {lang === "de"
-                      ? "Füge KI-Modelle hinzu und weise ihnen Fähigkeiten zu. Wähle dann für jede Fähigkeit das gewünschte Modell aus."
-                      : "Add AI models and assign their capabilities. Then select which model to use for each capability."}
-                  </p>
+                  <p>{t.configureAiModelsDescription}</p>
                 </div>
               </div>
             </div>
@@ -380,9 +370,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
           {/* Capabilities Visualization */}
           <div className="py-6">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
-              {lang === "de"
-                ? "Verfügbare Funktionen"
-                : "Available Capabilities"}
+              {t.availableCapabilities}
             </h3>
             <Capabilities
               enabledCapabilities={enabledCapabilities.value}
@@ -408,10 +396,8 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               htmlFor="systemPrompt"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              {lang === "de" ? "System-Prompt" : "System Prompt"}{" "}
-              <span className="text-gray-500">
-                {lang === "de" ? "(Optional)" : "(Optional)"}
-              </span>
+              {t.systemPrompt}{" "}
+              <span className="text-gray-500">{t.systemPromptOptional}</span>
             </label>
             <textarea
               id="systemPrompt"
@@ -420,16 +406,10 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               onChange={handleSystemPromptChange}
               rows={4}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              placeholder={
-                lang === "de"
-                  ? "Gib einen System-Prompt ein, um das Verhalten der KI anzupassen"
-                  : "Enter a system prompt to customize the AI's behavior"
-              }
+              placeholder={t.systemPromptPlaceholder}
             />
             <p className="mt-1 text-sm text-gray-500">
-              {lang === "de"
-                ? "Passe an, wie die KI antwortet, indem du spezifische Anweisungen gibst."
-                : "Customize how the AI responds by providing specific instructions."}
+              {t.systemPromptDescription}
             </p>
           </div>
         </>

@@ -1,17 +1,12 @@
 import { useSignal } from "@preact/signals";
 import { IconChevronDown } from "@tabler/icons-preact";
+import type { Translations } from "./settings.translations.d.ts";
+import translations from "./settings.translations.json" with { type: "json" };
 
 interface Model {
   id: string;
   name: string;
   capabilities: string[];
-}
-
-interface Capability {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
 }
 
 interface CapabilitiesProps {
@@ -31,47 +26,16 @@ export default function Capabilities({
 }: CapabilitiesProps) {
   const activeCapability = useSignal<string | null>(null);
   const showModelSelector = useSignal<string | null>(null);
+  const t = (translations as Translations)[lang as keyof Translations];
 
-  const capabilities: Record<string, Capability> = {
-    chat: {
-      id: "chat",
-      title: lang === "de" ? "Text-Chat" : "Text Chat",
-      description:
-        lang === "de"
-          ? "Bud-E kann mit dir über Text kommunizieren."
-          : "Bud-E can communicate with you through text.",
-      icon: "💬",
-    },
-    vision: {
-      id: "vision",
-      title: lang === "de" ? "Bild-Verständnis" : "Image Understanding",
-      description:
-        lang === "de"
-          ? "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
-          : "Bud-E can see and understand images you upload.",
-      icon: "👁️",
-    },
-    speak: {
-      id: "speak",
-      title: lang === "de" ? "Sprachausgabe" : "Voice Output",
-      description:
-        lang === "de"
-          ? "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
-          : "Bud-E can speak to you and convert text to speech.",
-      icon: "🔊",
-    },
-    listen: {
-      id: "listen",
-      title: lang === "de" ? "Spracherkennung" : "Voice Recognition",
-      description:
-        lang === "de"
-          ? "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
-          : "Bud-E can listen and understand your spoken words.",
-      icon: "🎤",
-    },
-  };
+  const allCapabilities = Object.entries(t.capabilities).map(
+    ([id, capability]) => ({
+      id,
+      ...capability,
+      icon: getCapabilityIcon(id),
+    })
+  );
 
-  const allCapabilities = Object.values(capabilities);
   const totalCapabilities = allCapabilities.length;
   const radius = 160;
   const centerX = radius;
@@ -80,6 +44,16 @@ export default function Capabilities({
   const segmentSpacing = 4;
   const segmentAngle =
     (360 - totalCapabilities * segmentSpacing) / totalCapabilities;
+
+  function getCapabilityIcon(id: string): string {
+    const icons: Record<string, string> = {
+      chat: "💬",
+      vision: "👁️",
+      speak: "🔊",
+      listen: "🎤",
+    };
+    return icons[id] || "✨";
+  }
 
   return (
     <div className="flex flex-col items-center space-y-8 p-4">
@@ -260,9 +234,7 @@ export default function Capabilities({
                     <span className="text-xs text-green-600">
                       {selectedModel
                         ? models.find((m) => m.id === selectedModel)?.name
-                        : lang === "de"
-                        ? "Modell wählen"
-                        : "Select Model"}
+                        : t.selectModel}
                     </span>
                     <IconChevronDown className="h-4 w-4" />
                   </>

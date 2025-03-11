@@ -82,6 +82,7 @@ import * as $settings_Settings from "./islands/settings/Settings.tsx";
 import * as $settings_TTSSettings from "./islands/settings/TTSSettings.tsx";
 import * as $settings_TokenUsage from "./islands/settings/TokenUsage.tsx";
 import * as $settings_VLMSettings from "./islands/settings/VLMSettings.tsx";
+import * as $settings_settings_translations_d from "./islands/settings/settings.translations.d.ts";
 import * as $sidebar_ChatList from "./islands/sidebar/ChatList.tsx";
 import * as $sidebar_CollapsibleSection from "./islands/sidebar/CollapsibleSection.tsx";
 import * as $sidebar_GamesSection from "./islands/sidebar/GamesSection.tsx";
@@ -197,6 +198,8 @@ const manifest = {
     "./islands/settings/TTSSettings.tsx": $settings_TTSSettings,
     "./islands/settings/TokenUsage.tsx": $settings_TokenUsage,
     "./islands/settings/VLMSettings.tsx": $settings_VLMSettings,
+    "./islands/settings/settings.translations.d.ts":
+      $settings_settings_translations_d,
     "./islands/sidebar/ChatList.tsx": $sidebar_ChatList,
     "./islands/sidebar/CollapsibleSection.tsx": $sidebar_CollapsibleSection,
     "./islands/sidebar/GamesSection.tsx": $sidebar_GamesSection,

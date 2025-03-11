@@ -1,0 +1,62 @@
+{
+  "en": {
+    "general": "General",
+    "tokenUsage": "Token Usage",
+    "configureAiModels": "Configure AI Models",
+    "configureAiModelsDescription": "Add AI models and assign their capabilities. Then select which model to use for each capability.",
+    "availableCapabilities": "Available Capabilities",
+    "systemPrompt": "System Prompt",
+    "systemPromptOptional": "(Optional)",
+    "systemPromptPlaceholder": "Enter a system prompt to customize the AI's behavior",
+    "systemPromptDescription": "Customize how the AI responds by providing specific instructions.",
+    "selectModel": "Select Model",
+    "capabilities": {
+      "chat": {
+        "title": "Text Chat",
+        "description": "Bud-E can communicate with you through text."
+      },
+      "vision": {
+        "title": "Image Understanding",
+        "description": "Bud-E can see and understand images you upload."
+      },
+      "speak": {
+        "title": "Voice Output",
+        "description": "Bud-E can speak to you and convert text to speech."
+      },
+      "listen": {
+        "title": "Voice Recognition",
+        "description": "Bud-E can listen and understand your spoken words."
+      }
+    }
+  },
+  "de": {
+    "general": "Allgemein",
+    "tokenUsage": "Token-Nutzung",
+    "configureAiModels": "KI-Modelle konfigurieren",
+    "configureAiModelsDescription": "Füge KI-Modelle hinzu und weise ihnen Fähigkeiten zu. Wähle dann für jede Fähigkeit das gewünschte Modell aus.",
+    "availableCapabilities": "Verfügbare Funktionen",
+    "systemPrompt": "System-Prompt",
+    "systemPromptOptional": "(Optional)",
+    "systemPromptPlaceholder": "Gib einen System-Prompt ein, um das Verhalten der KI anzupassen",
+    "systemPromptDescription": "Passe an, wie die KI antwortet, indem du spezifische Anweisungen gibst.",
+    "selectModel": "Modell wählen",
+    "capabilities": {
+      "chat": {
+        "title": "Text-Chat",
+        "description": "Bud-E kann mit dir über Text kommunizieren."
+      },
+      "vision": {
+        "title": "Bild-Verständnis",
+        "description": "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
+      },
+      "speak": {
+        "title": "Sprachausgabe",
+        "description": "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
+      },
+      "listen": {
+        "title": "Spracherkennung",
+        "description": "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
+      }
+    }
+  }
+}
