@@ -5,11 +5,15 @@ import { deleteGraph, graphs } from "../../components/graph/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
 
+interface GraphsSectionProps {
+  isCollapsed: boolean;
+  variant?: "amber" | "blue" | "red" | "purple" | "lime";
+}
+
 export default function GraphsSection({
   isCollapsed,
-}: {
-  isCollapsed: boolean;
-}) {
+  variant = "lime",
+}: GraphsSectionProps) {
   const [expanded, setExpanded] = useState(() => {
     const path = globalThis.location?.pathname;
     return path?.startsWith("/graph");
@@ -33,21 +37,23 @@ export default function GraphsSection({
       baseRoute="/graph"
       routePattern={/^\/graph(\/.*)?$/}
       onRouteMatch={(match) => setCurrentPath(match?.[0] || "")}
-      variant="lime"
+      variant={variant}
     >
       <div class="space-y-2">
         <a
           href="/graph/list"
-          class={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-lime-500 ${
+          class={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-${variant}-500 ${
             currentPath === "/graph/list"
-              ? "bg-lime-100 text-lime-900 hover:bg-lime-200"
+              ? `bg-${variant}-100 text-${variant}-900 hover:bg-${variant}-200`
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >
           <IconList
             size={16}
             class={
-              currentPath === "/graph/list" ? "text-lime-800" : "text-gray-600"
+              currentPath === "/graph/list"
+                ? `text-${variant}-800`
+                : "text-gray-600"
             }
           />
           <span>All Graphs</span>
@@ -65,6 +71,7 @@ export default function GraphsSection({
                     href={`/graph/${graphId}`}
                     isActive={currentPath === `/graph/${graphId}`}
                     className="flex-1 truncate"
+                    variant={variant}
                   >
                     {graphs.value.get(graphId)?.name || graphId}
                   </SidebarLink>

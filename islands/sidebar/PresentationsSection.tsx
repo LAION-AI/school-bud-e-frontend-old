@@ -1,13 +1,15 @@
-import SidebarLink from "./SidebarLink.tsx";
-import CollapsibleSection from "./CollapsibleSection.tsx";
 import { IconPresentation } from "@tabler/icons-preact";
 import { useState } from "preact/hooks";
+import CollapsibleSection from "./CollapsibleSection.tsx";
+import SidebarLink from "./SidebarLink.tsx";
 
 interface PresentationsSectionProps {
   isCollapsed: boolean;
 }
 
-export default function PresentationsSection({ isCollapsed }: PresentationsSectionProps) {
+export default function PresentationsSection({
+  isCollapsed,
+}: PresentationsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -18,8 +20,9 @@ export default function PresentationsSection({ isCollapsed }: PresentationsSecti
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
       baseRoute="/presentations"
+      variant="blue"
     >
-      <SidebarLink href="/presentations">
+      <SidebarLink href="/presentations" variant="blue">
         Generate Presentation
       </SidebarLink>
     </CollapsibleSection>

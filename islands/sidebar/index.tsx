@@ -105,13 +105,15 @@ export default function Sidebar({
           <TestsSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "tests"}
+            variant="blue"
           />
-          <GraphsSection isCollapsed={isCollapsed} />
-          <PresentationsSection isCollapsed={isCollapsed} />
-          <VideoNovelLink isCollapsed={isCollapsed} />
+          <GraphsSection isCollapsed={isCollapsed} variant="purple" />
+          <PresentationsSection isCollapsed={isCollapsed} variant="red" />
+          <VideoNovelLink isCollapsed={isCollapsed} variant="lime" />
           <GamesSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "games"}
+            variant="amber"
           />
         </nav>
       </div>
