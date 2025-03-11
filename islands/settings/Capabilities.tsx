@@ -73,7 +73,7 @@ export default function Capabilities({
           }}
         >
           <span className="text-3xl" role="img" aria-label="Bud-E Logo">
-            🤖
+            <img src="/logo.png" alt="Bud-E Logo" width="48" height="48" />
           </span>
         </div>
 

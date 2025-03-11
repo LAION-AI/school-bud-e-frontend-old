@@ -8,6 +8,8 @@ import SidebarHeader from "./SidebarHeader.tsx";
 import TestsSection from "./TestsSection.tsx";
 import UserProfileSection from "./UserProfileSection.tsx";
 import VideoNovelLink from "./VideoNovelLink.tsx";
+import type { TranslationContent, Translations } from "./sidebar.translations.d.ts";
+import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarProps {
   currentChatSuffix: string;
@@ -20,6 +22,7 @@ export default function Sidebar({
   lang = "en",
   onDownloadChat,
 }: SidebarProps) {
+  const t = translations[lang as keyof Translations] as TranslationContent;
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     const urlParams = new URLSearchParams(globalThis.location?.search);
     const collapsed = urlParams.get("collapsed");
@@ -83,6 +86,7 @@ export default function Sidebar({
       <SidebarHeader
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
+        translations={t}
       />
 
       <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
@@ -100,13 +104,23 @@ export default function Sidebar({
             currentChatSuffix={currentChatSuffix}
             onDownloadChat={onDownloadChat}
             onDeleteChat={deleteChat}
+            translations={t}
           />
           <TestsSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "tests"}
+            lang={lang}
+            translations={t}
           />
-          <GraphsSection isCollapsed={isCollapsed} />
-          <PresentationsSection isCollapsed={isCollapsed} />
+          <GraphsSection
+            isCollapsed={isCollapsed}
+            variant="lime"
+          />
+          <PresentationsSection
+            isCollapsed={isCollapsed}
+            translations={t}
+            lang={lang}
+          />
           <VideoNovelLink isCollapsed={isCollapsed} />
           {/*
           <GamesSection
@@ -119,8 +133,10 @@ export default function Sidebar({
 
       <div class="p-3 pt-0">
         <TourProgressSidebarSection />
-
-        <UserProfileSection isCollapsed={isCollapsed} lang={lang} />
+        <UserProfileSection
+          isCollapsed={isCollapsed}
+          lang={lang}
+        />
       </div>
     </div>
   );

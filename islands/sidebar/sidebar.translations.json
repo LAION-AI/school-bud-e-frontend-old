@@ -1,0 +1,64 @@
+{
+  "en": {
+    "navigation": {
+      "chats": "Chats",
+      "tests": "Tests",
+      "graphs": "Graphs",
+      "presentations": "Presentations",
+      "videoNovel": "Video Novel",
+      "games": "Games",
+      "logoAlt": "A little lion wearing a graduation cap."
+    },
+    "actions": {
+      "newChat": "New Chat",
+      "downloadChat": "Download Chat",
+      "deleteChat": "Delete Chat",
+      "deleteCurrentChat": "Delete current chat",
+      "deleteAllChats": "Delete all chats",
+      "backupChat": "Backup Chat",
+      "restoreChat": "Restore Chat",
+      "checkTests": "Check Tests",
+      "allTests": "All Tests",
+      "test": "Tests"
+    },
+    "tour": {
+      "progress": "Tour Progress",
+      "completed": "completed"
+    },
+    "profile": {
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "de": {
+    "navigation": {
+      "chats": "Chats",
+      "tests": "Tests",
+      "graphs": "Graphen",
+      "presentations": "Präsentationen",
+      "videoNovel": "Video-Roman",
+      "games": "Spiele",
+      "logoAlt": "Ein kleines Löwe in einem Abschlusskleid."
+    },
+    "actions": {
+      "newChat": "Neuer Chat",
+      "downloadChat": "Chat herunterladen",
+      "deleteChat": "Chat löschen",
+      "deleteCurrentChat": "Aktuellen Chat löschen",
+      "deleteAllChats": "Alle Chats löschen",
+      "backupChat": "Chat sichern",
+      "restoreChat": "Chat wiederherstellen",
+      "checkTests": "Aufgaben prüfen",
+      "allTests": "Alle Aufgaben",
+      "test": "Aufgaben"
+    },
+    "tour": {
+      "progress": "Tour-Fortschritt",
+      "completed": "abgeschlossen"
+    },
+    "profile": {
+      "settings": "Einstellungen",
+      "logout": "Abmelden"
+    }
+  }
+}
