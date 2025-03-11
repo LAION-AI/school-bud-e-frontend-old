@@ -2,7 +2,6 @@ import { useEffect, useState } from "preact/hooks";
 import { deleteChat } from "../../components/chat/store.ts";
 import { TourProgressSidebarSection } from "../../components/sidebar/TourProgressSidebarSection.tsx";
 import ChatList from "./ChatList.tsx";
-import GamesSection from "./GamesSection.tsx";
 import GraphsSection from "./GraphsSection.tsx";
 import PresentationsSection from "./PresentationsSection.tsx";
 import SidebarHeader from "./SidebarHeader.tsx";
@@ -105,16 +104,16 @@ export default function Sidebar({
           <TestsSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "tests"}
-            variant="blue"
           />
-          <GraphsSection isCollapsed={isCollapsed} variant="purple" />
-          <PresentationsSection isCollapsed={isCollapsed} variant="red" />
-          <VideoNovelLink isCollapsed={isCollapsed} variant="lime" />
+          <GraphsSection isCollapsed={isCollapsed} />
+          <PresentationsSection isCollapsed={isCollapsed} />
+          <VideoNovelLink isCollapsed={isCollapsed} />
+          {/*
           <GamesSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "games"}
-            variant="amber"
           />
+          */}
         </nav>
       </div>
 
