@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 
-const WIKIPEDIA_API_URL = "http://37.27.128.150:9999/search";
+const WIKIPEDIA_API_URL = Deno.env.get("WIKIPEDIA_API_URL") || "http://37.27.128.150:9999/search";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -13,16 +13,15 @@ export const handler: Handlers = {
       const url = new URL(req.url);
       const text = url.searchParams.get("text");
       const collection = url.searchParams.get("collection") || "English-ConcatX-Abstract";
-      const n = parseInt(url.searchParams.get("n") || "2", 10);
+      const n = Number.parseInt(url.searchParams.get("n") || "2", 10);
+      const apiUrl = url.searchParams.get("apiUrl") || WIKIPEDIA_API_URL;
 
       if (!text) {
         throw new Error("Text parameter is required");
       }
 
-      const response = await fetch(WIKIPEDIA_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, collection, n }),
+      const response = await fetch(`${apiUrl}?query=${encodeURIComponent(text)}&limit=${n}`, {
+        method: "GET",
       });
 
       if (!response.ok) {
@@ -45,20 +44,17 @@ export const handler: Handlers = {
   async POST(req: Request) {
     try {
       const payload = await req.json();
-      if (!payload.text) {
-        throw new Error("Text parameter is required");
+      const { query } = payload;
+      const collection = payload.collection || "English-ConcatX-Abstract";
+      const n = Number.parseInt(payload.n || "2", 10);
+      const apiUrl = payload.apiUrl || WIKIPEDIA_API_URL;
+
+      if (!query) {
+        throw new Error("Query parameter is required");
       }
 
-      console.log("Payload:", payload);
-
-      const response = await fetch(WIKIPEDIA_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: payload.text,
-          collection: payload.collection || "English-ConcatX-Abstract",
-          n: payload.n || 2,
-        }),
+      const response = await fetch(`${apiUrl}?query=${encodeURIComponent(query)}&limit=${n}`, {
+        method: "GET",
       });
 
       if (!response.ok) {

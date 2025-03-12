@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { IconQuestionMark } from "@tabler/icons-preact";
 
 export default function FAQButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +11,7 @@ export default function FAQButton() {
         class="fixed bottom-4 right-4 bg-primary-500 text-white p-3 rounded-full shadow-lg hover:bg-primary-600 transition-colors w-10 h-10 border"
         aria-label="FAQ"
       >
-        ?
+        <IconQuestionMark />
       </button>
 
       {isOpen && (

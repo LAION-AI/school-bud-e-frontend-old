@@ -6,8 +6,11 @@ export const handler: Handlers = {
     try {
       const formData = await req.formData();
       const pdfFile = formData.get("file") as File;
+      const apiUrl = formData.get("apiUrl")?.toString() || undefined;
+      const apiKey = formData.get("apiKey")?.toString() || undefined;
+      const apiModel = formData.get("apiModel")?.toString() || undefined;
 
-      if (!pdfFile || pdfFile.type !== "application/pdf") {
+      if (!pdfFile || !pdfFile.type.includes("pdf")) {
         return new Response(JSON.stringify({ 
           error: "Invalid or missing PDF file" 
         }), { 
@@ -20,34 +23,23 @@ export const handler: Handlers = {
       
       // Read the file content
       const fileArrayBuffer = await pdfFile.arrayBuffer();
-      const pdfBuffer = new Uint8Array(fileArrayBuffer);
-
-      // Use the direct transcription function
-      const transcription = await transcribePdf(pdfBuffer, pdfFile.size > 5000000);
       
-      // Check if the transcription was successful (doesn't start with "Error" or "PDF transcription failed")
-      if (!transcription.startsWith("Error") && !transcription.startsWith("PDF transcription failed")) {
-        return new Response(JSON.stringify({
-          transcription
-        }), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
+      // Convert to markdown and return the result
+      const markdown = await transcribePdf(
+        new Uint8Array(fileArrayBuffer),
+        apiUrl,
+        apiKey,
+        apiModel
+      );
       
-      // If we got here, there was an error in the transcription
-      return new Response(JSON.stringify({
-        error: "PDF processing failed",
-        details: transcription
-      }), { 
-        status: 500,
+      return new Response(JSON.stringify({ markdown }), {
         headers: { "Content-Type": "application/json" }
       });
+      
     } catch (error) {
-      console.error("[Transcribe] Error processing PDF:", error);
-      return new Response(JSON.stringify({
-        error: "PDF processing failed",
-        details: error instanceof Error ? error.message : String(error)
-      }), { 
+      console.error("[Transcribe] Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to transcribe PDF";
+      return new Response(JSON.stringify({ error: errorMessage }), { 
         status: 500,
         headers: { "Content-Type": "application/json" }
       });

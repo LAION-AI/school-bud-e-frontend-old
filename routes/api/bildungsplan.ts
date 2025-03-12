@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 
-const BILDUNGSPLAN_API_URL = "http://213.173.96.19:8020/query";
+const BILDUNGSPLAN_API_URL = Deno.env.get("BILDUNGSPLAN_API_URL") || "http://213.173.96.19:8020/query";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -12,17 +12,16 @@ export const handler: Handlers = {
     try {
       const url = new URL(req.url);
       const query = url.searchParams.get("query");
-      const top_n = parseInt(url.searchParams.get("top_n") || "5", 10);
+      const top_n = Number.parseInt(url.searchParams.get("top_n") || "5", 10);
+      const apiUrl = url.searchParams.get("apiUrl") || BILDUNGSPLAN_API_URL;
 
       if (!query) {
         throw new Error("Query parameter is required");
       }
 
-      const response = await fetch(BILDUNGSPLAN_API_URL, {
+      const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query,
           top_n,
@@ -49,20 +48,21 @@ export const handler: Handlers = {
 
   async POST(req: Request) {
     try {
-      const payload = await req.json() as BildungsplanQuery;
+      const payload = await req.json();
+      const { query } = payload;
+      const top_n = Number.parseInt(payload.top_n || "5", 10);
+      const apiUrl = payload.apiUrl || BILDUNGSPLAN_API_URL;
 
-      if (!payload.query) {
+      if (!query) {
         throw new Error("Query parameter is required");
       }
 
-      const response = await fetch(BILDUNGSPLAN_API_URL, {
+      const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: payload.query,
-          top_n: payload.top_n || 5,
+          query,
+          top_n,
         }),
       });
 

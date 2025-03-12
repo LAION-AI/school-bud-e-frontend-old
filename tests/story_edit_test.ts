@@ -45,7 +45,7 @@ interface EditStatusData {
   error?: string;
 }
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = Deno.env.get("TEST_BASE_URL") || "http://localhost:8000";
 
 Deno.test("Story Edit Feature", async (t) => {
   setupMockFetch();

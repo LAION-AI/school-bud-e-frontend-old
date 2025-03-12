@@ -6,6 +6,8 @@ interface PixelArtRequest {
   height?: number;
   steps?: number;
   n?: number;
+  apiUrl?: string;
+  apiKey?: string;
 }
 
 interface TogetherAPIResponse {
@@ -14,7 +16,7 @@ interface TogetherAPIResponse {
   }>;
 }
 
-const TOGETHER_API_URL = "https://api.together.xyz/v1/images/generations";
+const TOGETHER_API_URL = Deno.env.get("TOGETHER_API_URL") || "https://api.together.xyz/v1/images/generations";
 const TOGETHER_API_KEY = Deno.env.get("TOGETHER_API_KEY") || "";
 
 function getErrorMessage(error: unknown): string {
@@ -25,32 +27,36 @@ function getErrorMessage(error: unknown): string {
 export const handler: Handlers = {
   async POST(req: Request) {
     try {
-      if (!TOGETHER_API_KEY) {
-        throw new Error("TOGETHER_API_KEY is not configured");
+      const requestData = await req.json() as PixelArtRequest;
+      
+      if (!requestData.prompt) {
+        return new Response("Prompt is required", { status: 400 });
       }
 
-      const payload: PixelArtRequest = await req.json();
+      const apiUrl = requestData.apiUrl || TOGETHER_API_URL;
+      const apiKey = requestData.apiKey || TOGETHER_API_KEY;
       
-      if (!payload.prompt) {
-        throw new Error("Prompt is required");
+      if (!apiKey) {
+        return new Response("API key is required. Please set TOGETHER_API_KEY in environment or provide in request", 
+          { status: 400 });
       }
 
       const requestBody = {
         model: "black-forest-labs/FLUX.1-schnell",
-        prompt: payload.prompt,
-        width: payload.width || 416,
-        height: payload.height || 416,
-        steps: payload.steps || 7,
-        n: payload.n || 1,
+        prompt: requestData.prompt,
+        width: requestData.width || 416,
+        height: requestData.height || 416,
+        steps: requestData.steps || 7,
+        n: requestData.n || 1,
         response_format: "b64_json",
         update_at: new Date().toISOString()
       };
 
-      const response = await fetch(TOGETHER_API_URL, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${TOGETHER_API_KEY}`,
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify(requestBody),
       });

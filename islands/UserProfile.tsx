@@ -1,6 +1,7 @@
 import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import ImageUploadButton from "./core/buttons/ImageUploadButton.tsx";
+import Input from "../components/core/Input.tsx";
 
 interface UserProfileProps {
 	lang: string;
@@ -66,6 +67,10 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 									updateUserData({ avatar: images[0].image_url.url });
 								}
 							}}
+							disableSendButton={() => {}}
+							apiUrl={localStorage.getItem("bud-e-api-url") || ""}
+							apiKey={localStorage.getItem("bud-e-api-key") || ""}
+							apiModel={localStorage.getItem("bud-e-model") || ""}
 						/>
 					</div>
 					<div class="flex-grow space-y-4">
@@ -76,7 +81,7 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 							>
 								{lang === "de" ? "Name" : "Name"}
 							</label>
-							<input
+							<Input
 								id="name"
 								type="text"
 								value={userData.name || ""}
@@ -95,7 +100,7 @@ export function UserProfile({ lang }: UserProfileProps): JSX.Element {
 							>
 								{lang === "de" ? "E-Mail" : "Email"}
 							</label>
-							<input
+							<Input
 								id="email"
 								type="email"
 								value={userData.email || ""}

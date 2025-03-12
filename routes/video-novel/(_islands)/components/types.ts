@@ -9,4 +9,7 @@ export interface FormData {
   prompt: string;
   style: string;
   customInstructions: string;
+  apiUrl?: string;
+  apiKey?: string;
+  apiModel?: string;
 } 

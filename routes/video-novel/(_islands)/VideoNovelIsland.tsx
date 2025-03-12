@@ -1,16 +1,16 @@
 import { useState, useEffect } from "preact/hooks";
-import FloatingChat from "../../../islands/chat/FloatingChat.tsx";
 import VideoPlayer from "./components/VideoPlayer.tsx";
 import VideoControls from "./components/VideoControls.tsx";
 import StoryLibrary from "./components/StoryLibrary.tsx";
 import SettingsPanel from "./components/SettingsPanel.tsx";
 import CreateStoryModal from "./components/CreateStoryModal.tsx";
 import type { Story, FormData } from "./components/types.ts";
-import { Button } from "../../../components/Button.tsx";
 
 interface VideoNovelIslandProps {
 	lang: string;
 }
+
+const VIDEO_SERVICE_URL = Deno.env.get("VIDEO_SERVICE_URL") || "http://localhost:8083";
 
 export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 	// State for modal visibility and form data
@@ -146,7 +146,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 			addLog(
 				`Sending request with prompt: ${formData.prompt?.substring(0, 30)}...`,
 			);
-			const response = await fetch("http://localhost:8083/api/generate/video", {
+			const response = await fetch(`${formData.apiUrl || VIDEO_SERVICE_URL}/api/generate/video`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -155,6 +155,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 					prompt: formData.prompt,
 					style: formData.style,
 					customInstructions: formData.customInstructions,
+					apiKey: formData.apiKey,
+					apiModel: formData.apiModel,
 				}),
 			});
 
@@ -212,8 +214,8 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 
 										// Construct the image URL
 										const imageUrl = currentVideoId
-											? `http://localhost:8083/segments/${currentVideoId}/${data.data}`
-											: `http://localhost:8083/segments/${data.data}`;
+											? `${VIDEO_SERVICE_URL}/segments/${currentVideoId}/${data.data}`
+											: `${VIDEO_SERVICE_URL}/segments/${data.data}`;
 
 										addLog(`Setting preview image to: ${imageUrl}`);
 										setPreviewImage(imageUrl);
@@ -231,7 +233,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
 										}
 
 										// Construct the image URL using the server endpoint
-										const imageUrl = `http://localhost:8083/segments/${currentVideoId}/${fileData.filename}`;
+										const imageUrl = `${formData.apiUrl || VIDEO_SERVICE_URL}/segments/${currentVideoId}/${fileData.filename}`;
 
 										addLog(`Setting preview image to: ${imageUrl}`);
 										setPreviewImage(imageUrl);

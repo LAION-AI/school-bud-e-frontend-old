@@ -319,6 +319,9 @@ export default function ChatInput() {
 							<ImageUploadButton
 								onImagesUploaded={handleImagesUploaded}
 								disableSendButton={handleDisableSendButton}
+								apiUrl={settings.value.apiUrl}
+								apiKey={settings.value.apiKey}
+								apiModel={settings.value.apiModel}
 								class="image-upload-button"
 								data-tour="image-upload"
 							/>

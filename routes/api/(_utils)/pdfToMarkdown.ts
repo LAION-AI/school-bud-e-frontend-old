@@ -1,5 +1,7 @@
 import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
+const PYTHON_BASE_URL = Deno.env.get("PYTHON_BASE_URL");
+
 /**
  * Directly transcribes a PDF buffer to markdown text.
  * This is a simpler interface for PDF transcription without message structure overhead.
@@ -7,25 +9,38 @@ import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
  * @param shouldTruncate Whether to truncate large PDFs
  * @returns The transcribed text or an error message
  */
-export async function transcribePdf(pdfBuffer: Uint8Array, shouldTruncate = false): Promise<string> {
-  console.log(`[PDF] Direct transcription of PDF, size: ${pdfBuffer.length} bytes`);
-  
+export async function transcribePdf(
+  pdfBuffer: Uint8Array, 
+  apiUrl?: string, 
+  apiKey?: string, 
+  apiModel?: string
+): Promise<string> {
   try {
-    const [markdown, error] = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate);
+    console.log("[PDF] Starting PDF transcription process...");
     
+    // Try to get a markdown transcription
+    const [markdown, error] = await fetchMarkdownForPDF(pdfBuffer, false, apiUrl, apiKey, apiModel);
+    
+    // Check if we got a valid response
+    if (markdown) {
+      console.log("[PDF] Successfully transcribed PDF to markdown");
+      return markdown;
+    }
+    
+    // Return the error if we have one
     if (error) {
-      console.error(`[PDF] Error in direct transcription: ${error}`);
+      console.error("[PDF] Error transcribing PDF:", error);
       return `Error transcribing PDF: ${error}`;
     }
     
-    if (!markdown) {
-      return "PDF transcription failed: No content extracted";
+    // Otherwise return a generic error
+    return "PDF transcription failed for unknown reasons";
+  } catch (e) {
+    console.error("[PDF] Exception in transcribePdf:", e);
+    if (e instanceof Error) {
+      return `Error transcribing PDF: ${e.message}`;
     }
-    
-    return markdown;
-  } catch (error) {
-    console.error("[PDF] Exception in direct transcription:", error);
-    return `PDF transcription failed: ${error instanceof Error ? error.message : String(error)}`;
+    return "PDF transcription failed with an unexpected error";
   }
 }
 
@@ -175,7 +190,7 @@ export default async function replacePDFWithMarkdownInMessages(
                 console.log("[PDF] Large PDF detected, will truncate text output");
               }
               
-              const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate);
+              const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, url, null, null);
               // Replace the PDF item with the converted Markdown text in the processed content
               message[contentToProcess][i] = markdown[0] || "[PDF text extraction failed]";
               
@@ -265,7 +280,7 @@ export default async function replacePDFWithMarkdownInMessages(
               console.log("[PDF] Large PDF detected, will truncate text output");
             }
             
-            const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate);
+            const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, url, null, null);
             // Replace the object with the converted Markdown text in the processed content
             message[contentToProcess] = markdown[0] || "[PDF text extraction failed]";
             
@@ -299,31 +314,21 @@ export default async function replacePDFWithMarkdownInMessages(
   return null;
 }
 
-async function fetchMarkdownForPDF(pdf: Uint8Array, shouldTruncate = false): Promise<[string | null, string | null]> {
-  console.log(`[PDF] Processing PDF, size: ${pdf.length} bytes`);
+async function fetchMarkdownForPDF(
+  pdf: Uint8Array, 
+  shouldTruncate = false, 
+  apiUrl?: string, 
+  apiKey?: string, 
+  apiModel?: string
+): Promise<[string | null, string | null]> {
+  console.log(`[PDF] Attempting to fetch markdown for PDF (${pdf.length} bytes, truncate=${shouldTruncate})`);
   
-  let lastError: unknown;
   const MAX_RETRIES = 3;
+  const PYTHON_BASE_URL = Deno.env.get("PYTHON_BASE_URL");
 
-  // Check if we actually have data
-  if (!pdf || pdf.length === 0) {
-    console.error('[PDF] No PDF data to process');
-    return [null, 'No PDF data was provided for conversion'];
-  }
-
-  // Log first few bytes of PDF for debugging
-  const pdfHeader = Array.from(pdf.slice(0, 10)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-  console.log(`[PDF] PDF header bytes: ${pdfHeader}`);
-  
-  // Check for valid PDF header (%PDF-)
-  if (
-    pdf[0] !== 0x25 || // %
-    pdf[1] !== 0x50 || // P
-    pdf[2] !== 0x44 || // D
-    pdf[3] !== 0x46 || // F
-    pdf[4] !== 0x2D    // -
-  ) {
-    console.warn('[PDF] Invalid PDF header, data may be corrupted');
+  if (!PYTHON_BASE_URL) {
+    console.error("[PDF] PYTHON_BASE_URL environment variable not set");
+    return [null, "PYTHON_BASE_URL environment variable not set"];
   }
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -331,31 +336,45 @@ async function fetchMarkdownForPDF(pdf: Uint8Array, shouldTruncate = false): Pro
       console.log(`[PDF] Sending ${pdf.length} bytes to PDF-to-Markdown service (attempt ${attempt}/3)`);
       
       // Make sure the URL is correct - it should be the AI tasks server
-      const pdfToMarkdownUrl = "http://localhost:8083/pdf_to_markdown/";
+      const pdfToMarkdownUrl = `${PYTHON_BASE_URL}/pdf_to_markdown/`;
       console.log(`[PDF] Using PDF-to-Markdown service URL: ${pdfToMarkdownUrl}`);
       
-      // Log the first few bytes of the PDF for debugging
-      const pdfPreview = Array.from(pdf.slice(0, 20))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join(' ');
-      console.log(`[PDF] PDF buffer preview: ${pdfPreview}`);
+      let response;
       
-      const res = await fetch(pdfToMarkdownUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/pdf",
-        },
-        body: pdf,
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error(`[PDF] Service responded with error: ${res.status} ${res.statusText}`);
-        console.error(`[PDF] Error details: ${errorText}`);
-        throw new Error(`PDF conversion failed: ${res.status} ${res.statusText} - ${errorText}`);
+      // If we have API parameters, send them as JSON
+      if (apiUrl || apiKey || apiModel) {
+        console.log(`[PDF] Using custom API configuration`);
+        response = await fetch(pdfToMarkdownUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pdf_bytes: Array.from(pdf),
+            api_url: apiUrl,
+            api_key: apiKey,
+            api_model: apiModel
+          }),
+        });
+      } else {
+        // Otherwise send the raw PDF data
+        response = await fetch(pdfToMarkdownUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/pdf",
+          },
+          body: pdf,
+        });
       }
 
-      const result = await res.json() as { content: string };
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[PDF] Service responded with error: ${response.status} ${response.statusText}`);
+        console.error(`[PDF] Error details: ${errorText}`);
+        throw new Error(`PDF conversion failed: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const result = await response.json() as { content: string };
       console.log('[PDF] Conversion successful, received response type:', typeof result);
       console.log('[PDF] Response keys:', Object.keys(result));
       console.log(`[PDF] Full response: ${JSON.stringify(result).substring(0, 500)}...`);
@@ -403,7 +422,6 @@ async function fetchMarkdownForPDF(pdf: Uint8Array, shouldTruncate = false): Pro
       // Return text content
       return [textContent, null];
     } catch (error: unknown) {
-      lastError = error;
       console.error(`[PDF] Attempt ${attempt}/3 failed:`, error);
       if (attempt < MAX_RETRIES) {
         // Wait a bit before retrying
@@ -412,6 +430,6 @@ async function fetchMarkdownForPDF(pdf: Uint8Array, shouldTruncate = false): Pro
     }
   }
   
-  console.error('[PDF] All conversion attempts failed:', lastError);
-  return [null, lastError instanceof Error ? lastError.message : "Failed to convert PDF after multiple attempts"];
+  console.error('[PDF] All conversion attempts failed:');
+  return [null, "Failed to convert PDF after multiple attempts"];
 }

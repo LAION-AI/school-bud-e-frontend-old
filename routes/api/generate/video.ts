@@ -4,7 +4,12 @@ interface GenerateVideoRequest {
   prompt: string;
   style?: string;
   customInstructions?: string;
+  apiKey?: string;
+  apiModel?: string;
+  apiUrl?: string;
 }
+
+const VIDEO_SERVICE_URL = Deno.env.get("VIDEO_SERVICE_URL") || "http://localhost:8083";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -25,16 +30,19 @@ export const handler: Handlers = {
       });
       
       // Forward the request to the AI tasks server
-      const response = await fetch("http://localhost:8083/generate_video/", {
+      const response = await fetch(`${body.apiUrl || VIDEO_SERVICE_URL}/generate_video/`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           prompt: body.prompt,
           style: body.style || "realistic",
-          customInstructions: body.customInstructions || ""
-        })
+          custom_instructions: body.customInstructions || "",
+          api_key: body.apiKey,
+          api_model: body.apiModel,
+          api_url: body.apiUrl,
+        }),
       });
       
       if (!response.ok) {

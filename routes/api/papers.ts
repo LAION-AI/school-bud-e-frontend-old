@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 
-const PAPERS_API_URL = "https://api.ask.orkg.org/index/search";
+const PAPERS_API_URL = Deno.env.get("PAPERS_API_URL") || "https://api.ask.orkg.org/index/search";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -12,17 +12,18 @@ export const handler: Handlers = {
     try {
       const url = new URL(req.url);
       const query = url.searchParams.get("query");
-      const limit = parseInt(url.searchParams.get("limit") || "5", 10);
+      const limit = Number.parseInt(url.searchParams.get("limit") || "5", 10);
+      const apiUrl = url.searchParams.get("apiUrl") || PAPERS_API_URL;
 
       if (!query) {
         throw new Error("Query parameter is required");
       }
 
       const response = await fetch(
-        `${PAPERS_API_URL}?query=${encodeURIComponent(query)}&limit=${limit}`,
+        `${apiUrl}?query=${encodeURIComponent(query)}&limit=${limit}`,
         {
-          headers: { "accept": "application/json" },
-        },
+          method: "GET",
+        }
       );
 
       if (!response.ok) {
@@ -45,19 +46,19 @@ export const handler: Handlers = {
   async POST(req: Request) {
     try {
       const payload = await req.json();
-      if (!payload.query) {
+      const { query } = payload;
+      const limit = Number.parseInt(payload.limit || "5", 10);
+      const apiUrl = payload.apiUrl || PAPERS_API_URL;
+
+      if (!query) {
         throw new Error("Query parameter is required");
       }
 
-      const top_n = payload.limit || 5;
-
       const response = await fetch(
-        `${PAPERS_API_URL}?query=${encodeURIComponent(payload.query)}&limit=${
-          top_n * 4
-        }`,
+        `${apiUrl}?query=${encodeURIComponent(query)}&limit=${limit}`,
         {
-          headers: { "accept": "application/json" },
-        },
+          method: "GET",
+        }
       );
 
       if (!response.ok) {
@@ -74,7 +75,7 @@ export const handler: Handlers = {
         return item.abstract && item.title && item.doi && item.date_published;
       });
 
-      data.payload.items = data.payload.items.slice(0, top_n);
+      data.payload.items = data.payload.items.slice(0, limit);
 
       return new Response(JSON.stringify(data), {
         headers: { "Content-Type": "application/json" },

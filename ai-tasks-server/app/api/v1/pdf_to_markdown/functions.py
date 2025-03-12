@@ -6,8 +6,10 @@ from app.core.config import settings
 import fitz  # PyMuPDF
 import io
 from PIL import Image
+import os
+import requests
 
-def use_markitdown(pdf_bytes, base_url="https://api.groq.com/openai/v1", api_key=settings.MARKITDOWN_VLM_API_KEY, llm_model="llama-3.2-90b-vision-preview"):
+def use_markitdown(pdf_bytes, base_url=os.getenv("PDF_TO_MARKDOWN_BASE_URL", "https://api.groq.com/openai/v1"), api_key=settings.MARKITDOWN_VLM_API_KEY, llm_model="llama-3.2-90b-vision-preview"):
     if not pdf_bytes:
         raise HTTPException(status_code=400, detail="No PDF data received.")
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
@@ -94,3 +96,8 @@ def convert_images_to_text(images):
             combined_text += result.text_content + "\n\n"
     
     return combined_text.strip()
+
+def use_markdown_from_pdf(pdf_bytes, api_key=settings.MARKITDOWN_VLM_API_KEY):
+    # ... existing code ...
+    base_url=os.getenv("PDF_TO_MARKDOWN_BASE_URL", 'https://api.groq.com/openai/v1'),
+    # ... existing code ...

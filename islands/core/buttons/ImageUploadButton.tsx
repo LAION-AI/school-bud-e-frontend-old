@@ -22,9 +22,15 @@ export interface Image {
 export function ImageUploadButton({
   onImagesUploaded,
   disableSendButton,
+  apiUrl,
+  apiKey,
+  apiModel,
 }: {
   onImagesUploaded: (images: Image[]) => void;
   disableSendButton: (disabled: boolean) => void;
+  apiUrl?: string;
+  apiKey?: string;
+  apiModel?: string;
 }) {
   // Using FilePreview instead of any
   interface FilePreview {
@@ -66,10 +72,15 @@ export function ImageUploadButton({
       const formData = new FormData();
       formData.append("file", file);
       
+      // Add API configuration if provided
+      if (apiUrl) formData.append("apiUrl", apiUrl);
+      if (apiKey) formData.append("apiKey", apiKey);
+      if (apiModel) formData.append("apiModel", apiModel);
+      
       console.log("[Upload] Sending PDF for transcription:", file.name, "Size:", file.size, "Type:", file.type);
       
-      // Verify the file is a PDF
-      if (file.type !== "application/pdf") {
+      // Verify the file is a PDF - check file.type includes 'pdf'
+      if (!file.type.includes("pdf")) {
         console.warn("[Upload] File is not a PDF, type:", file.type);
         pdfObject.pdf_url.transcription = "Error: Not a valid PDF file";
         pdfObject.pdf_url.isTranscribing = false;
@@ -89,7 +100,13 @@ export function ImageUploadButton({
         console.log("[Upload] Transcription result:", result);
         
         // Update the PDF object with the transcription
-        pdfObject.pdf_url.transcription = result.transcription;
+        if (result.markdown) {
+          pdfObject.pdf_url.transcription = result.markdown;
+        } else if (result.transcription) {
+          pdfObject.pdf_url.transcription = result.transcription;
+        } else {
+          pdfObject.pdf_url.transcription = "No text content found in PDF";
+        }
         pdfObject.pdf_url.isTranscribing = false;
         
         console.log("[Upload] PDF transcription completed");
