@@ -2,6 +2,7 @@ import type { FreshContext } from "$fresh/server.ts";
 import { trackPageView } from "../utils/umami.ts";
 
 export async function handler(req: Request, ctx: FreshContext) {
+    console.log('Middleware triggered')
     trackPageView(req);
     console.log(ctx.destination);
     console.log(req.url);
