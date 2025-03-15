@@ -12,7 +12,7 @@ export async function trackPageView(req: Request) {
     };
 
     // Fire and forget - don't await
-    fetch(`${UMAMI_URL}/api/collect`, {
+    await fetch(`${UMAMI_URL}/api/collect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
