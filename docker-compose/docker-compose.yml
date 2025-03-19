@@ -1,12 +1,12 @@
 services:
   school-bud-e-frontend:
-    image: denoland/deno:latest
+    build:
+      context: ..
     container_name: school-bud-e-frontend
     expose:
       - "8000:8000"
     env_file:
       - .env
-    command: sh -c "apt-get update && apt-get install -y git && mkdir -p /school-bud-e-frontend && git config --global --add safe.directory /school-bud-e-frontend && cd /school-bud-e-frontend && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && deno task build && deno task preview"
     restart: unless-stopped
     depends_on:
       - keydb
