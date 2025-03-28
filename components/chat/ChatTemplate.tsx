@@ -3,7 +3,7 @@ import WelcomeBanner from "../WelcomeBanner.tsx";
 
 export function ChatTemplate({ onOpenSettings, onStartTour }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col md:min-h-screen">
       {!isApiConfigured.value && (
         <WelcomeBanner
           onOpenSettings={onOpenSettings}

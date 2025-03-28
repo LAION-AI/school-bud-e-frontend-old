@@ -1,4 +1,3 @@
-import { UserProfile } from "../islands/UserProfile.tsx";
 import Settings from "../islands/settings/Settings.tsx";
 
 export default function SettingsPage(req: Request) {
@@ -18,7 +17,6 @@ export default function SettingsPage(req: Request) {
       <div class="container mx-auto py-8 px-4 max-w-5xl">
         <h1 class="text-3xl font-bold mb-6">Settings</h1>
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <UserProfile lang={lang} />
           <Settings lang={lang} />
         </div>
       </div>

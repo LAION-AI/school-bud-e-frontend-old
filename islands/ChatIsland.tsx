@@ -163,7 +163,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   
   // MAIN CONTENT THAT IS RENDERED
   return (
-    <div class="flex w-full h-screen">
+    <div class="flex w-full h-[calc(100dvh-4rem)] md:h-screen">
       <ChatTemplate
         messages={messages.value}
         currentEditIndex={currentEditIndex.value}

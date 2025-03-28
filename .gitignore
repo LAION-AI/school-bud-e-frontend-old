@@ -6,6 +6,7 @@
 .env.local
 .DS_Store
 .vscode
+.idea
 
 # Fresh build directory
 _fresh/

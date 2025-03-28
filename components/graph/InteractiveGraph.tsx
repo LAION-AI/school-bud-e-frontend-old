@@ -11,7 +11,7 @@ import { addMessage, } from "../chat/store.ts";
 import { startStream } from "../chat/stream.ts";
 import { hasTestForNode, getTestForNode, setSelectedTest } from "../tests/store.ts";
 import NodeTestGenerator from "../tests/NodeTestGenerator.tsx";
-import FloatingChat from "../../islands/chat/FloatingChat.tsx";
+import AIFloatingButton from "../../islands/AIFloatingButton.tsx";
 import { IconMessageCircle, IconX, IconFileText, IconMaximize, IconLayoutGrid } from "@tabler/icons-preact";
 
 interface InteractiveGraphProps {

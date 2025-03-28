@@ -13,3 +13,5 @@ torch==2.2.2
 uvicorn==0.34.0
 whisper==1.1.10
 pydantic-settings==2.8.1
+openai-whisper==20240930
+PyMuPDF==1.25.4

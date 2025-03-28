@@ -16,8 +16,13 @@ export async function trackPageView(req: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-    }).catch(() => {}); // Ignore any errors
+    }).catch((e) => {
+      //console.error("Failed to track page view", e);
+    }).then((res) => {
+      //console.log("Tracked page view", res);
+    });
   } catch {
+    //console.error("Failed to track page view");
     // Silently fail if tracking fails
   }
 }

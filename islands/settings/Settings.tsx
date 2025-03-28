@@ -1,4 +1,5 @@
 import { useComputed, useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
 import { IconInfoCircleFilled } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import { settings } from "../../components/chat/store.ts";
@@ -32,28 +33,38 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
   const selectedModels = useSignal<Record<string, string>>({});
   const showPassword = useSignal(false);
 
-  // Initialize models from localStorage or settings
-  if (models.value.length === 0) {
-    // Try to load from localStorage first
-    const savedModels = localStorage.getItem(STORAGE_KEYS.MODELS);
-    const savedSelectedModels = localStorage.getItem(
-      STORAGE_KEYS.SELECTED_MODELS
-    );
+  useEffect(() => {
+    // Initialize models from localStorage or settings
+    if (models.value.length === 0) {
+      // Try to load from localStorage first
+      const savedModels = localStorage.getItem(STORAGE_KEYS.MODELS);
+      const savedSelectedModels = localStorage.getItem(STORAGE_KEYS.SELECTED_MODELS);
 
-    if (savedModels && savedSelectedModels) {
-      try {
-        models.value = JSON.parse(savedModels);
-        selectedModels.value = JSON.parse(savedSelectedModels);
-        // Update settings based on saved models
-        updateSettingsFromModels();
-      } catch (error) {
-        console.error("Error loading saved models:", error);
+      if (savedModels && savedSelectedModels) {
+        try {
+          models.value = JSON.parse(savedModels);
+          selectedModels.value = JSON.parse(savedSelectedModels);
+          // Update settings based on saved models
+          updateSettingsFromModels();
+        } catch (error) {
+          console.error("Error loading saved models:", error);
+          initializeModelsFromSettings();
+        }
+      } else {
         initializeModelsFromSettings();
       }
-    } else {
-      initializeModelsFromSettings();
     }
-  }
+
+    // Cleanup function
+    return () => {
+      // Clear signals on unmount to prevent memory leaks
+      models.value = [];
+      selectedModels.value = {};
+      newSettings.value = { ...settings.value };
+      showPassword.value = false;
+      activeTab.value = "general";
+    };
+  }, [models, selectedModels, newSettings, showPassword, activeTab]);
 
   function initializeModelsFromSettings() {
     const initialModels: Model[] = [];

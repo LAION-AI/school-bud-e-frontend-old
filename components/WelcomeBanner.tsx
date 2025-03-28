@@ -54,7 +54,6 @@ export default function WelcomeBanner({
             !
           </span>
         </Button>
-        {/* ... close button ... */}
       </div>
     </div>
   );

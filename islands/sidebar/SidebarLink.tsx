@@ -6,7 +6,7 @@ interface SidebarLinkProps {
   isActive?: boolean;
   children: ComponentChildren;
   className?: string;
-  variant?: "amber" | "blue" | "red" | "purple" | "lime";
+  variant?: "amber" | "blue" | "red" | "purple" | "green";
 }
 
 const variantClasses = {
@@ -16,7 +16,7 @@ const variantClasses = {
   red: "bg-red-100 text-red-900 hover:bg-red-200 focus-visible:ring-red-500",
   purple:
     "bg-purple-100 text-purple-900 hover:bg-purple-200 focus-visible:ring-purple-500",
-  lime: "bg-lime-100 text-lime-900 hover:bg-lime-200 focus-visible:ring-lime-500",
+  green: "bg-green-100 text-green-900 hover:bg-green-200 focus-visible:ring-green-500",
 };
 
 const defaultClass = "text-gray-700 hover:bg-gray-50 hover:text-gray-900";

@@ -5,6 +5,7 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
+import * as $_middleware from "./routes/_middleware.tsx";
 import * as $about from "./routes/about.tsx";
 import * as $api_audio_button from "./routes/api/audio-button.ts";
 import * as $api_bildungsplan from "./routes/api/bildungsplan.ts";
@@ -40,7 +41,7 @@ import * as $tests_index from "./routes/tests/index.tsx";
 import * as $tests_view_id_ from "./routes/tests/view/[id].tsx";
 import * as $tutorials from "./routes/tutorials.tsx";
 import * as $video_novel_index from "./routes/video-novel/index.tsx";
-import * as $AIVoiceButton from "./islands/AIVoiceButton.tsx";
+import * as $AIFloatingButton from "./islands/AIFloatingButton.tsx";
 import * as $ChatAgreement from "./islands/ChatAgreement.tsx";
 import * as $ChatAgreementOrIsland from "./islands/ChatAgreementOrIsland.tsx";
 import * as $ChatIsland from "./islands/ChatIsland.tsx";
@@ -61,12 +62,9 @@ import * as $RelatedArticles from "./islands/RelatedArticles.tsx";
 import * as $RightSidebar from "./islands/RightSidebar.tsx";
 import * as $StoryEditor from "./islands/StoryEditor.tsx";
 import * as $TourGuideInitializer from "./islands/TourGuideInitializer.tsx";
-import * as $UserProfile from "./islands/UserProfile.tsx";
 import * as $WindowManager from "./islands/WindowManager.tsx";
 import * as $chat_ChatInput from "./islands/chat/ChatInput.tsx";
-import * as $chat_ChatListPage from "./islands/chat/ChatListPage.tsx";
 import * as $chat_ChatModeSelector from "./islands/chat/ChatModeSelector.tsx";
-import * as $chat_FloatingChat from "./islands/chat/FloatingChat.tsx";
 import * as $chat_getLLMResponse from "./islands/chat/getLLMResponse.ts";
 import * as $core_Tooltip from "./islands/core/Tooltip.tsx";
 import * as $core_buttons_ChatSubmitButton from "./islands/core/buttons/ChatSubmitButton.tsx";
@@ -101,6 +99,7 @@ import * as $signin_ApiKeySetup from "./islands/signin/ApiKeySetup.tsx";
 import * as $signin_SignInFlow from "./islands/signin/SignInFlow.tsx";
 import * as $signin_UserTypeSelector from "./islands/signin/UserTypeSelector.tsx";
 import * as $chat_islands_ChatActions from "./routes/chat/(_islands)/ChatActions.tsx";
+import * as $chat_islands_ChatList from "./routes/chat/(_islands)/ChatList.tsx";
 import * as $tests_islands_TestComposerIsland from "./routes/tests/(_islands)/TestComposerIsland.tsx";
 import * as $tests_islands_TestViewIsland from "./routes/tests/(_islands)/TestViewIsland.tsx";
 import * as $tests_islands_TestsListIsland from "./routes/tests/(_islands)/TestsListIsland.tsx";
@@ -118,6 +117,7 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_layout.tsx": $_layout,
+    "./routes/_middleware.tsx": $_middleware,
     "./routes/about.tsx": $about,
     "./routes/api/audio-button.ts": $api_audio_button,
     "./routes/api/bildungsplan.ts": $api_bildungsplan,
@@ -155,7 +155,7 @@ const manifest = {
     "./routes/video-novel/index.tsx": $video_novel_index,
   },
   islands: {
-    "./islands/AIVoiceButton.tsx": $AIVoiceButton,
+    "./islands/AIFloatingButton.tsx": $AIFloatingButton,
     "./islands/ChatAgreement.tsx": $ChatAgreement,
     "./islands/ChatAgreementOrIsland.tsx": $ChatAgreementOrIsland,
     "./islands/ChatIsland.tsx": $ChatIsland,
@@ -176,12 +176,9 @@ const manifest = {
     "./islands/RightSidebar.tsx": $RightSidebar,
     "./islands/StoryEditor.tsx": $StoryEditor,
     "./islands/TourGuideInitializer.tsx": $TourGuideInitializer,
-    "./islands/UserProfile.tsx": $UserProfile,
     "./islands/WindowManager.tsx": $WindowManager,
     "./islands/chat/ChatInput.tsx": $chat_ChatInput,
-    "./islands/chat/ChatListPage.tsx": $chat_ChatListPage,
     "./islands/chat/ChatModeSelector.tsx": $chat_ChatModeSelector,
-    "./islands/chat/FloatingChat.tsx": $chat_FloatingChat,
     "./islands/chat/getLLMResponse.ts": $chat_getLLMResponse,
     "./islands/core/Tooltip.tsx": $core_Tooltip,
     "./islands/core/buttons/ChatSubmitButton.tsx":
@@ -221,6 +218,7 @@ const manifest = {
     "./islands/signin/SignInFlow.tsx": $signin_SignInFlow,
     "./islands/signin/UserTypeSelector.tsx": $signin_UserTypeSelector,
     "./routes/chat/(_islands)/ChatActions.tsx": $chat_islands_ChatActions,
+    "./routes/chat/(_islands)/ChatList.tsx": $chat_islands_ChatList,
     "./routes/tests/(_islands)/TestComposerIsland.tsx":
       $tests_islands_TestComposerIsland,
     "./routes/tests/(_islands)/TestViewIsland.tsx":

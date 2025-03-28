@@ -1,6 +1,8 @@
 import { useSignal } from "@preact/signals";
 import { IconBrain, IconPlus, IconTrash } from "@tabler/icons-preact";
 import type { JSX } from "preact";
+import Input from "../../components/core/Input.tsx";
+import { useEffect, useRef } from "preact/hooks";
 
 interface Model {
   id: string;
@@ -28,6 +30,25 @@ export default function ModelManager({
 }: ModelManagerProps) {
   const showNewModelForm = useSignal(false);
   const editingModel = useSignal<Model | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showNewModelForm.value) {
+        showNewModelForm.value = false;
+        editingModel.value = null;
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
+
+  useEffect(() => {
+    if (showNewModelForm.value) {
+      setTimeout(() => nameInputRef.current?.focus(), 0);
+    }
+  }, [showNewModelForm.value]);
 
   const defaultModel: Model = {
     id: crypto.randomUUID(),
@@ -109,7 +130,7 @@ export default function ModelManager({
         {models.map((model) => (
           <div
             key={model.id}
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+            className="bg-gray-50 rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex justify-between items-start">
               <div>
@@ -158,8 +179,8 @@ export default function ModelManager({
 
       {/* Add/Edit Model Form */}
       {showNewModelForm.value && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 border-2 border-gray-200 shadow-[0_4px_0_0_#e5e7eb]">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               {editingModel.value
                 ? lang === "de"
@@ -171,76 +192,49 @@ export default function ModelManager({
             </h3>
             <form onSubmit={handleModelSubmit} className="space-y-4">
               {/* Name */}
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  {lang === "de" ? "Name" : "Name"}
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  defaultValue={editingModel.value?.name}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <Input
+                ref={nameInputRef}
+                label={lang === "de" ? "Name" : "Name"}
+                type="text"
+                id="name"
+                name="name"
+                defaultValue={editingModel.value?.name}
+                required
+                className="bg-white"
+              />
 
               {/* API Key */}
-              <div>
-                <label
-                  htmlFor="key"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  {lang === "de" ? "API-Schlüssel" : "API Key"}
-                </label>
-                <input
-                  type="password"
-                  id="key"
-                  name="key"
-                  defaultValue={editingModel.value?.key}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <Input
+                label={lang === "de" ? "API-Schlüssel" : "API Key"}
+                type="password"
+                id="key"
+                name="key"
+                defaultValue={editingModel.value?.key}
+                required
+                className="bg-white"
+              />
 
               {/* URL */}
-              <div>
-                <label
-                  htmlFor="url"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  {lang === "de" ? "API-Endpunkt" : "API Endpoint"}
-                </label>
-                <input
-                  type="url"
-                  id="url"
-                  name="url"
-                  defaultValue={editingModel.value?.url}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <Input
+                label={lang === "de" ? "API-Endpunkt" : "API Endpoint"}
+                type="url"
+                id="url"
+                name="url"
+                defaultValue={editingModel.value?.url}
+                required
+                className="bg-white"
+              />
 
               {/* Model */}
-              <div>
-                <label
-                  htmlFor="model"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  {lang === "de" ? "Modell" : "Model"}
-                </label>
-                <input
-                  type="text"
-                  id="model"
-                  name="model"
-                  defaultValue={editingModel.value?.model}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <Input
+                label={lang === "de" ? "Modell" : "Model"}
+                type="text"
+                id="model"
+                name="model"
+                defaultValue={editingModel.value?.model}
+                required
+                className="bg-white"
+              />
 
               {/* Capabilities */}
               <div>

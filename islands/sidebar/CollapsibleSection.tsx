@@ -17,7 +17,7 @@ interface CollapsibleSectionProps {
   baseRoute?: string;
   routePattern?: RegExp;
   onRouteMatch?: (match: RegExpMatchArray | null) => void;
-  variant?: "amber" | "blue" | "red" | "purple" | "lime";
+  variant?: "amber" | "blue" | "red" | "purple" | "green";
 }
 
 export default function CollapsibleSection({
@@ -38,7 +38,7 @@ export default function CollapsibleSection({
 
   const getButtonColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "lime"
+    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
       if (variant === "blue")
@@ -47,8 +47,8 @@ export default function CollapsibleSection({
         return "bg-red-100 text-red-900 hover:bg-red-200 focus-visible:ring-red-500";
       if (variant === "purple")
         return "bg-purple-100 text-purple-900 hover:bg-purple-200 focus-visible:ring-purple-500";
-      if (variant === "lime")
-        return "bg-lime-100 text-lime-900 hover:bg-lime-200 focus-visible:ring-lime-500";
+      if (variant === "green")
+        return "bg-green-100 text-green-900 hover:bg-green-200 focus-visible:ring-green-500";
       return "bg-amber-100 text-amber-900 hover:bg-amber-200 focus-visible:ring-amber-500";
     }
     return "hover:bg-gray-50 text-gray-700 hover:text-gray-900";
@@ -56,13 +56,13 @@ export default function CollapsibleSection({
 
   const getIconColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "lime"
+    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
       if (variant === "blue") return "text-blue-800";
       if (variant === "red") return "text-red-800";
       if (variant === "purple") return "text-purple-800";
-      if (variant === "lime") return "text-lime-800";
+      if (variant === "green") return "text-green-800";
       return "text-amber-800";
     }
     return "text-gray-600 group-hover:text-gray-800";
@@ -70,13 +70,13 @@ export default function CollapsibleSection({
 
   const getChevronColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "lime"
+    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
       if (variant === "blue") return "text-blue-800";
       if (variant === "red") return "text-red-800";
       if (variant === "purple") return "text-purple-800";
-      if (variant === "lime") return "text-lime-800";
+      if (variant === "green") return "text-green-800";
       return "text-amber-800";
     }
     return "text-gray-500 group-hover:text-gray-700";

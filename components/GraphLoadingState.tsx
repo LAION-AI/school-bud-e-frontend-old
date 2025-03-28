@@ -23,7 +23,7 @@ export function GraphLoadingState({ isLoading, isComplete, type }: GraphLoadingS
   }
 
   return (
-    <div class="flex items-center justify-center p-4 space-x-2 border rounded-md">
+    <div class="flex items-center justify-center p-4 space-x-2 border rounded-md my-2">
       {isLoading && !isComplete && (
         <>
           <IconLoader class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent" />

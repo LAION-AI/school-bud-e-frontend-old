@@ -27,7 +27,7 @@ export default function SidebarHeader({
       <button
         type="button"
         onClick={handleCollapse}
-        class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-600"
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <IconLayoutSidebarLeftCollapse

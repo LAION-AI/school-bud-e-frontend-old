@@ -7,12 +7,12 @@ import SidebarLink from "./SidebarLink.tsx";
 
 interface GraphsSectionProps {
   isCollapsed: boolean;
-  variant?: "amber" | "blue" | "red" | "purple" | "lime";
+  variant?: "amber" | "blue" | "red" | "purple" | "green";
 }
 
 export default function GraphsSection({
   isCollapsed,
-  variant = "lime",
+  variant = "green",
 }: GraphsSectionProps) {
   const [expanded, setExpanded] = useState(() => {
     const path = globalThis.location?.pathname;

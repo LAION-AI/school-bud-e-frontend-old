@@ -221,6 +221,46 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Special thanks to LAION, ELLIS Institute Tübingen, Collabora, the Tübingen AI Center and the German Research Center for Artificial Intelligence (DFKI), and Intel for their contributions and support to this project.
 
+## Docker Development
+
+### Building and Pushing Images
+
+To build and push the next version:
+```bash
+# Build the next version
+docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.override.yml build
+
+# Push to Docker Hub
+docker push michael55555/school-bud-e-frontend:next
+```
+
+To build and push the main version:
+```bash
+# Build the main version
+docker build -t michael55555/school-bud-e-frontend:main .
+
+# Push to Docker Hub
+docker push michael55555/school-bud-e-frontend:main
+```
+
+Make sure you're logged in to Docker Hub first:
+```bash
+docker login
+```
+
+### Deploying Updates
+
+To ensure you're running the latest version in production, use one of these methods:
+
+```bash
+# Method 1: Pull before running
+docker compose -f docker-compose/docker-compose.yml pull
+docker compose -f docker-compose/docker-compose.yml up -d
+
+# Method 2: Force pull while running
+docker compose -f docker-compose/docker-compose.yml up -d --pull always
+```
+
 ---
 
 Built with ❤️ for the future of education.

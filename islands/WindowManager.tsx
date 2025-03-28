@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { JSX } from "preact";
-import FloatingChat from "./chat/FloatingChat.tsx";
+import AIFloatingButton from "./AIFloatingButton.tsx";
 
 interface Window {
   id: string;
@@ -28,7 +28,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
   };
 
   return (
-    <div class="relative min-h-screen bg-gray-100">
+    <div class="relative md:min-h-screen bg-gray-100">
       <div class="flex space-x-2 p-4 bg-white shadow-sm">
         {windows.value.map(window => (
           <button
@@ -49,8 +49,9 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
       <div class="p-4">
         {windows.value.map(window => (
           !window.isMinimized && (
-            <div
+            <button
               key={window.id}
+              type="button"
               onClick={() => handleActivate(window.id)}
               class={`rounded-lg shadow-lg overflow-hidden transition-all ${
                 window.id === activeWindowId.value
@@ -59,7 +60,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
               }`}
             >
               {window.content}
-            </div>
+            </button>
           )
         ))}
       </div>

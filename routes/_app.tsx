@@ -1,10 +1,9 @@
 import { Partial } from "$fresh/runtime.ts";
 import type { AppProps } from "$fresh/server.ts";
-import AIVoiceButton from "../islands/AIVoiceButton.tsx";
-import FloatingChat from "../islands/chat/FloatingChat.tsx";
 import BottomNavigation from "../islands/navbar/BottomNavigation.tsx";
 import Navbar from "../islands/navbar/index.tsx";
 import Sidebar from "../islands/sidebar/index.tsx";
+import AIFloatingButton from "../islands/AIFloatingButton.tsx";
 
 export default function App({ Component, url }: AppProps) {
   const pathname = new URL(url.href).pathname;
@@ -35,7 +34,7 @@ export default function App({ Component, url }: AppProps) {
         <link rel="stylesheet" href="/styles.css" />
       </head>
       <body f-client-nav>
-        <div class="h-screen flex">
+        <div class="h-[calc(100dvh-4rem)] md:h-screen flex">
           {!showSidebar ? (
             <>
               <div class="flex flex-col flex-1">
@@ -58,12 +57,11 @@ export default function App({ Component, url }: AppProps) {
                 <Partial name="main-content">
                   <div class="pb-16 md:pb-0">
                     <Component />
+                    <AIFloatingButton />
+                    {showBottomNav && <BottomNavigation lang={lang} />}
                   </div>
                 </Partial>
               </div>
-              <FloatingChat />
-              <AIVoiceButton />
-              {showBottomNav && <BottomNavigation lang={lang} />}
             </>
           )}
         </div>

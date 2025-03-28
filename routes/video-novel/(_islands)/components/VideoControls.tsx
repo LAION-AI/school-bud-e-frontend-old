@@ -7,7 +7,7 @@ interface VideoControlsProps {
 
 export default function VideoControls({ onCreateNew }: VideoControlsProps) {
 	return (
-		<div className="bg-gray-100/90 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
+		<div className="backdrop-blur-sm rounded-xl p-4 border border-gray-200">
 			<div className="flex flex-wrap gap-3">
 				<Button variant="primary">
           <IconPlayerPlay />

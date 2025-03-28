@@ -78,7 +78,7 @@ export default function Sidebar({
 
   return (
     <div
-      class={`sidebar bg-white rounded-2xl shadow-lg h-full flex flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
+      class={`sidebar bg-white rounded-r-2xl shadow-lg h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
         isCollapsed ? "w-0 overflow-hidden" : "w-[21rem]"
       }`}
     >
@@ -113,7 +113,7 @@ export default function Sidebar({
           />
           <GraphsSection
             isCollapsed={isCollapsed}
-            variant="lime"
+            variant="green"
           />
           <PresentationsSection
             isCollapsed={isCollapsed}

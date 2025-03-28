@@ -1,0 +1,8 @@
+services:
+  school-bud-e-frontend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        BRANCH: next
+    image: michael55555/school-bud-e-frontend:next 

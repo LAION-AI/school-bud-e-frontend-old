@@ -191,7 +191,7 @@ effect(() => {
 });
 
 // Sync settings to localStorage.
-effect(() => {
+const disposeEffect = effect(() => {
   localStorage.setItem(
     "bud-e-universal-api-key",
     settings.value.universalApiKey,
@@ -214,6 +214,11 @@ effect(() => {
     settings.value.vlmCorrectionModel,
   );
 });
+
+// Export dispose function to be called when needed
+export const disposeSettingsEffect = () => {
+  disposeEffect();
+};
 
 // ---------- Signal Mutations ----------
 
