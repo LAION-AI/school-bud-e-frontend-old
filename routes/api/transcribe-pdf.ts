@@ -9,6 +9,11 @@ export const handler: Handlers = {
       const apiUrl = formData.get("apiUrl")?.toString() || undefined;
       const apiKey = formData.get("apiKey")?.toString() || undefined;
       const apiModel = formData.get("apiModel")?.toString() || undefined;
+      console.log({
+        apiUrl,
+        apiKey,
+        apiModel,
+      });
 
       if (!pdfFile || !pdfFile.type.includes("pdf")) {
         return new Response(JSON.stringify({ 

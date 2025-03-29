@@ -48,6 +48,9 @@ export async function transcribePdf(
  * Searches through the messages and replaces all PDFs with Markdown.
  * If the message content is an array, it will be converted to a single string after conversion.
  * @param messages Chat messages uploaded to the server.
+ * @param apiUrl The API URL for fetching Markdown
+ * @param apiKey The API key for fetching Markdown
+ * @param apiModel The API model for fetching Markdown
  * @returns An error if something went wrong, or null if successful.
  */
 export default async function replacePDFWithMarkdownInMessages(
@@ -65,7 +68,10 @@ export default async function replacePDFWithMarkdownInMessages(
       image_url?: { url: string; detail?: string };
       pdf_url?: { url: string; size?: number };
     }[] | any;
-  }[]
+  }[],
+  apiUrl?: string,
+  apiKey?: string,
+  apiModel?: string
 ): Promise<unknown | null> {
   console.log(`[PDF] Processing ${messages.length} messages`);
   
@@ -190,7 +196,7 @@ export default async function replacePDFWithMarkdownInMessages(
                 console.log("[PDF] Large PDF detected, will truncate text output");
               }
               
-              const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, url, null, null);
+              const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, apiUrl, apiKey, apiModel);
               // Replace the PDF item with the converted Markdown text in the processed content
               message[contentToProcess][i] = markdown[0] || "[PDF text extraction failed]";
               
@@ -280,7 +286,7 @@ export default async function replacePDFWithMarkdownInMessages(
               console.log("[PDF] Large PDF detected, will truncate text output");
             }
             
-            const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, url, null, null);
+            const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, apiUrl, apiKey, apiModel);
             // Replace the object with the converted Markdown text in the processed content
             message[contentToProcess] = markdown[0] || "[PDF text extraction failed]";
             
@@ -351,9 +357,9 @@ async function fetchMarkdownForPDF(
           },
           body: JSON.stringify({
             pdf_bytes: Array.from(pdf),
-            api_url: apiUrl,
+            base_url: apiUrl,
             api_key: apiKey,
-            api_model: apiModel
+            model: apiModel
           }),
         });
       } else {

@@ -28,7 +28,7 @@ export interface ApiKeysParams {
   vlmCorrectionModel: string;
 }
 
-export async function getApiKeys(params: ApiKeysParams): Promise<{ api_url: string; api_key: string; api_model: string }> {
+export async function getApiKeys(params: ApiKeysParams): Promise<{ api_url: string; api_key: string; api_model: string, vlm_api_url: string, vlm_api_key: string, vlm_api_model: string, vlm_correction_model: string }> {
   const {
     messages,
     isImageInMessages,

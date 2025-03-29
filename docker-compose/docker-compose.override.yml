@@ -6,3 +6,11 @@ services:
       args:
         BRANCH: next
     image: michael55555/school-bud-e-frontend:next 
+
+  task-server:
+    build:
+      context: ../ai-tasks-server
+      dockerfile: Dockerfile
+      args:
+        BRANCH: next
+    image: michael55555/school-bud-e-task-server:next

@@ -100,9 +100,6 @@ ${value.requirements.join("\n")}`
   // Clone messages to avoid modifying the original
   const apiMessages = JSON.parse(JSON.stringify(messages));
 
-  // Process PDFs and images for API request
-  console.log("[Chat API] Processing messages for API request, count:", apiMessages.length);
-
   // Log message contents for debugging
   apiMessages.forEach((msg, idx) => {
     if (typeof msg.content === "string") {
@@ -135,55 +132,35 @@ ${value.requirements.join("\n")}`
           }
         });
       }
-      
     } else if (msg.content && typeof msg.content === "object") {
       console.log(`[Chat API] Message ${idx}: object content of type ${msg.content.type || "unknown"}`);
     }
   });
 
-  // Extract PDFs and process them for API consumption
-  try {
-    console.log("[Chat API] Processing PDFs in messages...");
-    await replacePDFWithMarkdownInMessages(apiMessages);
-    console.log("[Chat API] PDF processing complete");
-  } catch (error) {
-    console.error("[Chat API] Error processing PDFs:", error);
-    return new Response(JSON.stringify({ error: "Error processing PDFs" }), {
-      status: 500,
-    });
-  }
-
   // Create a copy of messages with processedContent for API request
-  // Use processedContent if available, otherwise use original content
   const apiMessagesWithProcessedContent = apiMessages.map(msg => {
-    // Only use processedContent if it exists and is not empty
     if (msg.processedContent) {
       return { ...msg, content: msg.processedContent };
     }
     return msg;
   });
 
-  // Prüfe, ob Bildinhalte in den Nachrichten vorkommen
+  // Check for images and PDFs in messages
   const isImageInMessages = apiMessagesWithProcessedContent.some((message) => {
     if (Array.isArray(message.content)) {
       return message.content.some((item) => item.type === "image_url");
     }
-    if (
-      typeof message.content === "object" && message.content !== null
-    ) {
+    if (typeof message.content === "object" && message.content !== null) {
       return (message.content as { type?: string }).type === "image_url";
     }
     return false;
   });
 
-  // Check if PDF content is present in messages
   const isPDFInMessages = apiMessagesWithProcessedContent.some((message) => {
     if (Array.isArray(message.content)) {
       return message.content.some((item) => item.type === "pdf_url");
     }
-    if (
-      typeof message.content === "object" && message.content !== null
-    ) {
+    if (typeof message.content === "object" && message.content !== null) {
       return (message.content as { type?: string }).type === "pdf_url";
     }
     return false;
@@ -193,7 +170,7 @@ ${value.requirements.join("\n")}`
   const shouldUseVLM = isImageInMessages || isPDFInMessages;
   console.log(`[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`);
 
-  const { api_url, api_key, api_model } = await getApiKeys({
+  const { api_url, api_key, api_model, vlm_api_url, vlm_api_key, vlm_api_model } = await getApiKeys({
     messages: apiMessagesWithProcessedContent,
     isImageInMessages: shouldUseVLM,
     isCorrectionInLastMessage,
@@ -207,6 +184,23 @@ ${value.requirements.join("\n")}`
     vlmApiModel,
     vlmCorrectionModel,
   });
+
+  // Process PDFs and images for API request
+  try {
+    console.log("[Chat API] Processing PDFs in messages...");
+    console.log({
+      vlm_api_url,
+      vlm_api_key,
+      vlm_api_model,
+    });
+    await replacePDFWithMarkdownInMessages(apiMessages, vlm_api_url, vlm_api_key, vlm_api_model);
+    console.log("[Chat API] PDF processing complete");
+  } catch (error) {
+    console.error("[Chat API] Error processing PDFs:", error);
+    return new Response(JSON.stringify({ error: "Error processing PDFs" }), {
+      status: 500,
+    });
+  }
 
   console.log("Using this API URL: ", api_url);
   console.log("Using this API Key: ", api_key);
