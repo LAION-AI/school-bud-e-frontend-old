@@ -10,7 +10,7 @@ export async function trackPageView(req: Request) {
         language: "",
         referrer: req.headers.get("referer") || "",
         screen: "1920x1080",
-        title: document.title,
+        title: "",
         url: url.toString(),
         website: '6f5f48af-a00c-42f7-9796-677e299e04c1',
         name: 'pageview',
