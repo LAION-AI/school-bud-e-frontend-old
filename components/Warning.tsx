@@ -3,11 +3,12 @@ import { useEffect, useState } from "preact/hooks";
 
 function Warning({ lang }: { lang: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isHidden, setIsHidden] = useState(localStorage.getItem("warning") === "true");
-  console.log({isHidden});
+  
+  const [isHidden, setIsHidden] = useState((localStorage.getItem("warning") || "true") === "true");
+  console.log({isHidden}, localStorage.getItem("warning"));
 
   useEffect(() => {
-    localStorage.setItem("warning", isHidden);
+    localStorage.setItem("warning", isHidden.toString());
   }, [isHidden]);
 
   const formatBoldTextWhereDoubleAsterisk = (text: string) => {
