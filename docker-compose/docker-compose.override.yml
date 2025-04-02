@@ -6,11 +6,35 @@ services:
       args:
         BRANCH: next
     image: michael55555/school-bud-e-frontend:next 
-
+    develop:
+      watch:
+        - action: sync
+          path: ../
+          target: /app
+          ignore:
+            - node_modules
+            - .git
+            - .env
+            - .env.local
+            - ai-tasks-server
+            
   task-server:
     build:
       context: ../ai-tasks-server
       dockerfile: Dockerfile
       args:
         BRANCH: next
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 8083"]
     image: michael55555/school-bud-e-task-server:next
+    expose:
+      - 8083
+    ports:
+      - 5678:5678
+    develop:
+      watch:
+        - action: sync
+          path: ../ai-tasks-server
+          target: /app
+          ignore:
+            - node_modules
+            - .git

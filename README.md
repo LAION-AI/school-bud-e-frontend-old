@@ -223,12 +223,23 @@ Special thanks to LAION, ELLIS Institute Tübingen, Collabora, the Tübingen AI 
 
 ## Docker Development
 
+### Running Docker Containers in Development Mode
+
+#### One at a time
+
+Useful when you don't want the logs to be mixed up.
+
+```
+docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.override.yml up task-server --build
+```
+
 ### Building and Pushing Images
 
 To build and push the next version:
 ```bash
 # Build the next version
 docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.override.yml build
+# The python server only starts once you connect the debugger from .vscode/launch.json to it. It can be started in the vscode debug settings.
 
 # Push to Docker Hub
 docker push michael55555/school-bud-e-frontend:next

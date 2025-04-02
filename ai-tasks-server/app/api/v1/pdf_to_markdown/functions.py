@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from markitdown import MarkItDown
 from openai import OpenAI
 import tempfile
-from app.core.config import settings
 import fitz  # PyMuPDF
 import io
 from PIL import Image
@@ -10,7 +9,16 @@ from PIL import Image
 def use_markitdown(pdf_bytes, base_url=None, api_key=None, llm_model=None):
     if not pdf_bytes:
         raise HTTPException(status_code=400, detail="No PDF data received.")
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+    
+    # Check if bytes are a list (from JSON) and convert to bytes
+    if isinstance(pdf_bytes, list):
+        pdf_bytes = bytes(pdf_bytes)
+    
+    # Validate PDF header
+    if not pdf_bytes.startswith(b'%PDF-'):
+        raise HTTPException(status_code=400, detail="Invalid PDF format")
+    
+    with tempfile.NamedTemporaryFile(suffix=".pdf", mode='wb', delete=False) as tmp:
         tmp.write(pdf_bytes)
         tmp_path = tmp.name
 
@@ -21,17 +29,14 @@ def use_markitdown(pdf_bytes, base_url=None, api_key=None, llm_model=None):
 
     md = MarkItDown(llm_client=client, llm_model=llm_model)
     result = md.convert(tmp_path)
-    print(result.text_content)
     
     # Extract images and convert them to text
     images = extract_images_from_pdf(pdf_bytes)
     if images:
-        print(f"Found {len(images)} images in the PDF")
-        image_text = convert_images_to_text(images)
+        image_text = convert_images_to_text(images, base_url, api_key, llm_model)
         if image_text:
             # Append image text with a title
             combined_content = result.text_content + "\n\n## Images from the PDF\n\n" + image_text
-            print(combined_content)
             return {"content": combined_content}
     
     return {"content": result.text_content}
@@ -43,8 +48,12 @@ def extract_images_from_pdf(pdf_bytes):
     # Use the same PDF loading logic as in use_markitdown
     if not pdf_bytes:
         return []
+    
+    # Check if bytes are a list (from JSON) and convert to bytes
+    if isinstance(pdf_bytes, list):
+        pdf_bytes = bytes(pdf_bytes)
         
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".pdf", mode='wb', delete=False) as tmp:
         tmp.write(pdf_bytes)
         tmp_path = tmp.name
     
@@ -60,8 +69,18 @@ def extract_images_from_pdf(pdf_bytes):
             xref = img[0]
             base_image = pdf.extract_image(xref)
             image_bytes = base_image["image"]
+            image_ext = base_image["ext"]  # Get the image extension/format from PyMuPDF
             
+            # Open image from bytes
             image = Image.open(io.BytesIO(image_bytes))
+            
+            # Store original format if PIL didn't detect it
+            if not image.format and image_ext:
+                if image_ext.upper() in ('JPG', 'JPEG'):
+                    image.format = 'JPEG'
+                else:
+                    image.format = image_ext.upper()
+                    
             images.append(image)
     
     return images
@@ -73,6 +92,7 @@ def convert_images_to_text(images, base_url, api_key, llm_model):
     if not images:
         return ""
     
+    base_url = base_url.replace("/chat/completions", "")
     # Create OpenAI client
     client = OpenAI(
         base_url=base_url,
@@ -85,8 +105,14 @@ def convert_images_to_text(images, base_url, api_key, llm_model):
     # Save images to temporary files and process with MarkItDown
     combined_text = ""
     for idx, image in enumerate(images):
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            image.save(tmp, format="PNG")
+        print(f"Processing image {idx + 1} of {len(images)}")
+
+        # Determine image format
+        image_format = image.format if image.format else "PNG"
+        suffix = f".{image_format.lower()}"
+        
+        with tempfile.NamedTemporaryFile(suffix=suffix, mode='wb', delete=False) as tmp:
+            image.save(tmp, format=image_format)
             tmp_path = tmp.name
             
             # Use MarkItDown to extract text from the image

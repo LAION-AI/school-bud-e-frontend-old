@@ -287,13 +287,6 @@ export default function ChatInput() {
 					className="flex cursor-text flex-col rounded-xl border border-gray-300 px-4 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors bg-white mx-4 mb-4"
 					data-tour="chat-input"
 				>
-					{/* Mode selector component */}
-					<ChatModeSelector
-						selectedMode={selectedMode.value}
-						selectedSubMode={selectedSubMode.value}
-						onModeSelect={handleModeSelect}
-						onSubModeSelect={handleSearchSubModeSelect}
-					/>
 
 					<textarea
 						ref={textareaRef}
@@ -334,10 +327,17 @@ export default function ChatInput() {
 								}}
 								data-tour="voice-record"
 							/>
+							{/* Mode selector component */}
+							<ChatModeSelector
+								selectedMode={selectedMode.value}
+								selectedSubMode={selectedSubMode.value}
+								onModeSelect={handleModeSelect}
+								onSubModeSelect={handleSearchSubModeSelect}
+							/>
 						</div>
 
 						<button
-							type="button"
+							type="form"
 							onClick={() => handleStartStream()}
 							disabled={
 								!query.value || 

@@ -14,10 +14,8 @@ async def pdf_to_markdown_route(request: Request):
             api_key = data.get("api_key")
             model = data.get("api_model")
             return use_markitdown(pdf_bytes, base_url=base_url, api_key=api_key, llm_model=model)
-        # Otherwise get raw PDF bytes
         else:
-            pdf_bytes = await request.body()
-            return use_markitdown(pdf_bytes)
+            raise HTTPException(status_code=415, detail="Unsupported media type")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
