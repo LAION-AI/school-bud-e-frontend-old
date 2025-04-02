@@ -6,15 +6,15 @@ import json
 import time
 import numpy as np
 import openai
-import torch
+#import torch
 import requests
-from loguru import logger
-import whisper
+#from loguru import logger
+#import whisper
 import sentence_transformers
-from concurrent.futures import ThreadPoolExecutor, as_completed
+#from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
-from request_log import RequestLogger
-from create_simulation import get_simulation
+#from request_log import RequestLogger
+#from create_simulation import get_simulation
 from typing import Dict, Any, Optional
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -47,8 +47,8 @@ print("HyperLab API Key:", HYPRLAB_API_KEY)
 # -------------------------
 # Determine device
 # -------------------------
-device_flag = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Running on {device_flag}.")
+#device_flag = "cuda" if torch.cuda.is_available() else "cpu"
+#print(f"Running on {device_flag}.")
 
 # -------------------------
 # Load writing cheat sheet from file (if present)
@@ -64,9 +64,9 @@ else:
 # -------------------------
 # Load Whisper model into memory (for TTS reference processing)
 # -------------------------
-logger.info("Loading Whisper model into memory...")
-whisper_model = whisper.load_model("base")
-logger.info("Whisper-base loaded.")
+#logger.info("Loading Whisper model into memory...")
+#whisper_model = whisper.load_model("base")
+#logger.info("Whisper-base loaded.")
 print("Initial model loading complete.")
 
 """
@@ -268,12 +268,12 @@ def extract_assign_voice_mappings(story_text, model, voice_profile_keys, voice_p
                 existing_assignments[name] = chosen_voice
     story_cleaned = assign_pattern.sub("", story_text)
     return existing_assignments, story_cleaned
-
+"""
 # -----------------------------
 # Initialize Sentence Transformer
 # -----------------------------
-device_st = "cuda" if torch.cuda.is_available() else "cpu"
-model_st = sentence_transformers.SentenceTransformer('BAAI/bge-small-en-v1.5', device=device_st)
+#device_st = "cuda" if torch.cuda.is_available() else "cpu"
+#model_st = sentence_transformers.SentenceTransformer('BAAI/bge-small-en-v1.5', device=device_st)
 
 # Load voice mapping
 voice_mapping_path = os.path.join(current_dir, "emottsvoices", "folder_mp3_mapping.json")
@@ -281,7 +281,7 @@ with open(voice_mapping_path, "r", encoding="utf-8") as file:
     voice_emotion_reference_dict = json.load(file)
 
 voice_profile_keys = list(voice_emotion_reference_dict.keys())
-voice_profile_embeddings = model_st.encode(voice_profile_keys, normalize_embeddings=True)
+#voice_profile_embeddings = model_st.encode(voice_profile_keys, normalize_embeddings=True)
 print("DEBUG: Precomputed embeddings for voice profile keys:", len(voice_profile_keys))
 
 
@@ -292,13 +292,14 @@ for vp in voice_emotion_reference_dict:
     emotion_dict = voice_emotion_reference_dict[vp]
     raw_keys = list(emotion_dict.keys())
     cleaned_keys = [clean_emotion_key(k) for k in raw_keys]
-    emb = model_st.encode(cleaned_keys, normalize_embeddings=True)
+#    emb = model_st.encode(cleaned_keys, normalize_embeddings=True)
     inner_embeddings_dict[vp] = {
         "raw_keys": raw_keys,
         "cleaned_keys": cleaned_keys,
         "embeddings": emb
     }
 
+"""
 # -----------------------------
 # HyperLab API for Image Generation (with retry)
 # -----------------------------

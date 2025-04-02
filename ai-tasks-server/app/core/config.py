@@ -8,8 +8,6 @@ load_dotenv()
 class Settings(BaseSettings):
     API_PREFIX: str = ""
     DEBUG: bool = True
-    PROJECT_NAME: str = "AI Tasks Server"
-    MARKITDOWN_VLM_API_KEY: str = os.getenv("MARKITDOWN_VLM_API_KEY", "")
     
     # Directory paths
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
