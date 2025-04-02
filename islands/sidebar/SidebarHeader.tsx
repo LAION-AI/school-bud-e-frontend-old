@@ -24,19 +24,6 @@ export default function SidebarHeader({
         height="48"
         alt={translations.navigation.logoAlt}
       />
-      <button
-        type="button"
-        onClick={handleCollapse}
-        class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-600"
-        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <IconLayoutSidebarLeftCollapse
-          class={`h-6 w-6 transition-transform duration-300 ${
-            isCollapsed ? "rotate-180" : ""
-          }`}
-          aria-hidden="true"
-        />
-      </button>
     </div>
   );
 }

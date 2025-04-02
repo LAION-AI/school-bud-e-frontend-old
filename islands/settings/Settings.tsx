@@ -8,6 +8,8 @@ import ModelManager from "./ModelManager.tsx";
 import TokenUsage from "./TokenUsage.tsx";
 import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
+import Input from "../../components/core/Input.tsx";
+import Textarea from "../../components/core/Textarea.tsx";
 
 interface Model {
 	id: string;
@@ -417,6 +419,24 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
 							lang={lang}
 						/>
 
+						{/* Universal API Key */}
+						<div className="mt-8">
+							<label
+								htmlFor="universalApiKey"
+								className="block text-sm font-medium text-gray-700 mb-1"
+							>
+								{t.universalApiKey || "Universal API Key"}
+							</label>
+							<Input
+								type={showPassword.value ? "text" : "password"}
+								id="universalApiKey"
+								name="universalApiKey"
+								value={newSettings.value.universalApiKey}
+								onChange={handleChange}
+								className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+							/>
+						</div>
+
 						{/* System Prompt */}
 						<div className="mt-8">
 							<label
@@ -426,7 +446,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
 								{t.systemPrompt}{" "}
 								<span className="text-gray-500">{t.systemPromptOptional}</span>
 							</label>
-							<textarea
+							<Textarea
 								id="systemPrompt"
 								name="systemPrompt"
 								value={newSettings.value.systemPrompt}

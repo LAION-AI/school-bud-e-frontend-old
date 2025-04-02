@@ -238,7 +238,7 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
             {/* Mode selection tiles */}
             {showModes.value && (
                 <div 
-                    class="bottom-full mb-2 w-full bg-white rounded-lg shadow-xl p-3 z-10 max-h-[400px] overflow-y-auto"
+                    class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-lg shadow-xl p-3 z-10 max-h-[400px] overflow-y-auto"
                     onKeyDown={(e) => handleModeKeyDown(e, CHAT_MODES)}
                     aria-label="Select a chat mode"
                 >

@@ -59,15 +59,13 @@ export default function Capabilities({
     <div className="flex flex-col items-center space-y-8">
       <div className="grid grid-cols-2 grid-rows-[auto_1fr_auto] lg:grid-cols-3 lg:grid-rows-2 gap-4 w-full max-w-5xl relative">
         <div className="col-start-1 col-span-2 lg:col-span-1 lg:col-start-2 lg:row-span-2 flex items-center justify-center">
-          <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
+          <div className="relative w-full h-full min-h-[300px]">
             <div
-              className="absolute bg-white rounded-full shadow-lg flex items-center justify-center"
+              className="absolute bg-white shadow-lg flex items-center justify-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               style={{
-                width: innerRadius * 2,
-                height: innerRadius * 2,
-                left: centerX - innerRadius,
-                top: centerY - innerRadius,
-                zIndex: 10,
+                height: '25%',
+                aspectRatio: '1/1',
+                borderRadius: '50%',
               }}
             >
               <span className="text-3xl" role="img" aria-label="Bud-E Logo">
@@ -75,7 +73,13 @@ export default function Capabilities({
               </span>
             </div>
 
-            <svg className="absolute inset-0 w-full h-full" aria-label="Capability Segments" title="Capability Segments">
+            <svg 
+              className="absolute inset-0 w-full h-full" 
+              aria-label="Capability Segments" 
+              title="Capability Segments"
+              viewBox={`0 0 ${radius * 2} ${radius * 2}`}
+              preserveAspectRatio="xMidYMid meet"
+            >
               {allCapabilities.map((capability, index) => {
                 const isEnabled = enabledCapabilities.includes(capability.id);
                 const isActive = activeCapability.value === capability.id;

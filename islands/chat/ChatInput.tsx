@@ -218,7 +218,7 @@ export default function ChatInput() {
 		<>
 			<div class="max-w-xl w-full mx-auto relative">
 				{files.value.length > 0 && (
-					<div class="w-full flex justify-center shadow">
+					<div class="flex justify-center">
 						<div class="p-2 flex flex-wrap max-w-xs gap-8">
 							{files.value
 								.filter((item) => "image_url" in item)
@@ -232,7 +232,7 @@ export default function ChatInput() {
 												deleteImage(e);
 											}
 										}}
-										class="w-32 h-32 relative group rounded-lg shadow-xl overflow-hidden cursor-pointer"
+										class="w-32 h-32 group rounded-lg shadow-xl overflow-hidden cursor-pointer"
 										aria-label="Click to remove image"
 									>
 										<img
@@ -240,7 +240,7 @@ export default function ChatInput() {
 											alt="Uploaded content"
 											class="w-full h-full object-cover"
 										/>
-										<div class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
+										<div class="bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
 											<IconX />
 										</div>
 									</button>
