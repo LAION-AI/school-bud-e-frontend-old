@@ -12,11 +12,12 @@ export async function trackPageView(req: Request) {
         screen: "1920x1080",
         title: document.title,
         url: url.toString(),
-        website: '1',
+        website: '6f5f48af-a00c-42f7-9796-677e299e04c1',
         name: 'pageview',
       },
       type: 'event',
     };
+    console.log({data});
 
     // Fire and forget - don't await
     await fetch(`${UMAMI_URL}/api/send`, {
