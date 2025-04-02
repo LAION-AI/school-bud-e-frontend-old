@@ -29,8 +29,8 @@ export async function trackPageView(req: Request) {
     }).then((res) => {
       console.log("Tracked page view", res);
     });
-  } catch {
-    //console.error("Failed to track page view");
+  } catch (e){
+    console.error("Failed to track page view", e);
     // Silently fail if tracking fails
   }
 }
