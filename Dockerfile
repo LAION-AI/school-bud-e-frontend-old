@@ -12,7 +12,7 @@ RUN apk add --no-cache git
 RUN git config --global --add safe.directory /school-bud-e-frontend
 
 # Clone and setup the repository using the specified branch
-COPY . .
+RUN git clone -b ${BRANCH} https://github.com/LAION-AI/school-bud-e-frontend.git .
 
 # Build the application
 RUN deno task build
