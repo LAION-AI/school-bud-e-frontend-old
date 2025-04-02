@@ -3,18 +3,25 @@ const UMAMI_URL = Deno.env.get("UMAMI_URL") || "http://umami:3000";
 export async function trackPageView(req: Request) {
   try {
     const url = new URL(req.url);
+
     const data = {
-      type: "pageview",
-      url: url.toString(),
-      referrer: req.headers.get("referer") || "",
-      website_id: "1", // Replace with your website_id from Umami
-      hostname: url.hostname,
+      payload: {
+        hostname: url.hostname,
+        language: "",
+        referrer: req.headers.get("referer") || "",
+        screen: "1920x1080",
+        title: document.title,
+        url: url.toString(),
+        website: '1',
+        name: 'pageview',
+      },
+      type: 'event',
     };
 
     // Fire and forget - don't await
-    await fetch(`${UMAMI_URL}/api/collect`, {
+    await fetch(`${UMAMI_URL}/api/send`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "User-Agent": req.headers.get("User-Agent") || "" },
       body: JSON.stringify(data),
     }).catch((e) => {
       console.error("Failed to track page view", e);
