@@ -118,7 +118,7 @@ export default function ModelManager({
             showNewModelForm.value = true;
             editingModel.value = null;
           }}
-          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           <IconPlus className="h-4 w-4 mr-1" />
           {lang === "de" ? "Neues Modell" : "New Model"}
@@ -165,7 +165,7 @@ export default function ModelManager({
                 return cap ? (
                   <span
                     key={capId}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
                   >
                     <span className="mr-1">{cap.icon}</span>
                     {cap.label}
@@ -250,7 +250,7 @@ export default function ModelManager({
                         defaultChecked={editingModel.value?.capabilities.includes(
                           capability.id
                         )}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-primary-600 focus:ring-indigo-500 border-gray-300 rounded"
                       />
                       <span className="ml-2">
                         {capability.icon} {capability.label}
@@ -274,7 +274,7 @@ export default function ModelManager({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   {editingModel.value
                     ? lang === "de"

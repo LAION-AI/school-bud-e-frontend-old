@@ -6,7 +6,7 @@ interface FooterProps {
 
 export default function Footer({ lang }: FooterProps) {
   return (
-    <div class="bg-indigo-700 w-full">
+    <div class="bg-primary-700 w-full">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div class="xl:grid xl:grid-cols-3 xl:gap-8">
           <div class="space-y-8 xl:col-span-1">
@@ -43,17 +43,17 @@ export default function Footer({ lang }: FooterProps) {
                 </h3>
                 <ul class="mt-4 space-y-4">
                   <li>
-                    <a href="https://laion.ai/blog" class="text-base text-indigo-100 hover:text-white">
+                    <a href="https://laion.ai/blog" class="text-base text-primary-100 hover:text-white">
                       {lang === "de" ? "Blog" : "Blog"}
                     </a>
                   </li>
                   <li>
-                    <a href="https://laion.ai/projects" class="text-base text-indigo-100 hover:text-white">
+                    <a href="https://laion.ai/projects" class="text-base text-primary-100 hover:text-white">
                       {lang === "de" ? "Projekte" : "Projects"}
                     </a>
                   </li>
                   <li>
-                    <a href="https://laion.ai/team" class="text-base text-indigo-100 hover:text-white">
+                    <a href="https://laion.ai/team" class="text-base text-primary-100 hover:text-white">
                       {lang === "de" ? "Team" : "Team"}
                     </a>
                   </li>
@@ -65,12 +65,12 @@ export default function Footer({ lang }: FooterProps) {
                 </h3>
                 <ul class="mt-4 space-y-4">
                   <li>
-                    <a href="https://laion.ai/privacy-policy" class="text-base text-indigo-100 hover:text-white">
+                    <a href="https://laion.ai/privacy-policy" class="text-base text-primary-100 hover:text-white">
                       {lang === "de" ? "Datenschutz" : "Privacy"}
                     </a>
                   </li>
                   <li>
-                    <a href="https://laion.ai/impressum" class="text-base text-indigo-100 hover:text-white">
+                    <a href="https://laion.ai/impressum" class="text-base text-primary-100 hover:text-white">
                       {lang === "de" ? "Impressum" : "Imprint"}
                     </a>
                   </li>
@@ -79,9 +79,9 @@ export default function Footer({ lang }: FooterProps) {
             </div>
           </div>
         </div>
-        <div class="mt-12 border-t border-indigo-500 pt-8">
-          <p class="text-base text-indigo-100 xl:text-center">
-            Generated on 07.03.2025. Prompted with love by <a href="https://github.com/laion-ai" class="text-indigo-100 hover:text-white">LAION</a>.
+        <div class="mt-12 border-t border-primary-500 pt-8">
+          <p class="text-base text-primary-100 xl:text-center">
+            Generated on 07.03.2025. Prompted with love by <a href="https://github.com/laion-ai" class="text-primary-100 hover:text-white">LAION</a>.
           </p>
         </div>
       </div>

@@ -59,7 +59,7 @@ export default function ModelSelector({
             name="Key"
             value={currentConfig.key || ""}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-primary-500"
             placeholder={
               lang === "de" ? "API-Schlüssel eingeben" : "Enter API key"
             }
@@ -77,7 +77,7 @@ export default function ModelSelector({
             name="Model"
             value={currentConfig.model}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-primary-500"
             placeholder={lang === "de" ? "Modell auswählen" : "Select model"}
           />
         </div>
@@ -93,7 +93,7 @@ export default function ModelSelector({
             name="Url"
             value={currentConfig.url}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-primary-500"
             placeholder={
               lang === "de" ? "API-Endpunkt eingeben" : "Enter API endpoint"
             }
@@ -112,7 +112,7 @@ export default function ModelSelector({
               {capabilities.map((capability) => (
                 <span
                   key={capability}
-                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
                 >
                   {getCapabilityLabel(capability)}
                 </span>

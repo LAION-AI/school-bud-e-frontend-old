@@ -30,7 +30,7 @@ export default function Home(req: Request) {
                   <div class="rounded-md shadow">
                     <a
                       href="/signin"
-                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
+                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
                     >
                       {lang === "de" ? "Jetzt starten" : "Get Started"}
                     </a>
@@ -38,7 +38,7 @@ export default function Home(req: Request) {
                   <div class="mt-3 sm:mt-0 sm:ml-3">
                     <a
                       href="/press"
-                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
+                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 md:py-4 md:text-lg md:px-10"
                     >
                       {lang === "de" ? "Mehr erfahren" : "Learn More"}
                     </a>
@@ -47,13 +47,6 @@ export default function Home(req: Request) {
               </div>
             </main>
           </div>
-        </div>
-        <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img
-            class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-            src={asset("/lines.svg")}
-            alt="School Bud-E"
-          />
         </div>
       </div>
 
@@ -78,7 +71,7 @@ export default function Home(req: Request) {
             <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
               {/* Feature 1 */}
               <div class="relative">
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" title={lang === "de" ? "Personalisiertes Lernen" : "Personalized Learning"}>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
@@ -97,7 +90,7 @@ export default function Home(req: Request) {
 
               {/* Feature 2 */}
               <div class="relative">
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" title={lang === "de" ? "Interaktive Übungen" : "Interactive Exercises"}>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                   </svg>
@@ -116,7 +109,7 @@ export default function Home(req: Request) {
 
               {/* Feature 3 */}
               <div class="relative">
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" title={lang === "de" ? "KI-gestützte Unterstützung" : "AI-powered Support"}>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                   </svg>
@@ -135,7 +128,7 @@ export default function Home(req: Request) {
 
               {/* Feature 4 */}
               <div class="relative">
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" title={lang === "de" ? "Fortschrittsverfolgung" : "Progress Tracking"}>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
@@ -157,20 +150,20 @@ export default function Home(req: Request) {
       </div>
 
       {/* CTA Section */}
-      <div class="bg-indigo-700 border-b">
+      <div class="bg-primary-700 border-b">
         <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
             <span class="block">{lang === "de" ? "Bereit zum Starten?" : "Ready to get started?"}</span>
             <span class="block">{lang === "de" ? "Beginne noch heute mit School Bud-E." : "Begin your journey with School Bud-E today."}</span>
           </h2>
-          <p class="mt-4 text-lg leading-6 text-indigo-200">
+          <p class="mt-4 text-lg leading-6 text-primary-200">
             {lang === "de" 
               ? "Melde dich an und entdecke, wie School Bud-E dein Lernerlebnis revolutionieren kann."
               : "Sign up and discover how School Bud-E can revolutionize your learning experience."}
           </p>
           <a
             href="/signin"
-            class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-indigo-50 sm:w-auto"
+            class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 sm:w-auto"
           >
             {lang === "de" ? "Jetzt starten" : "Get Started"}
           </a>

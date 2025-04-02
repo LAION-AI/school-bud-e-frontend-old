@@ -336,7 +336,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
             }}
             className={`${
               activeTab.value === "general"
-                ? "border-indigo-500 text-primary-600"
+                ? "border-primary-500 text-primary-600"
                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
@@ -349,7 +349,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
             }}
             className={`${
               activeTab.value === "token-usage"
-                ? "border-indigo-500 text-primary-600"
+                ? "border-primary-500 text-primary-600"
                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
@@ -416,7 +416,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               value={newSettings.value.systemPrompt}
               onChange={handleSystemPromptChange}
               rows={4}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              className="shadow-sm focus:ring-indigo-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
               placeholder={t.systemPromptPlaceholder}
             />
             <p className="mt-1 text-sm text-gray-500">

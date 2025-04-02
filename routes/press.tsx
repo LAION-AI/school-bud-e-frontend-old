@@ -12,13 +12,13 @@ export default function Press(req: Request) {
   return (
     <div class="min-h-screen bg-white w-full">
       {/* Header */}
-      <div class="bg-indigo-700 w-full">
+      <div class="bg-primary-700 w-full">
         <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
           <div class="text-center">
             <h1 class="text-4xl font-extrabold text-white sm:text-5xl sm:tracking-tight lg:text-6xl">
               {lang === "de" ? "Presse & Medien" : "Press & Media"}
             </h1>
-            <p class="mt-6 max-w-3xl mx-auto text-xl text-indigo-200">
+            <p class="mt-6 max-w-3xl mx-auto text-xl text-primary-200">
               {lang === "de" 
                 ? "Ressourcen und Informationen für Medienvertreter und Partner"
                 : "Resources and information for media representatives and partners"}
@@ -43,7 +43,7 @@ export default function Press(req: Request) {
               <div class="mt-8 space-y-6">
                 <div class="flex">
                   <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" title="Mission">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                       </svg>
@@ -62,7 +62,7 @@ export default function Press(req: Request) {
                 </div>
                 <div class="flex">
                   <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
                       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" title="Values">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                       </svg>

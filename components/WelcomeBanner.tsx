@@ -29,24 +29,24 @@ export default function WelcomeBanner({
 
   return (
     <div
-      className="mx-auto max-w-xl bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg shadow-md p-6 mb-6 border border-indigo-200 animate-fadeIn"
+      className="mx-auto max-w-xl bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg shadow-md p-6 mb-6 border border-primary-200 animate-fadeIn"
       data-tour="welcome-banner"
     >
-      <h2 className="text-xl font-bold text-indigo-800 mb-2">
+      <h2 className="text-xl font-bold text-primary-800 mb-2">
         {content.title}
       </h2>
-      <p className="mb-4 text-indigo-700">{content.description}</p>
+      <p className="mb-4 text-primary-700">{content.description}</p>
       <div className="flex space-x-3">
         <Button
           onClick={onOpenSettings}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+          className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
           data-tour="open-settings-button"
         >
           {content.setupButton}
         </Button>
         <Button
           onClick={onStartTour}
-          className="relative bg-white hover:bg-gray-50 text-primary-600 border border-indigo-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"
+          className="relative bg-white hover:bg-gray-50 text-primary-600 border border-primary-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"
           data-tour="start-tour-button"
         >
           <span className="mr-2">{content.tourButton}</span>

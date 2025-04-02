@@ -27,7 +27,7 @@ export default function Navbar({ lang }: NavbarProps) {
             <div class="flex-shrink-0">
               <a
                 href="/signin"
-                class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 {lang === "de" ? "Anmelden" : "Sign In"}
               </a>
