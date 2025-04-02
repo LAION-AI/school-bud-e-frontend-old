@@ -11,7 +11,7 @@ import {
 import { chatIslandContent } from "../../internalization/content.ts";
 import { getTTS, resetTranscript } from "./speech.ts";
 import {
-    EventSourceMessage,
+    type EventSourceMessage,
     fetchEventSource,
 } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
 
@@ -117,7 +117,7 @@ export const startStream = async (
                 content: mediaContent 
             });
             
-            console.log("[Stream] Final message structure:", JSON.stringify(messagesToSend).substring(0, 100) + "...");
+            console.log("[Stream] Final message structure:", `${JSON.stringify(messagesToSend).substring(0, 100)}...`);
         } else {
             messagesToSend.push({ role: "user", "content": currentQuery });
         }
@@ -158,14 +158,14 @@ export const startStream = async (
             const query = currentQuerrySplit[1].trim();
             let n = 5;
             if (currentQuerrySplit.length > 2) {
-                n = parseInt(currentQuery.split(":")[2].trim(), 10);
+                n = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
             }
 
             const res = await fetchWikipedia(query, collection, n);
 
             // console.log("[API] wikipedia response", res);
 
-            const beautifulWikipedia = res!.map(
+            const beautifulWikipedia = res?.map(
                 (result: WikipediaResult, index: number) => {
                     const content = Object.values(result)[0];
                     return `\`\`\`webresultjson
@@ -182,7 +182,7 @@ export const startStream = async (
             endwebresultjson\`\`\`
             **${chatIslandContent[lang.value].result} ${index + 1} ${
                         chatIslandContent[lang.value].of
-                    } ${res!.length}**\n**${
+                    } ${res?.length}**\n**${
                         chatIslandContent[lang.value].wikipediaTitle
                     }**: ${content.Title}\n**${
                         chatIslandContent[lang.value].wikipediaURL
@@ -205,19 +205,19 @@ export const startStream = async (
             const query = currentQuerrySplit[1].trim();
             let limit = 5;
             if (currentQuerrySplit.length > 2) {
-                limit = parseInt(currentQuery.split(":")[2].trim(), 10);
+                limit = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
             }
 
             const response = await fetchPapers(query, limit);
 
             // console.log("[API] papers response", response);
 
-            const beautifulPapers = response!.payload.items.map(
+            const beautifulPapers = response?.payload.items.map(
                 (result: PapersItem, index: number) => {
                     return `**${chatIslandContent[lang.value].result} ${
                         index + 1
                     } ${chatIslandContent[lang.value].of} ${
-                        response!.payload.items.length
+                        response?.payload.items.length
                     }**\n**${
                         chatIslandContent[lang.value].papersDOI
                     }**: ${result.doi}\n**${
@@ -246,7 +246,7 @@ export const startStream = async (
             const query = currentQuerrySplit[1].trim();
             let top_n = 5;
             if (currentQuerrySplit.length > 2) {
-                top_n = parseInt(currentQuery.split(":")[2].trim(), 10);
+                top_n = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
             }
 
             // console.log("query", query);
@@ -255,11 +255,11 @@ export const startStream = async (
             const res = await fetchBildungsplan(query, top_n);
 
             // console.log("[API] bildungsplan response", res);
-            const beautifulBildungsplan = res!.results.map((result, index) => {
+            const beautifulBildungsplan = res?.results.map((result, index) => {
                 return `**${chatIslandContent[lang.value].result} ${
                     index + 1
                 } ${chatIslandContent[lang.value].of} ${
-                    res!.results.length
+                    res?.results.length
                 }**\n${result.text}\n\n**Score**: ${result.score}`;
             }).join("\n\n");
 
@@ -269,7 +269,7 @@ export const startStream = async (
             return;
         }
 
-        fetchEventSource("/api/chat", {
+        await fetchEventSource("/api/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -278,7 +278,6 @@ export const startStream = async (
                 lang: lang.value,
                 messages: [...previousMessages, ...messagesToSend],
                 universalApiKey: settings.value.universalApiKey,
-                universalShopApiKey: settings.value.universalShopApiKey ?? "",
                 llmApiUrl: settings.value.apiUrl,
                 llmApiKey: settings.value.apiKey,
                 llmApiModel: settings.value.apiModel,
@@ -300,7 +299,7 @@ export const startStream = async (
                     const match = combinedText.match(/(?<!\d)[.!?][^.!?]*$/);
 
                     if (match && combinedText.length > 20) {
-                        const splitIndex = match.index! + 1; // Include the punctuation
+                        const splitIndex = match.index ?? 0 + 1; // Include the punctuation
                         const textToSpeak = combinedText.slice(0, splitIndex);
                         const remaining = combinedText.slice(splitIndex);
 
@@ -365,22 +364,20 @@ export const startStream = async (
                 });
                 if (response.ok) {
                     return; // everything's good
-                } else if (
-                    response.status != 200
-                ) {
+                }
+                if (response.status !== 200) {
                     // client-side errors are usually non-retriable:
                     const errorText = await response.text();
                     throw new FatalError(
                         `**BACKEND ERROR**\nStatuscode: ${response.status}\nMessage: ${errorText}`,
                     );
-                } else {
-                    throw new RetriableError();
                 }
+                throw new RetriableError();
             },
             onerror(err: FatalError) {
                 streamComplete.value = true;
                 /// add err.message to messages
-                appendToMessage(messages.value.length - 1, err.message);
+                // appendToMessage(messages.value.length - 1, err.message);
                 throw err;
             },
             onclose() {

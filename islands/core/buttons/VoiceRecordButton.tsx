@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import type { JSX } from "preact";
 import { IconMicrophone } from "@tabler/icons-preact";
-import { settings } from "../../../components/chat/store.ts";
+import { addMessage, settings } from "../../../components/chat/store.ts";
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   lang: string;
@@ -144,6 +144,11 @@ function VoiceRecordButton({
         onFinishRecording(text);
       } else {
         console.error("Failed to upload audio");
+        const errorMessage = await response.text();
+        addMessage({
+          role: "assistant",
+          content: `❌ **Error**: ${errorMessage}`,
+        });
       }
     } catch (error) {
       console.error("Error uploading audio:", error);

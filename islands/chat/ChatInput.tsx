@@ -157,7 +157,6 @@ export default function ChatInput() {
 					errorMessage = cleanMessage || error.message;
 				}
 			}
-
 			// Add error message to chat
 			addMessage({
 				role: "assistant",

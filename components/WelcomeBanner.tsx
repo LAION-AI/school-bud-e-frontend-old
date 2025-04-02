@@ -22,7 +22,10 @@ const welcomeContent = {
 export default function WelcomeBanner({
   onOpenSettings,
   onStartTour,
-}: WelcomeBannerProps) {
+}: {
+  onOpenSettings: () => void;
+  onStartTour: () => void;
+}) {
   // ...existing code
 
   const content = welcomeContent[lang.value] || welcomeContent.en;

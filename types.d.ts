@@ -126,11 +126,14 @@ interface Image {
     url: string;
     detail: string;
     size?: number;
+    transcription?: string;
   };
   pdf_url?: {
     url: string;
     detail: string;
     size?: number;
+    isTranscribing?: boolean;
+    transcription?: string;
   };
   preview?: string;
 }
