@@ -20,14 +20,10 @@ const welcomeContent = {
 };
 
 export default function WelcomeBanner({
-  onOpenSettings,
   onStartTour,
 }: {
-  onOpenSettings: () => void;
   onStartTour: () => void;
 }) {
-  // ...existing code
-
   const content = welcomeContent[lang.value] || welcomeContent.en;
 
   return (
@@ -40,13 +36,14 @@ export default function WelcomeBanner({
       </h2>
       <p className="mb-4 text-primary-700">{content.description}</p>
       <div className="flex space-x-3">
-        <Button
-          onClick={onOpenSettings}
-          className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-          data-tour="open-settings-button"
-        >
-          {content.setupButton}
-        </Button>
+        <a href="/settings">
+          <Button
+            className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            data-tour="open-settings-button"
+          >
+            {content.setupButton}
+          </Button>
+        </a>
         <Button
           onClick={onStartTour}
           className="relative bg-white hover:bg-gray-50 text-primary-600 border border-primary-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"

@@ -5,7 +5,6 @@ function Warning({ lang }: { lang: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const [isHidden, setIsHidden] = useState((localStorage.getItem("warning") || "true") === "true");
-  console.log({isHidden}, localStorage.getItem("warning"));
 
   useEffect(() => {
     localStorage.setItem("warning", isHidden.toString());

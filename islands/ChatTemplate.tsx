@@ -22,7 +22,6 @@ interface ChatTemplateProps {
 	onRefreshAction: (groupIndex: number) => void;
 	onEditAction: (groupIndex: number) => void;
 	children: JSX.Element | JSX.Element[];
-	onOpenSettings: () => void;
 	onStartTour?: () => void;
 }
 
@@ -76,7 +75,6 @@ function ChatTemplate({
 	onRefreshAction,
 	onEditAction,
 	children,
-	onOpenSettings,
 	onStartTour = () => startTour("basics"),
 }: ChatTemplateProps) {
 	const [sidebarData, setSidebarData] = useState<
@@ -178,7 +176,6 @@ function ChatTemplate({
 
 				{!isApiConfigured.value && (
 					<WelcomeBanner
-						onOpenSettings={onOpenSettings}
 						onStartTour={onStartTour}
 					/>
 				)}

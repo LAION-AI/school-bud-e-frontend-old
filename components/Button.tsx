@@ -29,6 +29,7 @@ export interface ButtonProps
   size?: ButtonSize;
   isLoading?: boolean;
   isFullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export function Button({

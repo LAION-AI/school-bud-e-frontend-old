@@ -8,7 +8,7 @@ import { useEffect, useState, useRef } from "preact/hooks";
 // // Import necessary types from Preact
 import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
 import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
-import { initTourGuide, startTour } from "../utils/tourGuide.ts";
+import { initTourGuide } from "../utils/tourGuide.ts";
 
 // Define the AudioItem interface if not already defined
 interface AudioItem {
@@ -33,7 +33,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   const [audioFileDict, setAudioFileDict] = useState<AudioFileDict>({});
 
   const [isStreamComplete] = useState(true);
-  const [setIsSettingsOpen] = useState(false);
   const tourInitialized = useRef(false);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     if (isStreamComplete && lastMessage) {
       if ("content" in messages.value[messages.value.length - 1]) {
         let lastMessageFromBuddy: string;
-        const lastMessageContent = messages.value[messages.value.length - 1]["content"];
+        const lastMessageContent = messages.value[messages.value.length - 1].content;
 
         if (typeof lastMessageContent === "string") {
           lastMessageFromBuddy = lastMessageContent;
@@ -156,10 +155,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     // Force immediate state update when starting playback
     setAudioFileDict({ ...audioFileDict });
   };
-
-  const handleOpenSettings = () => {
-    setIsSettingsOpen(true);
-  };
   
   // MAIN CONTENT THAT IS RENDERED
   return (
@@ -170,7 +165,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         audioFileDict={audioFileDict}
         onRefreshAction={handleRefreshAction}
         onEditAction={() => { }}
-        onOpenSettings={handleOpenSettings}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>

@@ -17,9 +17,9 @@ export async function trackPageView(req: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     }).catch((e) => {
-      //console.error("Failed to track page view", e);
+      console.error("Failed to track page view", e);
     }).then((res) => {
-      //console.log("Tracked page view", res);
+      console.log("Tracked page view", res);
     });
   } catch {
     //console.error("Failed to track page view");
