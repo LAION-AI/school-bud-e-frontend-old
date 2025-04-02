@@ -109,7 +109,7 @@ export default function Press(req: Request) {
           </div>
           <div class="mt-12 sm:mt-16 lg:mt-20">
             <div class="bg-gray-50 rounded-lg overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px">
-              <div class="p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
+              <div class="p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500">
                 <div class="mt-8">
                   <h3 class="text-lg font-medium text-gray-900">
                     <a href="https://laion.ai/contact" class="focus:outline-none">
@@ -128,7 +128,7 @@ export default function Press(req: Request) {
                   </div>
                 </div>
               </div>
-              <div class="p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
+              <div class="p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500">
                 <div class="mt-8">
                   <h3 class="text-lg font-medium text-gray-900">
                     <a href="https://laion.ai/blog" class="focus:outline-none">

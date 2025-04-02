@@ -161,7 +161,7 @@ export default function PresentationGeneratorIsland() {
 
   return (
     <div class="flex h-full gap-4 p-4">
-      <div class="flex-1 bg-white rounded-lg shadow-lg p-6">
+      <div class="flex-1 bg-white rounded-lg shadow-lg p-6 !pt-0">
         <div class="h-full flex flex-col">
           <h2 class="text-2xl font-bold mb-4">PowerPoint Presentation Generator</h2>
           

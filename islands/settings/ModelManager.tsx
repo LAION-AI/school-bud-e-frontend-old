@@ -1,8 +1,9 @@
-import { useSignal } from "@preact/signals";
+import { useSignalEffect   } from "@preact/signals";
 import { IconBrain, IconPlus, IconTrash } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import Input from "../../components/core/Input.tsx";
 import { useEffect, useRef } from "preact/hooks";
+import type { Signal } from "@preact/signals";
 
 interface Model {
   id: string;
@@ -18,6 +19,9 @@ interface ModelManagerProps {
   onUpdateModel: (model: Model) => void;
   onDeleteModel: (modelId: string) => void;
   onAddModel: (model: Model) => void;
+  showNewModelForm: Signal<boolean>;
+  editingModel: Signal<Model | null>;
+  preselectedCapability: Signal<string | null>;
   lang: string;
 }
 
@@ -26,10 +30,11 @@ export default function ModelManager({
   onUpdateModel,
   onDeleteModel,
   onAddModel,
+  showNewModelForm,
+  editingModel,
+  preselectedCapability,
   lang,
 }: ModelManagerProps) {
-  const showNewModelForm = useSignal(false);
-  const editingModel = useSignal<Model | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -37,6 +42,7 @@ export default function ModelManager({
       if (e.key === "Escape" && showNewModelForm.value) {
         showNewModelForm.value = false;
         editingModel.value = null;
+        preselectedCapability.value = null;
       }
     };
 
@@ -44,11 +50,11 @@ export default function ModelManager({
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  useEffect(() => {
+  useSignalEffect(() => {
     if (showNewModelForm.value) {
       setTimeout(() => nameInputRef.current?.focus(), 0);
     }
-  }, [showNewModelForm.value]);
+  });
 
   const defaultModel: Model = {
     id: crypto.randomUUID(),
@@ -56,7 +62,7 @@ export default function ModelManager({
     key: "",
     url: "",
     model: "",
-    capabilities: [],
+    capabilities: preselectedCapability.value ? [preselectedCapability.value] : [],
   };
 
   const capabilities = [
@@ -117,8 +123,9 @@ export default function ModelManager({
           onClick={() => {
             showNewModelForm.value = true;
             editingModel.value = null;
+            preselectedCapability.value = null;
           }}
-          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
         >
           <IconPlus className="h-4 w-4 mr-1" />
           {lang === "de" ? "Neues Modell" : "New Model"}
@@ -237,28 +244,31 @@ export default function ModelManager({
               />
 
               {/* Capabilities */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <fieldset className="space-y-2">
+                <legend className="block text-sm font-medium text-gray-700 mb-2">
                   {lang === "de" ? "Fähigkeiten" : "Capabilities"}
-                </label>
+                </legend>
                 <div className="space-y-2">
-                  {capabilities.map((capability) => (
-                    <label key={capability.id} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name={`capability-${capability.id}`}
-                        defaultChecked={editingModel.value?.capabilities.includes(
-                          capability.id
-                        )}
-                        className="h-4 w-4 text-primary-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <span className="ml-2">
-                        {capability.icon} {capability.label}
-                      </span>
-                    </label>
-                  ))}
+                  {capabilities.map((capability) => {
+                    const isPreselected = preselectedCapability.value === capability.id;
+                    return (
+                      <label key={capability.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name={`capability-${capability.id}`}
+                          defaultChecked={
+                            isPreselected || editingModel.value?.capabilities.includes(capability.id)
+                          }
+                          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        />
+                        <span className="ml-2">
+                          {capability.icon} {capability.label}
+                        </span>
+                      </label>
+                    );
+                  })}
                 </div>
-              </div>
+              </fieldset>
 
               {/* Form Actions */}
               <div className="flex justify-end space-x-3 mt-6">
@@ -267,6 +277,7 @@ export default function ModelManager({
                   onClick={() => {
                     showNewModelForm.value = false;
                     editingModel.value = null;
+                    preselectedCapability.value = null;
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
                 >
@@ -274,7 +285,7 @@ export default function ModelManager({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                 >
                   {editingModel.value
                     ? lang === "de"
