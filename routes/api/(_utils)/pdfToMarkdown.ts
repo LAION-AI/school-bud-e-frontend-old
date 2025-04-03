@@ -356,23 +356,15 @@ async function fetchMarkdownForPDF(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            pdf_bytes: Array.from(pdf),
-            base_url: apiUrl,
-            api_key: apiKey,
-            model: apiModel
+            file: Array.from(pdf),
+            apiUrl: apiUrl,
+            apiKey: apiKey,
+            apiModel: apiModel
           }),
         });
       } else {
-        // Otherwise send the raw PDF data
-        response = await fetch(pdfToMarkdownUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/pdf",
-          },
-          body: pdf,
-        });
+        return ["No API configuration provided", null];
       }
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`[PDF] Service responded with error: ${response.status} ${response.statusText}`);

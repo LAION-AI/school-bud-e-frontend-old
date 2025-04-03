@@ -1,5 +1,6 @@
 import { Button } from "./Button.tsx";
 import { lang } from "./chat/store.ts";
+
 // Define welcome content for different languages
 const welcomeContent = {
   en: {
@@ -28,32 +29,19 @@ export default function WelcomeBanner({
 
   return (
     <div
-      className="mx-auto max-w-xl bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg shadow-md p-6 mb-6 border border-primary-200 animate-fadeIn"
+      className="mx-auto max-w-xl bg-white rounded-lg shadow-md p-6 mb-6 animate-fadeIn"
       data-tour="welcome-banner"
     >
-      <h2 className="text-xl font-bold text-primary-800 mb-2">
+      <h2 className="text-xl font-bold text-primary-700 mb-2">
         {content.title}
       </h2>
       <p className="mb-4 text-primary-700">{content.description}</p>
       <div className="flex space-x-3">
         <a href="/settings">
-          <Button
-            className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-            data-tour="open-settings-button"
-          >
+          <Button data-tour="open-settings-button" variant="primary">
             {content.setupButton}
           </Button>
         </a>
-        <Button
-          onClick={onStartTour}
-          className="relative bg-white hover:bg-gray-50 text-primary-600 border border-primary-600 font-medium py-2 px-4 rounded-md transition-colors animate-pulse"
-          data-tour="start-tour-button"
-        >
-          <span className="mr-2">{content.tourButton}</span>
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
-            !
-          </span>
-        </Button>
       </div>
     </div>
   );

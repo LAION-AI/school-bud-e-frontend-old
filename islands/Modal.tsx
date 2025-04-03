@@ -10,11 +10,33 @@ interface ModalProps {
 
 export default function Modal({ isOpen, onClose, title, children, size = "md" }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLButtonElement>(null);
+  const lastFocusableRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
         onClose();
+      }
+    };
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (!isOpen || !firstFocusableRef.current || !lastFocusableRef.current) return;
+      
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstFocusableRef.current) {
+            e.preventDefault();
+            lastFocusableRef.current.focus();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastFocusableRef.current) {
+            e.preventDefault();
+            firstFocusableRef.current.focus();
+          }
+        }
       }
     };
 
@@ -25,7 +47,13 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
     };
 
     document.addEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleTab);
     document.addEventListener("mousedown", handleClickOutside);
+
+    // Focus first element when modal opens
+    if (isOpen && firstFocusableRef.current) {
+      firstFocusableRef.current.focus();
+    }
 
     // Prevent scrolling on body when modal is open
     if (isOpen) {
@@ -36,6 +64,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleTab);
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "auto";
     };
@@ -59,6 +88,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold">{title}</h2>
           <button
+            ref={firstFocusableRef}
             type="button"
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -72,6 +102,16 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
         </div>
         <div className="p-4 overflow-y-auto max-h-[80vh]">
           {children}
+        </div>
+        <div className="p-4 border-t flex justify-end">
+          <button
+            ref={lastFocusableRef}
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

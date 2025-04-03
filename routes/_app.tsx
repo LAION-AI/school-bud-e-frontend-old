@@ -51,12 +51,12 @@ export default function App({ Component, url }: AppProps) {
 								onDownloadChat={handleDownloadChat}
 								lang={lang}
 							/>
+							<AIFloatingButton />
 						</Partial>
 						<Partial name="main-content">
 							<div class="flex-1">
 								<div class="pb-16 md:pb-0">
 									<Component />
-									<AIFloatingButton />
 									{showBottomNav && <BottomNavigation lang={lang} />}
 								</div>
 							</div>

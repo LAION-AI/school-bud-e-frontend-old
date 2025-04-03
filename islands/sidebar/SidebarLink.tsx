@@ -49,7 +49,7 @@ export default function SidebarLink({
   return (
     <a
       href={href}
-      class={`block px-3 py-2 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 ${
+      class={`block px-3 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 ${
         isActive ? activeClass : defaultClass
       } ${className}`}
     >

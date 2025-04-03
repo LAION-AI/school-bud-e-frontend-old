@@ -133,7 +133,6 @@ export default function Sidebar({
       <div class="p-3 pt-0">
         <TourProgressSidebarSection />
         <UserProfileSection
-          isCollapsed={isCollapsed}
           lang={lang}
         />
       </div>

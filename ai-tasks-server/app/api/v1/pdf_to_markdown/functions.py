@@ -9,6 +9,12 @@ from PIL import Image
 def use_markitdown(pdf_bytes, base_url=None, api_key=None, llm_model=None):
     if not pdf_bytes:
         raise HTTPException(status_code=400, detail="No PDF data received.")
+    if not base_url:
+        raise HTTPException(status_code=400, detail="No base URL received.")
+    if not api_key:
+        raise HTTPException(status_code=400, detail="No API key received.")
+    if not llm_model:
+        raise HTTPException(status_code=400, detail="No LLM model received.")
     
     # Check if bytes are a list (from JSON) and convert to bytes
     if isinstance(pdf_bytes, list):

@@ -9,10 +9,10 @@ async def pdf_to_markdown_route(request: Request):
         # Get JSON data if content type is JSON
         if request.headers.get("content-type") == "application/json":
             data = await request.json()
-            pdf_bytes = data.get("pdf_bytes")
-            base_url = data.get("api_url")
-            api_key = data.get("api_key")
-            model = data.get("api_model")
+            pdf_bytes = data.get("file")
+            base_url = data.get("apiUrl")
+            api_key = data.get("apiKey")
+            model = data.get("apiModel")
             return use_markitdown(pdf_bytes, base_url=base_url, api_key=api_key, llm_model=model)
         else:
             raise HTTPException(status_code=415, detail="Unsupported media type")

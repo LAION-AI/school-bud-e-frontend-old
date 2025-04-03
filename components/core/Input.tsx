@@ -1,6 +1,7 @@
 // @ts-ignore: JSX namespace is used in type definitions
 import { JSX } from "preact";
 import { IS_BROWSER } from "$fresh/runtime.ts";
+import { forwardRef } from "preact/compat";
 
 export interface InputProps {
   label?: string;
@@ -25,7 +26,7 @@ export interface InputProps {
   [key: string]: unknown; // Allow for additional HTML attributes
 }
 
-export default function Input({
+const Input = forwardRef<HTMLInputElement, InputProps>(({
   label,
   error,
   type = "text",
@@ -46,7 +47,7 @@ export default function Input({
   iconPosition = "right",
   helpText,
   ...props
-}: InputProps) {
+}, ref) => {
   const baseInputClass = "block w-full px-3 py-2 sm:text-sm border-2 border-gray-200 rounded-md focus:ring-primary-500 focus:border-primary-500";
   const errorInputClass = "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
   const disabledInputClass = "bg-gray-100 cursor-not-allowed";
@@ -90,6 +91,7 @@ export default function Input({
           onBlur={onBlur}
           onFocus={onFocus}
           className={inputClasses}
+          ref={ref}
           {...props}
         />
         {icon && iconPosition === "right" && (
@@ -110,4 +112,6 @@ export default function Input({
       )}
     </div>
   );
-} 
+});
+
+export default Input; 

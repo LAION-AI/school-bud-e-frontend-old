@@ -52,6 +52,7 @@ export default function ModelManager({
 
   useSignalEffect(() => {
     if (showNewModelForm.value) {
+      console.log(nameInputRef.current)
       setTimeout(() => nameInputRef.current?.focus(), 0);
     }
   });
@@ -113,8 +114,8 @@ export default function ModelManager({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div>
+      <div className="flex justify-between items-center pb-4">
         <h3 className="text-lg font-medium text-gray-900">
           {lang === "de" ? "KI-Modelle" : "AI Models"}
         </h3>

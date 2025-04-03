@@ -283,7 +283,7 @@ export default function ChatInput() {
 				)}
 				{isThinking.value && <TypingIndicator />}
 				<div
-					className="flex cursor-text flex-col rounded-xl border border-gray-300 px-4 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors bg-white mx-4 mb-4"
+					className={`flex cursor-text flex-col rounded-xl border border-gray-300 px-4 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors bg-white mx-4 mb-4 ${isApiConfigured.value ? '' : 'opacity-50 cursor-not-allowed pointer-events-none'}`}
 					data-tour="chat-input"
 				>
 

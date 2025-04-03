@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { IconQuestionMark } from "@tabler/icons-preact";
+import Modal from "../islands/Modal.tsx";
 
 export default function FAQButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,38 +15,35 @@ export default function FAQButton() {
         <IconQuestionMark />
       </button>
 
-      {isOpen && (
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-4">
-              <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                class="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div class="space-y-4">
-              <div>
-                <h3 class="font-semibold text-lg">Why isn't the service free?</h3>
-                <p class="text-gray-600">
-                  We would love to offer our service for free, but we face significant costs in providing high-quality AI assistance. However, we're committed to making education accessible:
-                </p>
-                <ul class="list-disc ml-6 mt-2 text-gray-600">
-                  <li>We maintain a free tier with limited usage</li>
-                  <li>We provide detailed tutorials on how to get started with free API keys</li>
-                  <li>We offer special pricing for educational institutions</li>
-                </ul>
-                <p class="mt-2 text-gray-600">
-                  Check out our <a href="/tutorials" class="text-primary-500 hover:underline">tutorials page</a> to learn how to get started with free API keys from various providers.
-                </p>
-              </div>
-            </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Frequently Asked Questions"
+        size="lg"
+      >
+        <div class="space-y-6">
+          <div class="space-y-4">
+            <h3 class="font-medium text-lg">What is School Bud-E?</h3>
+            <p class="text-gray-600">
+              School Bud-E is your AI-powered educational companion, designed to help students and teachers with various learning tasks.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="font-medium text-lg">How does it work?</h3>
+            <p class="text-gray-600">
+              School Bud-E uses advanced AI to understand your questions and provide helpful, educational responses. It can assist with homework, explain concepts, and help you learn more effectively.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="font-medium text-lg">Is it free to use?</h3>
+            <p class="text-gray-600">
+              School Bud-E offers both free and premium features. Basic functionality is available to all users, while advanced features may require a subscription.
+            </p>
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 } 
