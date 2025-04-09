@@ -1,6 +1,4 @@
-import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
-
-const PYTHON_BASE_URL = Deno.env.get("PYTHON_BASE_URL");
+import { getApiKeys } from "../chat/(_utils)/apiKeys.ts";
 
 /**
  * Directly transcribes a PDF buffer to markdown text.
@@ -13,13 +11,14 @@ export async function transcribePdf(
   pdfBuffer: Uint8Array, 
   apiUrl?: string, 
   apiKey?: string, 
-  apiModel?: string
+  apiModel?: string,
+  shopApiKey?: string
 ): Promise<string> {
   try {
     console.log("[PDF] Starting PDF transcription process...");
     
     // Try to get a markdown transcription
-    const [markdown, error] = await fetchMarkdownForPDF(pdfBuffer, false, apiUrl, apiKey, apiModel);
+    const [markdown, error] = await fetchMarkdownForPDF(pdfBuffer, false, apiUrl, apiKey, apiModel, shopApiKey);
     
     // Check if we got a valid response
     if (markdown) {
@@ -44,290 +43,21 @@ export async function transcribePdf(
   }
 }
 
-/**
- * Searches through the messages and replaces all PDFs with Markdown.
- * If the message content is an array, it will be converted to a single string after conversion.
- * @param messages Chat messages uploaded to the server.
- * @param apiUrl The API URL for fetching Markdown
- * @param apiKey The API key for fetching Markdown
- * @param apiModel The API model for fetching Markdown
- * @returns An error if something went wrong, or null if successful.
- */
-export default async function replacePDFWithMarkdownInMessages(
-  messages: {
-    role: string;
-    content: string | {
-      type: string;
-      text?: string;
-      image_url?: { url: string; detail?: string };
-      pdf_url?: { url: string; size?: number };
-    }[] | any;
-    processedContent?: string | {
-      type: string;
-      text?: string;
-      image_url?: { url: string; detail?: string };
-      pdf_url?: { url: string; size?: number };
-    }[] | any;
-  }[],
-  apiUrl?: string,
-  apiKey?: string,
-  apiModel?: string
-): Promise<unknown | null> {
-  console.log(`[PDF] Processing ${messages.length} messages`);
-  
-  for (const message of messages) {
-    // Use processedContent if available, otherwise fall back to content
-    const contentToProcess = message.processedContent !== undefined ? 'processedContent' : 'content';
-    
-    // Skip if message content is undefined
-    if (!message[contentToProcess]) {
-      console.log(`[PDF] Skipping message with undefined ${contentToProcess}`);
-      continue;
-    }
-    
-    if (Array.isArray(message[contentToProcess])) {
-      console.log(`[PDF] Processing message with array ${contentToProcess} (${message[contentToProcess].length} items)`);
-      
-      for (let i = 0; i < message[contentToProcess].length; i++) {
-        const item = message[contentToProcess][i];
-        
-        if (
-          item &&
-          typeof item === "object" &&
-          item.type === "pdf_url" &&
-          item.pdf_url?.url
-        ) {
-          try {
-            console.log(`[PDF] Found PDF item at index ${i}, URL type: ${item.pdf_url.url.substring(0, 20)}...`);
-            
-            let pdfBuffer: Uint8Array;
-            const url = item.pdf_url.url;
-            
-            // Log URL type for debugging
-            if (url.startsWith("data:")) {
-              console.log("[PDF] Processing data URL");
-            } else if (url.startsWith("blob:")) {
-              console.log("[PDF] Processing blob URL");
-            } else if (url.startsWith("http")) {
-              console.log("[PDF] Processing HTTP URL");
-            } else {
-              console.log(`[PDF] Unknown URL type: ${url.substring(0, 10)}...`);
-            }
-
-            try {
-              // Fetch PDF content based on URL type
-              if (url.startsWith("data:application/pdf;base64,")) {
-                console.log("[PDF] Decoding base64 PDF data");
-                try {
-                  const base64Data = url.replace(/^data:application\/pdf;base64,/, "");
-                  pdfBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-                  console.log(`[PDF] Base64 decoded, buffer size: ${pdfBuffer.length} bytes`);
-                } catch (decodeError) {
-                  console.error("[PDF] Base64 decode error:", decodeError);
-                  throw new Error(`PDF decode error: ${decodeError}`);
-                }
-              } else if (url.startsWith("blob:")) {
-                console.log(`[PDF] Attempting to fetch blob URL: ${url}`);
-                try {
-                  // For blob URLs, first try fetch with no-cors mode
-                  let response: Response;
-                  try {
-                    console.log("[PDF] Trying fetch with credentials");
-                    response = await fetch(url, { credentials: 'include' });
-                  } catch (initialFetchError) {
-                    console.log(`[PDF] Initial fetch failed: ${initialFetchError.message}, trying no-cors mode`);
-                    response = await fetch(url, { mode: 'no-cors' });
-                  }
-                  
-                  if (!response.ok) {
-                    console.error(`[PDF] Blob fetch failed with status: ${response.status}`);
-                    throw new Error(`Blob fetch failed: ${response.statusText}`);
-                  }
-                  
-                  try {
-                    console.log("[PDF] Blob fetch succeeded, getting blob");
-                    const blob = await response.blob();
-                    console.log(`[PDF] Got blob of type ${blob.type} and size ${blob.size}`);
-                    
-                    const arrayBuffer = await blob.arrayBuffer();
-                    console.log(`[PDF] Converted blob to arrayBuffer of length ${arrayBuffer.byteLength}`);
-                    
-                    pdfBuffer = new Uint8Array(arrayBuffer);
-                    console.log(`[PDF] Created Uint8Array of length ${pdfBuffer.length}`);
-                  } catch (blobError) {
-                    console.error(`[PDF] Error processing blob: ${blobError.message}`);
-                    throw new Error(`Error processing blob: ${blobError.message}`);
-                  }
-                } catch (blobFetchError) {
-                  console.error(`[PDF] Blob URL fetch error: ${blobFetchError.message}`);
-                  
-                  // Fallback - suggest client to convert blob to data URL before submitting
-                  console.log("[PDF] Blob URL failed, adding specific error message");
-                  throw new Error(`Blob URL can't be processed by server. Convert to data URL client-side.`);
-                }
-              } else {
-                console.log(`[PDF] Fetching PDF from URL: ${url.substring(0, 30)}...`);
-                try {
-                  const response = await fetch(url);
-                  if (!response.ok) {
-                    console.error(`[PDF] Fetch failed with status: ${response.status}`);
-                    throw new Error(`PDF fetch failed: ${response.statusText}`);
-                  }
-                  const arrayBuffer = await response.arrayBuffer();
-                  pdfBuffer = new Uint8Array(arrayBuffer);
-                  console.log(`[PDF] Fetch successful, buffer size: ${pdfBuffer.length} bytes`);
-                } catch (fetchError) {
-                  console.error("[PDF] Fetch error:", fetchError);
-                  throw new Error(`Error fetching PDF: ${fetchError}`);
-                }
-              }
-            } catch (urlProcessingError) {
-              console.error("[PDF] URL processing error:", urlProcessingError);
-              message[contentToProcess][i] = `[PDF processing failed: ${urlProcessingError.message}]`;
-              continue;
-            }
-            
-            try {
-              console.log(`[PDF] Extracting text from PDF (${pdfBuffer.length} bytes)`);
-              
-              // Check if PDF needs to be truncated based on the flag
-              const shouldTruncate = item.pdf_url.shouldTruncate === true;
-              if (shouldTruncate) {
-                console.log("[PDF] Large PDF detected, will truncate text output");
-              }
-              
-              const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, apiUrl, apiKey, apiModel);
-              // Replace the PDF item with the converted Markdown text in the processed content
-              message[contentToProcess][i] = markdown[0] || "[PDF text extraction failed]";
-              
-              // Also store the transcription in the original PDF object for future reference
-              if (markdown[0] && item.pdf_url) {
-                item.pdf_url.transcription = markdown[0];
-              }
-              
-              // If there was an error, add it as a comment
-              if (markdown[1]) {
-                console.error(`[PDF] Error processing PDF: ${markdown[1]}`);
-                message[contentToProcess][i] += `\n\n<!-- PDF processing error: ${markdown[1]} -->`;
-              }
-            } catch (processingError) {
-              console.error("PDF processing error:", processingError);
-              message[contentToProcess][i] = "[PDF processing failed]";
-            }
-          } catch (e) {
-            console.error(e);
-            return e;
-          }
-        } else if (
-          item &&
-          typeof item === "object" &&
-          item.type === "text" &&
-          typeof item.text === "string"
-        ) {
-          // Replace text objects with their string content.
-          message[contentToProcess][i] = item.text;
-        }
-        // If the item is already a string, leave it as is.
-      }
-      // Join all items into a single string.
-      message[contentToProcess] = message[contentToProcess].join("\n");
-    } else if (
-      message[contentToProcess] &&
-      typeof message[contentToProcess] === "object" &&
-      message[contentToProcess] !== null
-    ) {
-      // Process content if it is a single object.
-      if (message[contentToProcess].type === "pdf_url") {
-        try {
-          let pdfBuffer: Uint8Array;
-          const url = message[contentToProcess].pdf_url.url;
-          
-          // Handle blob URLs by fetching the content
-          if (url.startsWith('blob:')) {
-            try {
-              const response = await fetch(url);
-              if (!response.ok) {
-                message[contentToProcess] = "[PDF could not be downloaded]";
-                return null;
-              }
-              const blob = await response.blob();
-              const arrayBuffer = await blob.arrayBuffer();
-              pdfBuffer = new Uint8Array(arrayBuffer);
-            } catch (fetchError) {
-              console.error("Error fetching blob URL:", fetchError);
-              message[contentToProcess] = "[PDF could not be downloaded]";
-              return null;
-            }
-          } else {
-            // Handle base64 data URLs
-            const base64 = url.replace(/^data:application\/pdf;base64,/, "");
-            
-            // Add a size check to prevent processing extremely large PDFs
-            if (base64.length > 10000000) { // ~10MB limit for base64 processing
-              message[contentToProcess] = "[Large PDF document - text extraction skipped]";
-              return null;
-            }
-            
-            try {
-              pdfBuffer = decodeBase64(base64);
-            } catch (decodeError) {
-              console.error("PDF decode error:", decodeError);
-              message[contentToProcess] = "[PDF could not be processed - decoding error]";
-              return null;
-            }
-          }
-          
-          try {
-            console.log(`[PDF] Extracting text from PDF (${pdfBuffer.length} bytes)`);
-            
-            // Check if PDF needs to be truncated based on the flag
-            const shouldTruncate = message[contentToProcess].pdf_url.shouldTruncate === true;
-            if (shouldTruncate) {
-              console.log("[PDF] Large PDF detected, will truncate text output");
-            }
-            
-            const markdown = await fetchMarkdownForPDF(pdfBuffer, shouldTruncate, apiUrl, apiKey, apiModel);
-            // Replace the object with the converted Markdown text in the processed content
-            message[contentToProcess] = markdown[0] || "[PDF text extraction failed]";
-            
-            // Also store the transcription in the original PDF object for future reference
-            if (markdown[0] && message[contentToProcess].pdf_url) {
-              message[contentToProcess].pdf_url.transcription = markdown[0];
-            }
-            
-            // If there was an error, add it as a comment
-            if (markdown[1]) {
-              console.error(`[PDF] Error processing PDF: ${markdown[1]}`);
-              message[contentToProcess] += `\n\n<!-- PDF processing error: ${markdown[1]} -->`;
-            }
-          } catch (processingError) {
-            console.error("PDF processing error:", processingError);
-            message[contentToProcess] = "[PDF processing failed]";
-          }
-        } catch (e) {
-          console.error(e);
-          return e;
-        }
-      } else if (
-        message[contentToProcess].type === "text" &&
-        typeof message[contentToProcess].content === "string"
-      ) {
-        // If it's a text object, use its string content.
-        message[contentToProcess] = message[contentToProcess].content;
-      }
-    }
-  }
-  return null;
-}
-
 async function fetchMarkdownForPDF(
   pdf: Uint8Array, 
   shouldTruncate = false, 
   apiUrl?: string, 
   apiKey?: string, 
-  apiModel?: string
+  apiModel?: string,
+  shopApiKey?: string
 ): Promise<[string | null, string | null]> {
   console.log(`[PDF] Attempting to fetch markdown for PDF (${pdf.length} bytes, truncate=${shouldTruncate})`);
+  console.debug({
+    apiUrl,
+    apiKey,
+    apiModel,
+    shopApiKey,
+  });
   
   const MAX_RETRIES = 3;
   const PYTHON_BASE_URL = Deno.env.get("PYTHON_BASE_URL");
@@ -346,6 +76,27 @@ async function fetchMarkdownForPDF(
       console.log(`[PDF] Using PDF-to-Markdown service URL: ${pdfToMarkdownUrl}`);
       
       let response;
+
+      if ((!apiUrl || !apiKey || !apiModel) && shopApiKey) {
+        const data = await getApiKeys({
+          messages: [],
+          shopApiKey: shopApiKey || "",
+          llmApiUrl: "",
+          llmApiKey: "",
+          llmApiModel: "",
+          isImageInMessages: false,
+          isCorrectionInLastMessage: false,
+          vlmApiUrl: "",
+          vlmApiKey: "",
+          vlmApiModel: "",
+          vlmCorrectionModel: ""
+        }, "gemini-2.5-pro-online");
+        console.debug("API KEYS", data);
+
+        apiUrl = data.api_url;
+        apiKey = data.api_key;
+        apiModel = data.api_model;
+      }
       
       // If we have API parameters, send them as JSON
       if (apiUrl || apiKey || apiModel) {

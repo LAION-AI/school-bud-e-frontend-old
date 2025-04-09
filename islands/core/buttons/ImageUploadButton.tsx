@@ -25,12 +25,14 @@ export function ImageUploadButton({
   apiUrl,
   apiKey,
   apiModel,
+  shopApiKey,
 }: {
   onImagesUploaded: (images: Image[]) => void;
   disableSendButton: (disabled: boolean) => void;
   apiUrl?: string;
   apiKey?: string;
   apiModel?: string;
+  shopApiKey?: string;
 }) {
   // Using FilePreview instead of any
   interface FilePreview {
@@ -76,7 +78,8 @@ export function ImageUploadButton({
       if (apiUrl) formData.append("apiUrl", apiUrl);
       if (apiKey) formData.append("apiKey", apiKey);
       if (apiModel) formData.append("apiModel", apiModel);
-      
+      if (shopApiKey) formData.append("shopApiKey", shopApiKey);
+
       console.log("[Upload] Sending PDF for transcription:", file.name, "Size:", file.size, "Type:", file.type);
       
       // Verify the file is a PDF - check file.type includes 'pdf'

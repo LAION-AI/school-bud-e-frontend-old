@@ -17,7 +17,7 @@ export async function trackPageView(req: Request) {
       },
       type: 'event',
     };
-    console.log({data});
+    // console.log({data});
 
     // Fire and forget - don't await
     await fetch(`${UMAMI_URL}/api/send`, {
@@ -25,12 +25,12 @@ export async function trackPageView(req: Request) {
       headers: { "Content-Type": "application/json", "User-Agent": req.headers.get("User-Agent") || "" },
       body: JSON.stringify(data),
     }).catch((e) => {
-      console.error("Failed to track page view", e);
+      // console.error("Failed to track page view", e);
     }).then((res) => {
-      console.log("Tracked page view", res);
+      //console.log("Tracked page view", res);
     });
   } catch (e){
-    console.error("Failed to track page view", e);
+    // console.error("Failed to track page view", e);
     // Silently fail if tracking fails
   }
 }

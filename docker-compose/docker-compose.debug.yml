@@ -6,7 +6,9 @@ services:
       args:
         BRANCH: next
     image: michael55555/school-bud-e-frontend:next 
-    command: ["sh", "-c", "deno task start"]
+    command: ["sh", "-c", "deno run --inspect-brk=0.0.0.0:9229 -A --watch=static/,routes/ dev.ts"]
+    ports:
+      - "9229:9229"
     develop:
       watch:
         - action: sync

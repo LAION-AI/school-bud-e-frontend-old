@@ -314,6 +314,7 @@ export default function ChatInput() {
 								apiUrl={settings.value.apiUrl}
 								apiKey={settings.value.apiKey}
 								apiModel={settings.value.apiModel}
+								shopApiKey={settings.value.universalApiKey}
 								class="image-upload-button"
 								data-tour="image-upload"
 							/>

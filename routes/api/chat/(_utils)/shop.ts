@@ -41,6 +41,7 @@ export async function deductOutputTokens(
 export async function deductInputTokens(
   messages: Message[],
   universalShopApiKey: string,
+  model = "gemini-1.5-flash"
 ) {
   const tokens = await countTokens(messages);
   const response = await fetch(
@@ -53,7 +54,7 @@ export async function deductInputTokens(
       body: JSON.stringify({
         key: universalShopApiKey,
         tokens: tokens,
-        model: "gemini-1.5-flash",
+        model: model,
       }),
     },
   );
@@ -70,14 +71,28 @@ export async function deductInputTokens(
 async function countTokens(messages: Message[]) {
   const encoder = await tiktoken.get_encoding("cl100k_base");
 
-  const tokensPerMessage = 3; // Base tokens per message
-  const tokensPerName = 1; // Additional token if 'name' property exists
+  const tokensPerMessage = 3;
+  const tokensPerName = 1;
   let totalTokens = 0;
 
   for (const message of messages) {
     totalTokens += tokensPerMessage;
     if ("content" in message) {
-      totalTokens += encoder.encode(message.content).length;
+      if (typeof message.content === "string") {
+        totalTokens += encoder.encode(message.content).length;
+      } else if (Array.isArray(message.content)) {
+        for (const item of message.content) {
+          if (typeof item === 'object' && item !== null) {
+            if (item.type === 'text' && item.text) {
+              totalTokens += encoder.encode(item.text).length;
+            } else if (item.type === 'image_url' && item.image_url?.url) {
+              totalTokens += encoder.encode(item.image_url.url).length;
+            } else if (item.type === 'pdf_url' && item.pdf_url?.url) {
+              totalTokens += encoder.encode(item.pdf_url.url).length;
+            }
+          }
+        }
+      }
     }
     if ("role" in message) {
       totalTokens += encoder.encode(message.role).length;
@@ -87,6 +102,6 @@ async function countTokens(messages: Message[]) {
       totalTokens += tokensPerName;
     }
   }
-  totalTokens += 3; // Every reply is primed with <|start|>assistant<|message|>
+  totalTokens += 3;
   return totalTokens;
 }

@@ -9,10 +9,12 @@ export const handler: Handlers = {
       const apiUrl = formData.get("apiUrl")?.toString() || undefined;
       const apiKey = formData.get("apiKey")?.toString() || undefined;
       const apiModel = formData.get("apiModel")?.toString() || undefined;
+      const shopApiKey = formData.get("shopApiKey")?.toString() || undefined;
       console.log({
         apiUrl,
         apiKey,
         apiModel,
+        shopApiKey
       });
 
       if (!pdfFile || !pdfFile.type.includes("pdf")) {
@@ -34,7 +36,8 @@ export const handler: Handlers = {
         new Uint8Array(fileArrayBuffer),
         apiUrl,
         apiKey,
-        apiModel
+        apiModel,
+        shopApiKey
       );
       
       return new Response(JSON.stringify({ markdown }), {

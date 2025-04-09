@@ -3,7 +3,6 @@ import { ServerSentEventStream } from "https://deno.land/std@0.210.0/http/server
 import { formatTemplates } from "../../../types/formats.ts";
 
 import { chatContent } from "../../../internalization/content.ts";
-import replacePDFWithMarkdownInMessages from "../(_utils)/pdfToMarkdown.ts";
 import { deductOutputTokens } from "./(_utils)/shop.ts";
 import { getApiKeys } from "./(_utils)/apiKeys.ts";
 
@@ -23,8 +22,7 @@ async function getModelResponseStream(
   {
     messages,
     lang,
-    universalShopApiKey,
-    universalApiKey,
+    shopApiKey,
     llmApiUrl,
     llmApiKey,
     llmApiModel,
@@ -36,8 +34,7 @@ async function getModelResponseStream(
   }: {
     messages: Message[];
     lang: string;
-    universalShopApiKey: string;
-    universalApiKey: string;
+    shopApiKey: string;
     llmApiUrl: string;
     llmApiKey: string;
     llmApiModel: string;
@@ -48,14 +45,6 @@ async function getModelResponseStream(
     vlmCorrectionModel: string;
   },
 ) {
-  console.log(systemPrompt);
-  if (universalApiKey !== "" && !universalApiKey.startsWith("sbe-")) {
-    return new Response(
-      "Invalid Universal API Key. It needs to start with '**sbe-**'.",
-      { status: 400 },
-    );
-  }
-
   // Entferne ggf. alte Assistant-Nachrichten am Ende der Konversation
   let isLastMessageAssistant =
     messages[messages.length - 1].role === "assistant";
@@ -67,7 +56,6 @@ async function getModelResponseStream(
 
   // Prüfe, ob im letzten Nachrichteninhalt ein #korrektur/#correction-Hashtag vorkommt
   const isCorrectionInLastMessage = hasKorrekturHashtag(messages);
-  console.log("isCorrectionInLastMessage", isCorrectionInLastMessage);
 
   let useThisSystemPrompt = isCorrectionInLastMessage
     ? chatContent[lang].correctionSystemPrompt
@@ -101,11 +89,11 @@ ${value.requirements.join("\n")}`
   const apiMessages = JSON.parse(JSON.stringify(messages));
 
   // Log message contents for debugging
-  apiMessages.forEach((msg, idx) => {
+  apiMessages.forEach((msg: Message, idx: number) => {
     if (typeof msg.content === "string") {
-      console.log(`[Chat API] Message ${idx}: string content (${msg.content.length} chars)`);
+      console.debug(`[Chat API] Message ${idx}: string content (${msg.content.length} chars)`);
     } else if (Array.isArray(msg.content)) {
-      console.log(`[Chat API] Message ${idx}: array content with ${msg.content.length} items`);
+      console.debug(`[Chat API] Message ${idx}: array content with ${msg.content.length} items`);
       
       // Check for different content types in this message
       const contentTypes = msg.content
@@ -114,7 +102,7 @@ ${value.requirements.join("\n")}`
         .filter(Boolean);
         
       if (contentTypes.length > 0) {
-        console.log(`[Chat API] Message ${idx} content types:`, contentTypes);
+        console.debug(`[Chat API] Message ${idx} content types:`, contentTypes);
       }
       
       // Check and log PDF items specifically
@@ -122,18 +110,18 @@ ${value.requirements.join("\n")}`
         typeof item === 'object' && item.type === 'pdf_url' && item.pdf_url);
         
       if (pdfItems.length > 0) {
-        console.log(`[Chat API] Found ${pdfItems.length} PDF items in message ${idx}`);
+        console.debug(`[Chat API] Found ${pdfItems.length} PDF items in message ${idx}`);
         
         pdfItems.forEach((item, i) => {
           if (item.pdf_url) {
             const urlType = item.pdf_url.url.substring(0, 20);
             const size = item.pdf_url.size || 'unknown';
-            console.log(`[Chat API] PDF ${i} in message ${idx}: URL type: ${urlType}..., size: ${size}`);
+            console.debug(`[Chat API] PDF ${i} in message ${idx}: URL type: ${urlType}..., size: ${size}`);
           }
         });
       }
     } else if (msg.content && typeof msg.content === "object") {
-      console.log(`[Chat API] Message ${idx}: object content of type ${msg.content.type || "unknown"}`);
+      console.debug(`[Chat API] Message ${idx}: object content of type ${msg.content.type || "unknown"}`);
     }
   });
 
@@ -142,8 +130,11 @@ ${value.requirements.join("\n")}`
     if (msg.processedContent) {
       return { ...msg, content: msg.processedContent };
     }
+    if (Array.isArray(msg.content) && msg.content.length === 0) {
+      return null;
+    }
     return msg;
-  });
+  }).filter(Boolean);
 
   // Check for images and PDFs in messages
   const isImageInMessages = apiMessagesWithProcessedContent.some((message) => {
@@ -168,14 +159,14 @@ ${value.requirements.join("\n")}`
 
   // Use VLM if we have images OR PDFs
   const shouldUseVLM = isImageInMessages || isPDFInMessages;
-  console.log(`[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`);
+  console.debug(`[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`);
 
-  const { api_url, api_key, api_model, vlm_api_url, vlm_api_key, vlm_api_model } = await getApiKeys({
+  vlmApiModel = "gemini-2.5-pro-online";
+  const { api_url, api_key, api_model  } = await getApiKeys({
     messages: apiMessagesWithProcessedContent,
     isImageInMessages: shouldUseVLM,
     isCorrectionInLastMessage,
-    universalApiKey,
-    universalShopApiKey,
+    shopApiKey,
     llmApiUrl,
     llmApiKey,
     llmApiModel,
@@ -183,18 +174,19 @@ ${value.requirements.join("\n")}`
     vlmApiKey,
     vlmApiModel,
     vlmCorrectionModel,
-  });
+  }, "gemini-2.5-pro-online");
+
 
   // Process PDFs and images for API request
   try {
-    console.log("[Chat API] Processing PDFs in messages...");
-    console.log({
-      vlm_api_url,
-      vlm_api_key,
-      vlm_api_model,
+    console.debug("[Chat API] Not Processing PDFs in messages...");
+    console.debug({
+      api_url,
+      api_key,
+      api_model,
+      shopApiKey
     });
-    await replacePDFWithMarkdownInMessages(apiMessages, vlm_api_url, vlm_api_key, vlm_api_model);
-    console.log("[Chat API] PDF processing complete");
+    console.debug("[Chat API] Not PDF processing complete");
   } catch (error) {
     console.error("[Chat API] Error processing PDFs:", error);
     return new Response(JSON.stringify({ error: "Error processing PDFs" }), {
@@ -202,9 +194,9 @@ ${value.requirements.join("\n")}`
     });
   }
 
-  console.log("Using this API URL: ", api_url);
-  console.log("Using this API Key: ", api_key);
-  console.log("Using this API Model: ", api_model);
+  console.debug("Using this API URL: ", api_url);
+  console.debug("Using this API Key: ", api_key);
+  console.debug("Using this API Model: ", api_model);
 
   if (api_url === "" || api_key === "" || api_model === "") {
     const missingSettingsText = `The following settings are missing: ${
@@ -236,8 +228,8 @@ ${value.requirements.join("\n")}`
 
   const response = await fetch(api_url, fetchOptions);
 
-  console.log("response", response);
-  console.log("response status", response.status);
+  console.debug("response", response);
+  console.debug("response status", response.status);
 
   if (response.status !== 200) {
     return new Response(response.statusText, { status: response.status });
@@ -268,14 +260,14 @@ ${value.requirements.join("\n")}`
                   item.pdf_url?.url && 
                   item.pdf_url.url.startsWith('blob:')) {
                 hasBlobPdf = true;
-                console.log("[Stream] Detected blob: PDF URL in message that may cause issues");
+                console.debug("[Stream] Detected blob: PDF URL in message that may cause issues");
                 break;
               }
             }
           }
           
           if (hasBlobPdf) {
-            console.log("[Stream] Warning user about blob: PDF URLs");
+            console.debug("[Stream] Warning user about blob: PDF URLs");
             controller.enqueue("⚠️ Note: PDF files with blob URLs can't be processed by the server. " +
               "Please convert PDFs to data URLs client-side before sending them. " +
               "The system will continue processing other content.\n\n");
@@ -301,7 +293,7 @@ ${value.requirements.join("\n")}`
                     data.choices[0].delta.content !== null
                   ) {
                     if (data.choices[0].delta.content === "<|im_end|>") {
-                      console.log("End of model response!");
+                      console.debug("End of model response!");
                       controller.close();
                     } else {
                       entireResponse += data.choices[0].delta.content;
@@ -318,11 +310,11 @@ ${value.requirements.join("\n")}`
                   console.error("Error parsing JSON:", error, jsonStr);
                 }
               } else if (line === "data: [DONE]") {
-                console.log("Closing controller!");
+                console.debug("Closing controller!");
                 controller.close();
-                console.log("universalShopApiKey", universalShopApiKey);
-                if (universalShopApiKey) {
-                  deductOutputTokens(entireResponse, universalShopApiKey);
+                console.debug("shopApiKey", shopApiKey);
+                if (shopApiKey) {
+                  deductOutputTokens(entireResponse, shopApiKey);
                 }
               }
             }
@@ -332,7 +324,7 @@ ${value.requirements.join("\n")}`
         }
       },
       cancel(err) {
-        console.log("Stream cancelled", err);
+        console.debug("Stream cancelled", err);
       },
     }).pipeThrough(new ServerSentEventStream()),
     {
@@ -369,14 +361,14 @@ function hasKorrekturHashtag(messages: Message[]): boolean {
 export const handler: Handlers = {
   async POST(req: Request) {
     const payload = await req.json();
+    console.debug("payload", payload);
 
     try {
       return await getModelResponseStream(
         {
           messages: payload.messages,
           lang: payload.lang,
-          universalShopApiKey: payload.universalShopApiKey,
-          universalApiKey: payload.universalApiKey,
+          shopApiKey: payload.universalApiKey,
           llmApiUrl: payload.llmApiUrl,
           llmApiKey: payload.llmApiKey,
           llmApiModel: payload.llmApiModel,
