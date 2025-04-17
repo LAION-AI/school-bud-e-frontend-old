@@ -1,5 +1,7 @@
 import { Button } from "./Button.tsx";
 import { lang } from "./chat/store.ts";
+import { KeyInput } from "../islands/signin/KeyInput.tsx";
+import { signal } from "@preact/signals";
 
 // Define welcome content for different languages
 const welcomeContent = {
@@ -26,6 +28,9 @@ export default function WelcomeBanner({
   onStartTour: () => void;
 }) {
   const content = welcomeContent[lang.value] || welcomeContent.en;
+  const universalKey = signal("");
+  const showPassword = signal(false);
+  const hasValidKey = signal(false);
 
   return (
     <div
@@ -36,6 +41,14 @@ export default function WelcomeBanner({
         {content.title}
       </h2>
       <p className="mb-4 text-primary-700">{content.description}</p>
+      <div className="mb-4">
+        <KeyInput
+          universalKey={universalKey}
+          showPassword={showPassword}
+          hasValidKey={hasValidKey}
+          lang={lang.value}
+        />
+      </div>
       <div className="flex space-x-3">
         <a href="/settings">
           <Button data-tour="open-settings-button" variant="primary">

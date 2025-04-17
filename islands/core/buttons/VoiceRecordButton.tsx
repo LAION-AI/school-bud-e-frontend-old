@@ -186,11 +186,11 @@ function VoiceRecordButton({
     <button
       onClick={toggleRecording}
       disabled={!IS_BROWSER}
-      class={`disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${isRecording ? "animate-pulse bg-red-600" : ""}`}
+      class={`border disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${isRecording ? "animate-pulse bg-red-600" : ""}`}
       type="button"
       aria-label={isRecording ? "Stop recording" : "Start recording"}
     >
-      <IconMicrophone class={`icon ${isRecording ? "text-white" : "text-gray-600"}`} />
+      <IconMicrophone class={`icon w-5 h-5 ${isRecording ? "text-white" : "text-gray-500"}`} />
     </button>
   );
 }

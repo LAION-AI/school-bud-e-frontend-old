@@ -1257,7 +1257,7 @@ export function InteractiveGraph({
 
 	// --- Rendering ---
 	return (
-		<div class="relative w-full h-full flex flex-col" style={{ height: '100vh' }}>
+		<div class="relative w-full h-full flex flex-col" style={{ height: '100dvh' }}>
 			{/* Rest of the component */}
 			<div class="flex-grow flex relative">
 				{/* Graph container */}
@@ -1281,7 +1281,7 @@ export function InteractiveGraph({
 					)}
 					
 					{/* Move the toolbar to the bottom center with a rounded-full style */}
-					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center space-y-3">
+					<div class="absolute bottom-20 md:bottom-4 md:left-1/2 transform left-4 md:-translate-x-1/2 z-20 flex flex-col items-center space-y-3">
 						{/* Inline Prompt for AI Connections */}
 						{showInlinePrompt && promptType === 'connection' && (
 							<div class="inline-flex items-center justify-center p-2 bg-white border border-blue-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90 mb-2 max-w-lg transition-all duration-200 ease-in-out">
@@ -1360,7 +1360,7 @@ export function InteractiveGraph({
 						
 						{/* Main Toolbar */}
 						<div class="inline-flex items-center justify-center p-2 bg-white border border-t-gray-100 border-l-gray-100 border-r-gray-300 border-b-gray-300 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90">
-							<div class="flex items-center space-x-1">
+							<div class="flex items-center space-x-1 max-w-[300px] flex-wrap">
 								{/* Button to spread all nodes */}
 								<button
 									type="button"

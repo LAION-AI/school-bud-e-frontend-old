@@ -283,7 +283,7 @@ export default function ChatInput() {
 				)}
 				{isThinking.value && <TypingIndicator />}
 				<div
-					className={`flex cursor-text flex-col rounded-xl border border-gray-300 px-4 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors bg-white mx-4 mb-4 ${isApiConfigured.value ? '' : 'opacity-50 cursor-not-allowed pointer-events-none'}`}
+					className={`flex cursor-text flex-col rounded-xl px-4 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors bg-white mx-4 mb-4 ${isApiConfigured.value ? '' : 'opacity-50 cursor-not-allowed pointer-events-none'}`}
 					data-tour="chat-input"
 				>
 
@@ -302,11 +302,11 @@ export default function ChatInput() {
 								handleStartStream();
 							}
 						}}
-						class="block min-h-10 max-h-24 w-full resize-none border-0 bg-transparent px-0 py-2 text-gray-800 placeholder:text-gray-500 focus-visible:outline-none message-input"
+						class="block min-h-10 max-h-24 w-full resize-none border-0 bg-transparent px-0 py-2 text-gray-800 placeholder:text-gray-400 focus-visible:outline-none message-input"
 						data-tour="chat-textarea"
 					/>
 
-					<div class="flex items-center justify-between w-full border-t pt-2">
+					<div class="flex items-center justify-between w-full">
 						<div class="flex items-center gap-x-1">
 							<ImageUploadButton
 								onImagesUploaded={handleImagesUploaded}

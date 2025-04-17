@@ -505,32 +505,32 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
   };
 
   if (loading) {
-    return <div class="container mx-auto px-6 py-10 text-gray-600 dark:text-gray-400">Loading test...</div>;
+    return <div class="container mx-auto px-6 py-10 text-gray-600">Loading test...</div>;
   }
 
   if (!test) {
-    return <div class="container mx-auto px-6 py-10 text-gray-600 dark:text-gray-400">Test not found</div>;
+    return <div class="container mx-auto px-6 py-10 text-gray-600">Test not found</div>;
   }
 
   return (
     <div class="container mx-auto px-6 py-10 max-w-4xl">
       <div class="mb-8">
-        <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+        <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800">
           <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Graph
         </a>
       </div>
       
       <div class="mb-12">
-        <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">{test.name}</h1>
+        <h1 class="text-4xl font-bold mb-4 text-gray-900">{test.name}</h1>
         <div class="flex justify-between items-start mb-6">
-          <p class="text-gray-600 dark:text-gray-400">Created from node: {test.nodeId}</p>
+          <p class="text-gray-600">Created from node: {test.nodeId}</p>
           
           <div class="flex items-center space-x-4">
             {submission && !revisitMode && (
               <button
                 onClick={showTestResults}
-                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
+                class="text-blue-500 hover:text-blue-700 flex items-center"
                 aria-label="View submissions"
                 type="button"
               >
@@ -542,7 +542,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             {!showDeleteConfirm ? (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center"
+                class="text-red-500 hover:text-red-700 flex items-center"
                 aria-label="Delete test"
                 type="button"
               >
@@ -578,12 +578,12 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
         </div>
         
         {showResults && (
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div class="bg-white rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Test Results</h2>
+              <h2 class="text-2xl font-bold text-gray-900">Test Results</h2>
               <button
                 onClick={() => setShowResults(false)}
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                class="text-gray-600 hover:text-gray-800"
               >
                 <IconX class="w-6 h-6" />
               </button>
@@ -593,20 +593,20 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               <div class="flex items-center justify-center gap-4 mb-4">
                 <div class="text-center">
                   <div class="text-4xl font-bold text-green-500">{score.correct}</div>
-                  <div class="text-sm text-gray-600 dark:text-gray-400">Correct</div>
+                  <div class="text-sm text-gray-600">Correct</div>
                 </div>
-                <div class="text-4xl text-gray-300 dark:text-gray-600">/</div>
+                <div class="text-4xl text-gray-300">/</div>
                 <div class="text-center">
-                  <div class="text-4xl font-bold text-gray-700 dark:text-gray-300">{score.total}</div>
-                  <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                  <div class="text-4xl font-bold text-gray-700">{score.total}</div>
+                  <div class="text-sm text-gray-600">Total</div>
                 </div>
               </div>
             </div>
 
             <div class="space-y-6">
               {test.questions.map((question, index) => (
-                <div key={index} class="p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
-                  <h3 class="font-medium text-gray-900 dark:text-white mb-2">
+                <div key={index} class="p-4 rounded-lg bg-gray-50">
+                  <h3 class="font-medium text-gray-900 mb-2">
                     Question {index + 1}: {question.question}
                   </h3>
                   
@@ -624,11 +624,11 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                             class={`flex items-center p-2 rounded ${
                               isSelected
                                 ? isCorrect
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
-                                  : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
                                 : isCorrect && showResults
-                                ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200"
-                                : "text-gray-700 dark:text-gray-300"
+                                ? "bg-green-50 text-green-800"
+                                : "text-gray-700"
                             }`}
                           >
                             <span class="ml-2">{option}</span>
@@ -650,11 +650,11 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                             class={`flex items-center p-2 rounded ${
                               isSelected
                                 ? isCorrect
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
-                                  : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
                                 : isCorrect && showResults
-                                ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200"
-                                : "text-gray-700 dark:text-gray-300"
+                                ? "bg-green-50 text-green-800"
+                                : "text-gray-700"
                             }`}
                           >
                             <span class="ml-2">{option}</span>
@@ -667,19 +667,19 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                   {question.type === "short_answer" && (
                     <div class="ml-4">
                       <div class="mb-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
                           Your Answer:
                         </label>
-                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
+                        <div class="p-2 rounded bg-gray-100 text-gray-800">
                           {selectedAnswers[index] || "No answer provided"}
                         </div>
                       </div>
                       {showResults && (
                         <div>
-                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label class="block text-sm font-medium text-gray-700 mb-1">
                             Correct Answer:
                           </label>
-                          <div class="p-2 rounded bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200">
+                          <div class="p-2 rounded bg-green-50 text-green-800">
                             {question.correctAnswer}
                           </div>
                         </div>
@@ -695,8 +695,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
         {!showResults && (
           <div class="space-y-6">
             {test.questions.map((question, index) => (
-              <div key={index} class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-4">
+              <div key={index} class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-medium text-gray-900 mb-4">
                   Question {index + 1}: {question.question}
                 </h3>
 
@@ -708,8 +708,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                         onClick={() => handleAnswerSelect(index, option)}
                         class={`w-full text-left p-3 rounded-lg border transition-colors ${
                           (selectedAnswers[index] as string[])?.includes(option)
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                            : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-gray-200 hover:border-blue-200 hover:bg-blue-50"
                         }`}
                       >
                         {option}
@@ -726,8 +726,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                         onClick={() => handleAnswerSelect(index, option)}
                         class={`w-full text-left p-3 rounded-lg border transition-colors ${
                           selectedAnswers[index] === option
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                            : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-gray-200 hover:border-blue-200 hover:bg-blue-50"
                         }`}
                       >
                         {option}
@@ -741,7 +741,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                     <textarea
                       value={selectedAnswers[index] as string}
                       onChange={(e) => handleAnswerSelect(index, (e.target as HTMLTextAreaElement).value)}
-                      class="w-full p-3 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                       rows={4}
                       placeholder="Enter your answer here..."
                     />
@@ -764,9 +764,9 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
 
       {showDeleteConfirm && (
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Delete Test</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-6">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Delete Test</h2>
+            <p class="text-gray-600 mb-6">
               Are you sure you want to delete this test? This action cannot be undone.
             </p>
             <div class="flex justify-end space-x-4">

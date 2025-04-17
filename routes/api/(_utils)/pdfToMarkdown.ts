@@ -90,7 +90,7 @@ async function fetchMarkdownForPDF(
           vlmApiKey: "",
           vlmApiModel: "",
           vlmCorrectionModel: ""
-        }, "gemini-2.5-pro-online");
+        }, "gemini-2.5-flash-preview-04-17");
         console.debug("API KEYS", data);
 
         apiUrl = data.api_url;

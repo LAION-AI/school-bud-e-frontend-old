@@ -1,43 +1,44 @@
+# docker-compose/docker-compose.dev.yml
 services:
   school-bud-e-frontend:
-    build:
-      context: ..
-      dockerfile: Dockerfile.debug
-      args:
-        BRANCH: next
-    image: michael55555/school-bud-e-frontend:next 
-    command: ["sh", "-c", "deno run --inspect-brk=0.0.0.0:9229 -A --watch=static/,routes/ dev.ts"]
+    image: denoland/deno:alpine
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      #- NO_COLOR=1 deno run --inspect-brk=0.0.0.0:9229 -A --watch=static/,routes/ dev.ts
+      - deno run -A --watch=static/,routes/ dev.ts
     ports:
       - "9229:9229"
-    develop:
-      watch:
-        - action: sync
-          path: ../
-          target: /school-bud-e-frontend
-          ignore:
-            - node_modules
-            - .git
-            - .env
-            - .env.local
-            - ai-tasks-server
-            
+    volumes:
+      - ../:/app:cached
+      - deno_cache:/root/.cache/deno
+      - /app/node_modules
+    cpu_shares: 256
+    mem_limit: 512m
+    environment:
+      - CHOKIDAR_USEPOLLING=false
+      - CHOKIDAR_IGNORED=**/node_modules/**,**/dist/**,**/.git/**
+
   task-server:
-    build:
-      context: ../ai-tasks-server
-      dockerfile: Dockerfile
-      args:
-        BRANCH: next
-    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 8083"]
-    image: michael55555/school-bud-e-task-server:next
-    expose:
-      - 8083
+    image: python:3.11-slim
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - |
+        pip install --no-cache-dir -r requirements.txt && \
+        python -m debugpy --wait-for-client --listen 0.0.0.0:5678 \
+          -m uvicorn app.main:app \
+          --host 0.0.0.0 --port 8083 --log-level warning
     ports:
-      - 5678:5678
-    develop:
-      watch:
-        - action: sync
-          path: ../ai-tasks-server
-          target: /app
-          ignore:
-            - node_modules
-            - .git
+      - "5678:5678"
+    volumes:
+      - ../ai-tasks-server:/app:cached
+      - pip_cache:/root/.cache/pip
+    cpu_shares: 128
+    mem_limit: 256m
+
+volumes:
+  deno_cache:
+  pip_cache:

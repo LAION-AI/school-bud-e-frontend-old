@@ -1,6 +1,7 @@
 import { useState, useEffect } from "preact/hooks";
 import AIFloatingButton from "./AIFloatingButton.tsx";
 import { apiWarningMessage, settings } from "../components/chat/store.ts";
+import { Button } from "../components/Button.tsx";
 
 interface SlideData {
   title: string;
@@ -193,18 +194,19 @@ export default function PresentationGeneratorIsland() {
                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                 disabled={isLoading || !isApiConfigured}
               />
-              <button
-                type="button"
+              <Button
                 onClick={generatePresentation}
                 disabled={isLoading || !isApiConfigured}
-                class={`px-4 py-2 rounded-lg text-white transition-colors ${
+                variant="primary"
+                size="md"
+                class={`${
                   isLoading || !isApiConfigured
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-amber-500 hover:bg-amber-600"
+                    : ""
                 }`}
               >
                 {isLoading ? "Generating..." : "Generate Presentation"}
-              </button>
+              </Button>
             </div>
             {error && <p class="mt-2 text-sm text-red-600">{error}</p>}
             {success && <p class="mt-2 text-sm text-green-600">{success}</p>}

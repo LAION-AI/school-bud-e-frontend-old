@@ -243,6 +243,7 @@ docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-com
 
 # Push to Docker Hub
 docker push michael55555/school-bud-e-frontend:next
+docker push michael55555/school-bud-e-task-server:next
 ```
 
 To build and push the main version:

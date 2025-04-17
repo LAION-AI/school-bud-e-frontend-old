@@ -1,7 +1,6 @@
 import { signal } from "@preact/signals";
 import {
     addMessage,
-    appendToMessage,
     editMessage,
     lang,
     messages,
@@ -103,7 +102,7 @@ export const startStream = async (
                         // Add the transcription as text
                         mediaContent.push({
                             type: "text",
-                            text: `[PDF Transcription]\n\n${img.pdf_url.transcription}`
+                            text: `\`\`\`pdf_transcription\n\n${img.pdf_url.transcription}\n\`\`\``
                         });
                     } else {
                         console.warn("[Stream] PDF has no transcription, skipping");

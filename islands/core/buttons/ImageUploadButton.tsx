@@ -259,17 +259,17 @@ export function ImageUploadButton({
       <button
         onClick={onButtonClick}
         disabled={!IS_BROWSER}
-        class="disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 mr-1 text-gray-600 hover:text-gray-900 relative"
+        class="border disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 mr-1 text-gray-500 hover:text-gray-900 relative"
         type="button"
         aria-label="Upload image or PDF"
       >
         {transcribingFiles.size > 0 ? (
-          <IconLoader2 class="animate-spin" />
+          <IconLoader2 class="animate-spin h-5 w-5" />
         ) : (
-          <IconPhoto />
+          <IconPhoto class="h-5 w-5" />
         )}
         {transcribingFiles.size > 0 && (
-          <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+          <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             {transcribingFiles.size}
           </span>
         )}
