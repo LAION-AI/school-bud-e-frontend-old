@@ -173,7 +173,7 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
   }, [graphData, selectedNodeId, isRoot]);
 
   return (
-    <div class="relative border rounded bg-gray-50" style={{ width: "100%", height }}>
+    <div class="relative border rounded-2xl mb-4 bg-gray-50" style={{ width: "100%", height }}>
       {isPositioning && (
         <div class="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-80 z-10">
           <div class="flex flex-col items-center">
