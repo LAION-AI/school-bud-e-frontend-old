@@ -41,17 +41,9 @@ export default function CollapsibleSection({
     variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
-      if (variant === "blue")
-        return "bg-blue-100 text-blue-900 hover:bg-blue-200 focus-visible:ring-blue-500";
-      if (variant === "red")
-        return "bg-red-100 text-red-900 hover:bg-red-200 focus-visible:ring-red-500";
-      if (variant === "purple")
-        return "bg-purple-100 text-purple-900 hover:bg-purple-200 focus-visible:ring-purple-500";
-      if (variant === "green")
-        return "bg-green-100 text-green-900 hover:bg-green-200 focus-visible:ring-green-500";
-      return "bg-amber-100 text-amber-900 hover:bg-amber-200 focus-visible:ring-amber-500";
+        return "bg-blue-100 text-blue-900 hover:bg-blue-200 border-2 border-blue-500 focus-visible:ring-blue-500";
     }
-    return "hover:bg-gray-50 text-gray-700 hover:text-gray-900";
+    return "hover:bg-gray-50 text-gray-700 hover:text-gray-900 border-2 border-transparent";
   };
 
   const getIconColorClasses = (

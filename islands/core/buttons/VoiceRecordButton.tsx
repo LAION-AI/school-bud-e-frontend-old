@@ -34,15 +34,18 @@ function VoiceRecordButton({
   onFinishRecording,
   onInterimTranscript,
   resetTranscript,
+  shopApiKey,
 }: {
   onFinishRecording: (transcript: string) => void;
   onInterimTranscript: (transcript: string) => void;
   resetTranscript: number;
+  shopApiKey: string;
 }): JSX.Element {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  console.log("shopApiKey", shopApiKey);
 
   // deno-lint-ignore no-explicit-any
   (globalThis as any).SpeechRecognition =
@@ -130,6 +133,7 @@ function VoiceRecordButton({
     formData.append("sttUrl", serverUrl);
     formData.append("sttKey", sttKey);
     formData.append("sttModel", modelName);
+    formData.append("shopApiKey", shopApiKey);
 
     try {
       const response = await fetch("/api/stt", {

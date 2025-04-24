@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from fish_audio_sdk import Session, TTSRequest, ReferenceAudio
+# from fish_audio_sdk import Session, TTSRequest, ReferenceAudio
 import os
 import re
 import json
@@ -10,7 +10,7 @@ import openai
 import requests
 #from loguru import logger
 #import whisper
-import sentence_transformers
+# import sentence_transformers
 #from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 #from request_log import RequestLogger

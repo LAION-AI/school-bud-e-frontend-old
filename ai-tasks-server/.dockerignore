@@ -18,3 +18,6 @@ coverage.xml
 *.log
 .pytest_cache
 .DS_Store 
+emottsvoices.tar
+emottsvoices
+tts_segments

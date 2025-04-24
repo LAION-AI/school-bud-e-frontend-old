@@ -320,6 +320,7 @@ export default function ChatInput() {
 							/>
 
 							<VoiceRecordButton
+								shopApiKey={settings.value.universalApiKey}
 								resetTranscript={resetTranscript.value}
 								onFinishRecording={handleStartStream}
 								onInterimTranscript={(interimTranscript) => {

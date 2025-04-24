@@ -161,7 +161,7 @@ ${value.requirements.join("\n")}`
   const shouldUseVLM = isImageInMessages || isPDFInMessages;
   console.debug(`[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`);
 
-  vlmApiModel = "gemini-2.5-flash-preview-04-17";
+  vlmApiModel = "gemini-2.5-pro-preview-03-25";
   const { api_url, api_key, api_model  } = await getApiKeys({
     messages: apiMessagesWithProcessedContent,
     isImageInMessages: shouldUseVLM,
@@ -174,7 +174,7 @@ ${value.requirements.join("\n")}`
     vlmApiKey,
     vlmApiModel,
     vlmCorrectionModel,
-  }, "gemini-2.5-flash-preview-04-17");
+  }, "gemini-2.5-pro-preview-03-25");
 
 
   // Process PDFs and images for API request

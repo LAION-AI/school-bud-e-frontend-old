@@ -29,7 +29,7 @@ export async function deductOutputTokens(
       body: JSON.stringify({
         key: universalShopApiKey,
         tokens: tokens,
-        model: "gemini-2.5-flash-preview-04-17",
+        model: "gemini-2.5-pro-preview-03-25",
       }),
     },
     );
@@ -41,7 +41,7 @@ export async function deductOutputTokens(
 export async function deductInputTokens(
   messages: Message[],
   universalShopApiKey: string,
-  model = "gemini-2.5-flash-preview-04-17"
+  model = "gemini-2.5-pro-preview-03-25"
 ) {
   const tokens = await countTokens(messages);
   const response = await fetch(

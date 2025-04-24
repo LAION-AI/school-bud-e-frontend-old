@@ -1,4 +1,5 @@
 import { Handlers } from "$fresh/server.ts";
+import { deductInputTokens, deductOutputTokens } from "./chat/(_utils)/shop.ts";
 
 const STT_KEY = Deno.env.get("STT_KEY") || "";
 const STT_MODEL = Deno.env.get("STT_MODEL") || "";
@@ -10,8 +11,18 @@ export const handler: Handlers = {
       const formData = await req.formData();
       const audioFile = formData.get("audio") as File;
       let sttUrl = formData.get("sttUrl") as string || STT_URL;
-      const sttKey = formData.get("sttKey") as string || STT_KEY;
+      const shopApiKey = formData.get("shopApiKey") as string;
+      let sttKey = formData.get("sttKey") as string;
       let sttModel = formData.get("sttModel") as string || STT_MODEL;
+
+      if (shopApiKey) {
+        const { apiKey } = await deductInputTokens(
+          [{ role: "user", content: "Audio transcription request" }],
+          shopApiKey,
+          "whisper-1"
+        );
+        sttKey = apiKey;
+      }
 
       if (sttKey.startsWith("gsk_")) {
         sttUrl = sttUrl == "" ? "https://api.groq.com/openai/v1/audio/transcriptions" : sttUrl;
@@ -45,6 +56,10 @@ export const handler: Handlers = {
       }
 
       const transcription = await response.json();
+
+      if (shopApiKey) {
+        deductOutputTokens(transcription.text, shopApiKey);
+      }
 
       return new Response(transcription.text, {
         status: 200,
