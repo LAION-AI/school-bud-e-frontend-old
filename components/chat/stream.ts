@@ -24,17 +24,8 @@ export const startStream = async (
     prevMessages?: Message[],
     images?: Image[],
 ) => {
-    console.log(settings.value);
-    // if currentEditIndex is set, we are editing a message instead of starting the stream
-    // except if the currentEditIndex is the last user message, then we do start the stream
-
-    // pause all ongoing audio files first
-    // stopAndResetAudio();
-    // setAudioFileDict({ ...audioFileDict });
-
     const ongoingStream: string[] = [];
-    let currentAudioIndex = 1;
-    let ttsFromFirstSentence = false;
+
     if (streamComplete.value) {
         streamComplete.value = false;
         resetTranscript.value++;
@@ -52,158 +43,79 @@ export const startStream = async (
             return msg;
         });
 
-        const messagesToSend = [...previousMessages];
-        const imageContent: Image[] = [];
+        const messagesToSend: Message[] = [...previousMessages];
+        const queryWithImages: (Message | Image)[] = [];
 
         if (images && images.length > 0) {
-            imageContent.push(...images);
+            console.log("[Stream] Handling message with files:", images.length);
+            
+            // Create a properly structured message with text content
+            const textContent = { 
+                role: "user", 
+                content: [{ type: "text", text: currentQuery }]
+            };
+            
+            // Add the text message first
+            queryWithImages.push(textContent);
+            
+            // Process image objects
+            console.log("[Stream] Images to process:", images);
+            
+            // Create a single message with multiple content items including text and images/PDFs
+            const mediaContent: any[] = [];
+            mediaContent.push({ type: "text", text: currentQuery });
+            
+            // Add each image/PDF as a content item
+            for (const img of images) {
+                console.log(`[Stream] Processing file object: ${JSON.stringify(img).substring(0, 100)}...`);
+                
+                // Check for in-progress transcriptions - these should not be sent
+                if (img.type === "pdf_url" && img.pdf_url?.isTranscribing) {
+                    console.warn("[Stream] Skipping PDF that is still being transcribed");
+                    continue;
+                }
+                
+                if (img.type === "image_url" && img.image_url) {
+                    mediaContent.push({
+                        type: "image_url",
+                        image_url: {
+                            url: img.image_url.url,
+                            detail: img.image_url.detail || "high",
+                            transcription: img.image_url.transcription
+                        }
+                    });
+                } 
+                else if (img.type === "pdf_url" && img.pdf_url) {
+                    // For PDFs, don't send the PDF URL to the server
+                    // Instead, just send the transcription as text
+                    if (img.pdf_url.transcription) {
+                        console.log("[Stream] Using PDF transcription instead of sending PDF URL");
+                        
+                        // Add the transcription as text
+                        mediaContent.push({
+                            type: "text",
+                            text: `\`\`\`pdf_transcription\n\n${img.pdf_url.transcription}\n\`\`\``
+                        });
+                    } else {
+                        console.warn("[Stream] PDF has no transcription, skipping");
+                    }
+                }
+            }
+            
+            // Add a single message with all content items
+            messagesToSend.push({ 
+                role: "user", 
+                content: mediaContent 
+            });
+            
+            console.log("[Stream] Final message structure:", `${JSON.stringify(messagesToSend).substring(0, 100)}...`);
+        } else if (currentQuery) {
+            messagesToSend.push({ role: "user", content: currentQuery });
         }
 
-        if (currentQuery) {
-            const userMessage = { role: "user", content: currentQuery };
-            messagesToSend.push(userMessage);
-            addMessage(userMessage);
-        }
-
-        // check if the last message has #bildungsplan in the content (case insensitive)
-        // #bildungsplan: wofür braucht man eigentlich trigonometrie:5
-        const isBildungsplanInLastMessage = currentQuery.toLowerCase()
-            .includes(
-                "#bildungsplan",
-            );
-
-        const isWikipediaInLastMessage = currentQuery.toLowerCase().includes(
-            "#wikipedia",
-        );
-
-        const isPapersInLastMessage = currentQuery.toLowerCase().includes(
-            "#papers",
-        );
-
-        if (isWikipediaInLastMessage) {
-            let collection = lang.peek() === "en"
-                ? "English-ConcatX-Abstract"
-                : "German-ConcatX-Abstract";
-            if (currentQuery.toLowerCase().includes("#wikipedia_de")) {
-                collection = "German-ConcatX-Abstract";
-            }
-            if (currentQuery.toLowerCase().includes("#wikipedia_en")) {
-                collection = "English-ConcatX-Abstract";
-            }
-
-            const currentQuerrySplit = currentQuery.split(":");
-            const query = currentQuerrySplit[1].trim();
-            let n = 5;
-            if (currentQuerrySplit.length > 2) {
-                n = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
-            }
-
-            const res = await fetchWikipedia(query, collection, n);
-
-            // console.log("[API] wikipedia response", res);
-
-            const beautifulWikipedia = res?.map(
-                (result: WikipediaResult, index: number) => {
-                    const content = Object.values(result)[0];
-                    return `\`\`\`webresultjson
-{
-  "type": "webResults",
-  "results": [
-    {
-      "url": "string",
-      "title": "string",
-      "description": "string",
-    }
-  ]
-}
-            endwebresultjson\`\`\`
-            **${chatIslandContent[lang.value].result} ${index + 1} ${
-                        chatIslandContent[lang.value].of
-                    } ${res?.length}**\n**${
-                        chatIslandContent[lang.value].wikipediaTitle
-                    }**: ${content.Title}\n**${
-                        chatIslandContent[lang.value].wikipediaURL
-                    }**: ${content.URL}\n**${
-                        chatIslandContent[lang.value].wikipediaContent
-                    }**: ${content["Concat Abstract"]}\n**${
-                        chatIslandContent[lang.value].wikipediaScore
-                    }**: ${content.score}\n`;
-                },
-            ).join("\n\n");
-
-            addMessage({ role: "assistant", content: [beautifulWikipedia] });
-            streamComplete.value = true;
-            // query.value = ("");
-            return;
-        }
-
-        if (isPapersInLastMessage) {
-            const currentQuerrySplit = currentQuery.split(":");
-            const query = currentQuerrySplit[1].trim();
-            let limit = 5;
-            if (currentQuerrySplit.length > 2) {
-                limit = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
-            }
-
-            const response = await fetchPapers(query, limit);
-
-            // console.log("[API] papers response", response);
-
-            const beautifulPapers = response?.payload.items.map(
-                (result: PapersItem, index: number) => {
-                    return `**${chatIslandContent[lang.value].result} ${
-                        index + 1
-                    } ${chatIslandContent[lang.value].of} ${
-                        response?.payload.items.length
-                    }**\n**${
-                        chatIslandContent[lang.value].papersDOI
-                    }**: ${result.doi}\n**${
-                        chatIslandContent[lang.value].papersDate
-                    }**: ${result.date_published.substring(0, 10)}\n**${
-                        chatIslandContent[lang.value].papersSubjects
-                    }**: ${result.subjects.join(", ")}\n**${
-                        chatIslandContent[lang.value].papersTitle
-                    }**: ${result.title}\n**${
-                        chatIslandContent[lang.value].papersAuthors
-                    }**: ${result.authors.join(", ")}\n**${
-                        chatIslandContent[lang.value].papersAbstract
-                    }**: ${result.abstract}\n`;
-                },
-            ).join("\n\n");
-
-            addMessage({ role: "assistant", content: [beautifulPapers] });
-
-            streamComplete.value = true;
-            // query.value = ("");
-            return;
-        }
-
-        if (isBildungsplanInLastMessage) {
-            const currentQuerrySplit = currentQuery.split(":");
-            const query = currentQuerrySplit[1].trim();
-            let top_n = 5;
-            if (currentQuerrySplit.length > 2) {
-                top_n = Number.parseInt(currentQuery.split(":")[2].trim(), 10);
-            }
-
-            // console.log("query", query);
-            // console.log("top_n", top_n);
-
-            const res = await fetchBildungsplan(query, top_n);
-
-            // console.log("[API] bildungsplan response", res);
-            const beautifulBildungsplan = res?.results.map((result, index) => {
-                return `**${chatIslandContent[lang.value].result} ${
-                    index + 1
-                } ${chatIslandContent[lang.value].of} ${
-                    res?.results.length
-                }**\n${result.text}\n\n**Score**: ${result.score}`;
-            }).join("\n\n");
-
-            addMessage({ role: "assistant", content: [beautifulBildungsplan] });
-            streamComplete.value = true;
-            // query.value = ("");
-            return;
+        // Add the user message to the UI
+        if (messagesToSend.length > 0) {
+            addMessage(messagesToSend[messagesToSend.length - 1]);
         }
 
         // Start with an empty assistant message that we'll stream into
@@ -217,7 +129,7 @@ export const startStream = async (
             },
             body: JSON.stringify({
                 messages: messagesToSend,
-                images: imageContent,
+                images: queryWithImages,
                 lang: lang.value,
                 universalApiKey: settings.value.universalApiKey,
                 llmApiUrl: settings.value.apiUrl,

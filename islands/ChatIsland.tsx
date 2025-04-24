@@ -61,7 +61,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     console.log("readAlways", readAlways.value);
     console.log("--------------------------------");
     if (!readAlways.value) return;
-    debugger;
 
     for (const [groupIndex, groupAudios] of Object.entries(audioFileDict)) {
       const nextUnplayedIndex = findNextUnplayedAudio(groupAudios);
