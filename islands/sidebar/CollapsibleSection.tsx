@@ -3,7 +3,7 @@ import { IconChevronDown } from "@tabler/icons-preact";
 import type { ComponentChildren, VNode } from "preact";
 import { useEffect, useState } from "preact/hooks";
 
-const SafeChevronDown = (props: LucideProps): VNode => (
+const SafeChevronDown = (props: any): VNode => (
   <IconChevronDown {...props} />
 );
 
@@ -139,7 +139,6 @@ export default function CollapsibleSection({
         aria-controls={`${title.toLowerCase()}-content`}
         class={`${buttonBaseClasses} ${getButtonColorClasses(
           isActive,
-          variant
         )}`}
       >
         <div class="flex items-center gap-3">
@@ -147,7 +146,6 @@ export default function CollapsibleSection({
             <div
               class={`h-5 w-5 transition-colors ${getIconColorClasses(
                 isActive,
-                variant
               )}`}
             >
               {icon}
@@ -159,7 +157,6 @@ export default function CollapsibleSection({
           <SafeChevronDown
             class={`h-4 w-4 transition-transform duration-200 ${getChevronColorClasses(
               isActive,
-              variant
             )} ${shouldBeExpanded ? "rotate-180" : ""}`}
           />
         )}
