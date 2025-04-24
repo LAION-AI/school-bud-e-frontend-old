@@ -40,6 +40,10 @@ body {
   }
 }
 
+.chat-history {
+  scrollbar-gutter: stable;
+}
+
 .highlight-score {
   animation: highlight 0.5s ease-in-out;
 }

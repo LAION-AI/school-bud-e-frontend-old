@@ -23,6 +23,7 @@ interface ChatTemplateProps {
 	onEditAction: (groupIndex: number) => void;
 	children: JSX.Element | JSX.Element[];
 	onStartTour?: () => void;
+	onSpeakAtGroupIndexAction: (groupIndex: number) => void;
 }
 
 function downloadAudioFiles(items: {
@@ -76,6 +77,7 @@ function ChatTemplate({
 	onEditAction,
 	children,
 	onStartTour = () => startTour("basics"),
+	onSpeakAtGroupIndexAction,
 }: ChatTemplateProps) {
 	const [sidebarData, setSidebarData] = useState<
 		{
@@ -145,6 +147,7 @@ function ChatTemplate({
 		}
 	}, []); // Also run when autoScroll changes
 
+
 	return (
 		<div class="flex w-full">
 			<div class="flex-grow flex flex-col min-h-full">
@@ -166,7 +169,7 @@ function ChatTemplate({
 								audioFileDict={audioFileDict}
 								onEditAction={onEditAction}
 								onRefreshAction={onRefreshAction}
-								onSpeakAtGroupIndexAction={() => {}}
+								onSpeakAtGroupIndexAction={onSpeakAtGroupIndexAction}
 								onDownloadAudio={downloadAudioFiles}
 							/>
 						))}

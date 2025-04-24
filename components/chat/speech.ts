@@ -1,31 +1,36 @@
 import { signal } from "@preact/signals";
-import { chatIslandContent } from "../../internalization/content.ts";
 import { lang, messages, settings } from "./store.ts";
 
-export const audioFileDict = signal<
-    AudioItem[][]
->([]);
+export const audioFileDict = signal<Record<number, Record<number, { audio: HTMLAudioElement; played: boolean }>>>({});
 export const readAlways = signal(true);
 export const stopList = signal<number[]>([]);
-export const resetTranscript = signal(0); // used for STT in Voice Record Button
+export const resetTranscript = signal(0);
 
-// 1. toggleReadAlways
-// - toggles readAlways state
-// - stops all audio playback if readAlways is set to false
-// - add all groupIndices to stopList if readAlways is set to false
 export const toggleReadAlways = (value: boolean) => {
     readAlways.value = value;
     if (!value) {
-        for (const group of audioFileDict.value) {
-            for (const item of group) {
-                if (!item.audio.paused) {
-                    item.audio.pause();
-                    item.audio.currentTime = 0;
-                }
-            }
-        }
-        stopList.value = Object.keys(audioFileDict).map(Number);
+        stopAndResetAudio();
+        stopList.value = Object.keys(audioFileDict.value).map(Number);
     }
+};
+
+const cleanTextForSpeech = (text: string): string => {
+    return text
+        // Remove code blocks
+        .replace(/```[\s\S]*?```/g, '')
+        // Remove inline code
+        .replace(/`[^`]*`/g, '')
+        // Remove URLs
+        .replace(/https?:\/\/[^\s]+/g, '')
+        // Remove markdown links
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        // Remove markdown bold/italic
+        .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+        // Remove special characters but keep basic punctuation
+        .replace(/[^a-zA-Z0-9\s.,!?;:'"()[\]-]/g, ' ')
+        // Remove extra whitespace
+        .replace(/\s+/g, ' ')
+        .trim();
 };
 
 export const getTTS = async (
@@ -33,90 +38,47 @@ export const getTTS = async (
     groupIndex: number,
     sourceFunction: string,
 ) => {
-    // Only return early if readAlways is false AND this is a streaming request
-    if (!readAlways && sourceFunction.startsWith("stream")) return;
+    console.log(`getTTS called for group ${groupIndex}, source: ${sourceFunction}`);
+    
+    // Don't process if it's a user message
+    if (messages.value[groupIndex]?.role === "user") {
+        console.log('Skipping user message');
+        return;
+    }
+    
+    // Don't process if readAlways is false and this is a stream request
+    if (!readAlways.value && sourceFunction.startsWith("stream")) {
+        console.log('Skipping due to readAlways false');
+        return;
+    }
 
-    console.log("[LOG] getTTS");
-    // console.log("text", text);
-    // console.log("chatIslandContent[lang][welcomeMessage]", chatIslandContent[lang]["welcomeMessage"]);
-    if (
-        text === chatIslandContent[lang.value]["welcomeMessage"]
-    ) {
-        const audioFile = text === chatIslandContent["de"]["welcomeMessage"]
-            ? "./intro.mp3"
-            : "./intro-en.mp3";
-        const audio = new Audio(audioFile);
-        // audioFileDict.value[groupIndex] = {
-        //   0: audio,
-        // };
-        const sourceFunctionIndex =
-            Number(sourceFunction.replace("stream", "")) -
-                1 || 0;
-        if (audioFileDict.value[groupIndex]) {
-            audioFileDict.value[groupIndex][sourceFunctionIndex] = {
-                audio: audio,
-                played: false,
-            };
-        } else {
-            audioFileDict.value[groupIndex] = [];
-            audioFileDict.value[groupIndex][sourceFunctionIndex] = {
-                audio: audio,
-                played: false,
-            };
-        }
+    // Clean the text for speech
+    const cleanedText = cleanTextForSpeech(text);
+    if (!cleanedText) return;
 
-        // all indices < groupIndex should be put to pause and added to stopList
-        const newStopList = stopList;
-        for (let i = 0; i < groupIndex; i++) {
-            if (audioFileDict.value[i]) {
-                (Object.values(audioFileDict.value[i]) as AudioItem[]).forEach(
-                    (item) => {
-                        if (!item.audio.paused) {
-                            item.audio.pause();
-                            item.audio.currentTime = 0;
-                            newStopList.value.push(i);
-                        }
-                    },
-                );
-            }
-        }
-
-        stopList.value = newStopList.value;
-
-        // // // TRYING DIFFERENT SETTER
-        audioFileDict.value = [ ...audioFileDict.value ];
-
-        // // // WORKING SETTER
-        // audioFileDict.value = ((prev) => ({
-        //   ...prev,
-        //   [groupIndex]: audioFileDict.value[groupIndex],
-        // }));
-        // audioFileDict.value = ((prev) => ({ ...prev, [groupIndex]: audio }));
-        console.log(
-            "[LOG] Audio file loaded into audioQueue with groupIndex:",
-            groupIndex,
-        );
-        if (sourceFunction === "handleOnSpeakAtGroupIndexAction") {
-            handleOnSpeakAtGroupIndexAction(groupIndex);
+    // Don't process if we already have audio for this message
+    if (audioFileDict.value[groupIndex]?.[0]?.audio) {
+        console.log('Audio already exists for this message');
+        if (readAlways.value) {
+            audioFileDict.value[groupIndex][0].audio.play().catch(console.error);
         }
         return;
     }
 
     try {
-        // // FOR PRODUCTION WHEN TTS SERVER IS WORKING
-        console.log("text for /api/tts", sourceFunction, text);
         const response = await fetch("/api/tts", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                text: text,
+                text: cleanedText,
                 textPosition: sourceFunction,
                 voice: lang.value === "en" ? "Stefanie" : "Florian",
                 ttsKey: settings.value.ttsKey,
                 ttsUrl: settings.value.ttsUrl,
                 ttsModel: settings.value.ttsModel,
+                shopApiKey: settings.value.universalApiKey,
             }),
         });
 
@@ -129,136 +91,65 @@ export const getTTS = async (
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
 
-        const startsWithStream = sourceFunction.startsWith("stream");
-
         if (!audioFileDict.value[groupIndex]) {
-            audioFileDict.value[groupIndex] = []
+            audioFileDict.value[groupIndex] = {};
         }
 
-        if (startsWithStream) {
-            const sourceFunctionIndex =
-                Number(sourceFunction.replace("stream", "")) - 1;
-            audioFileDict.value[groupIndex][sourceFunctionIndex] = {
-                audio: audio,
-                played: false,
-            };
-        } else {
-            audioFileDict.value[groupIndex][0] = { audio: audio, played: true };
+        audioFileDict.value[groupIndex][0] = {
+            audio,
+            played: false
+        };
+
+        audioFileDict.value = { ...audioFileDict.value };
+        console.log('Created new audio for message');
+
+        if (readAlways.value) {
+            audio.play().catch(console.error);
         }
 
-        // audioFileDict.value = (prev) => ({
-        //     ...prev,
-        //     [groupIndex]: audioFileDict.value[groupIndex],
-        // });
-
-        if (sourceFunction === "handleOnSpeakAtGroupIndexAction") {
-            handleOnSpeakAtGroupIndexAction(groupIndex);
-        }
     } catch (error) {
         console.error("Error fetching TTS:", error);
     }
 };
 
-// 3. handleOnSpeakAtGroupIndexAction
-const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
-    console.log("[LOG] handleOnSpeakAtGroupIndexAction", groupIndex);
+export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
+    // Don't process if it's a user message
+    if (messages.value[groupIndex]?.role === "user") return;
+
     if (!audioFileDict.value[groupIndex]) {
-        console.log("No audio file found for groupIndex", groupIndex);
-        console.log("AudioFileDict", audioFileDict);
-        const lastMessage = Array.isArray(messages.value[groupIndex])
-            ? messages.value[groupIndex][0]
-            : messages.value[groupIndex];
-        console.log("lastMessage", lastMessage);
-        const parsedLastMessage = Array.isArray(lastMessage.content)
-            ? lastMessage.content.join("")
-            : lastMessage.content;
-        if (parsedLastMessage === "") return;
-        getTTS(
-            parsedLastMessage as string,
-            groupIndex,
-            "handleOnSpeakAtGroupIndexAction",
-        );
+        const message = messages.value[groupIndex];
+        if (!message || !message.content) return;
+        
+        const content = Array.isArray(message.content) 
+            ? message.content.join("") 
+            : message.content;
+            
+        getTTS(content, groupIndex, "handleOnSpeakAtGroupIndexAction");
         return;
-    } else {
-        const indexThatIsPlaying = Object.entries(
-            audioFileDict.value[groupIndex],
-        )
-            .findIndex(([_, item]) => !item.audio.paused);
-
-        if (indexThatIsPlaying !== -1) {
-            // Pause current audio
-            // audioFileDict.value[groupIndex][indexThatIsPlaying].audio.pause();
-            // audioFileDict.value[groupIndex][indexThatIsPlaying].audio.currentTime = 0;
-
-            (Object.values(audioFileDict) as Record<number, AudioItem>[])
-                .forEach(
-                    (group) => {
-                        (Object.values(group) as AudioItem[]).forEach(
-                            (item) => {
-                                if (!item.audio.paused) {
-                                    item.audio.pause();
-                                    item.audio.currentTime = 0;
-                                }
-                            },
-                        );
-                    },
-                );
-
-            stopList.value = [...stopList.value, groupIndex];
-            // Force state update after pausing
-            audioFileDict.value = [...audioFileDict.value];
-        } else {
-            stopList.value = stopList.value.filter((item) =>
-                item !== groupIndex
-            );
-            // Stop all other playing audio
-            (Object.values(audioFileDict) as Record<number, AudioItem>[])
-                .forEach(
-                    (group) => {
-                        (Object.values(group) as AudioItem[]).forEach(
-                            (item) => {
-                                if (!item.audio.paused) {
-                                    item.audio.pause();
-                                    item.audio.currentTime = 0;
-                                }
-                            },
-                        );
-                    },
-                );
-
-            // Start playback of current group
-            const firstAudio = audioFileDict.value[groupIndex][0].audio;
-            firstAudio.play();
-
-            // Set up sequential playback
-            Object.keys(audioFileDict.value[groupIndex]).forEach((_, index) => {
-                const currentAudio =
-                    audioFileDict.value[groupIndex][index].audio;
-                currentAudio.onended = () => {
-                    if (audioFileDict.value[groupIndex][index + 1]) {
-                        audioFileDict.value[groupIndex][index + 1].audio.play();
-                    }
-                    // Update state after each audio finishes
-                    audioFileDict.value = [...audioFileDict.value];
-                };
-            });
-        }
-
-        // Force immediate state update when starting playback
-        audioFileDict.value = [...audioFileDict.value];
     }
+
+    const audio = audioFileDict.value[groupIndex][0]?.audio;
+    if (!audio) return;
+
+    if (!audio.paused) {
+        stopAndResetAudio();
+        stopList.value = [...stopList.value, groupIndex];
+    } else {
+        stopAndResetAudio();
+        stopList.value = stopList.value.filter(item => item !== groupIndex);
+        audio.play().catch(console.error);
+    }
+
+    audioFileDict.value = { ...audioFileDict.value };
 };
 
-// 2. stopAndResetAudio
 export const stopAndResetAudio = () => {
-    for (const group of (audioFileDict.value || [])) {
-        for (const item of group) {
-            if (item.audio.paused) continue;
-
-            item.audio.pause(); // Changed from audio.pause()
-            item.audio.currentTime = 0; // Changed from audio.currentTime
-        }
-    }
-    // TODO: Check if this is necessary
-    // audioFileDict.value = {};
+    Object.values(audioFileDict.value).forEach(group => {
+        Object.values(group).forEach(item => {
+            if (!item.audio.paused) {
+                item.audio.pause();
+                item.audio.currentTime = 0;
+            }
+        });
+    });
 };

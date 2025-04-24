@@ -21,7 +21,7 @@ export interface ApiKeysParams {
 
 export async function getApiKeys(
   params: ApiKeysParams,
-  aiModel = "gemini-2.5-pro-preview-03-25",
+  aiModel = "gemini-2.5-flash-online",
 ): Promise<{ api_url: string; api_key: string; api_model: string }> {
   const {
     messages,
@@ -71,7 +71,7 @@ export async function getApiKeys(
 async function getApiKeysFromShop(
   messages: Message[],
   shopApiKey: string,
-  aiModel = "gemini-2.5-pro-preview-03-25",
+  aiModel = "gemini-2.5-flash-online",
 ): Promise<{ api_url: string; api_key: string; api_model: string }> {
   const { endpoint, apiKey, model } = await deductInputTokens(
     messages,

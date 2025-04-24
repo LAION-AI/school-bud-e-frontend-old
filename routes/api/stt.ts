@@ -16,13 +16,18 @@ export const handler: Handlers = {
       let sttModel = formData.get("sttModel") as string || STT_MODEL;
 
       if (shopApiKey) {
-        const { apiKey } = await deductInputTokens(
+        const { apiKey, endpoint } = await deductInputTokens(
           [{ role: "user", content: "Audio transcription request" }],
           shopApiKey,
           "whisper-1"
         );
         sttKey = apiKey;
+        sttUrl = endpoint;
+        sttModel = "whisper-1";
       }
+      console.log("sttKey", sttKey);
+      console.log("sttUrl", sttUrl);
+      console.log("sttModel", sttModel);
 
       if (sttKey.startsWith("gsk_")) {
         sttUrl = sttUrl == "" ? "https://api.groq.com/openai/v1/audio/transcriptions" : sttUrl;
@@ -58,7 +63,7 @@ export const handler: Handlers = {
       const transcription = await response.json();
 
       if (shopApiKey) {
-        deductOutputTokens(transcription.text, shopApiKey);
+        deductOutputTokens(transcription.text, shopApiKey, "whisper-1");
       }
 
       return new Response(transcription.text, {

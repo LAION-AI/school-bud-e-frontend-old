@@ -18,7 +18,7 @@ def interactive_loop():
     genai.configure(api_key="")
 
     gemini_model = genai.GenerativeModel(
-        model_name="gemini-2.5-pro-preview-03-25",
+        model_name="gemini-2.5-flash-online",
         generation_config=generation_config,
     )
 

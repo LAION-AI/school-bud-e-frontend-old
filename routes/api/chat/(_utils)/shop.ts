@@ -14,6 +14,7 @@ const SHOP_API_URL = Deno.env.get("SHOP_API_URL") || "http://localhost:3000";
 export async function deductOutputTokens(
   response: string,
   universalShopApiKey: string,
+  model = "gemini-2.5-flash-online"
 ) {
   const encoder = await tiktoken.get_encoding("cl100k_base");
   const tokens = encoder.encode(response).length;
@@ -29,7 +30,7 @@ export async function deductOutputTokens(
       body: JSON.stringify({
         key: universalShopApiKey,
         tokens: tokens,
-        model: "gemini-2.5-pro-preview-03-25",
+        model: model,
       }),
     },
     );
@@ -41,7 +42,7 @@ export async function deductOutputTokens(
 export async function deductInputTokens(
   messages: Message[],
   universalShopApiKey: string,
-  model = "gemini-2.5-pro-preview-03-25"
+  model = "gemini-2.5-flash-online"
 ) {
   const tokens = await countTokens(messages);
   const response = await fetch(

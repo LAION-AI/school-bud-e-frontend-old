@@ -34,8 +34,8 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
           totalInput: 12458,
           totalOutput: 35672,
           history: [
-            { id: "1", date: "2023-06-01", model: "gemini-2.5-pro-preview-03-25", input: 1245, output: 3567 },
-            { id: "2", date: "2023-06-02", model: "gemini-2.5-pro-preview-03-25", input: 2356, output: 4789 },
+            { id: "1", date: "2023-06-01", model: "gemini-2.5-flash-online", input: 1245, output: 3567 },
+            { id: "2", date: "2023-06-02", model: "gemini-2.5-flash-online", input: 2356, output: 4789 },
             { id: "3", date: "2023-06-03", model: "gemini-1.5-pro", input: 3467, output: 8765 },
             { id: "4", date: "2023-06-04", model: "llama-3.3-70b", input: 2341, output: 7896 },
             { id: "5", date: "2023-06-05", model: "llama-3.3-70b", input: 3049, output: 10655 },

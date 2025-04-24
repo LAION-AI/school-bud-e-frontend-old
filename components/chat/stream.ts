@@ -39,93 +39,31 @@ export const startStream = async (
         streamComplete.value = false;
         resetTranscript.value++;
 
-        const currentQuery = (transcript) ? transcript : query.value;
+        const currentQuery = transcript || query.value;
         let previousMessages = prevMessages || messages.value;
 
         previousMessages = previousMessages.map((msg) => {
             if (typeof msg.content === "string") {
                 return msg;
             }
-            if (typeof msg.content[0] === "string") {
-                return { "role": msg.role, "content": msg.content.join("") };
+            if (Array.isArray(msg.content) && typeof msg.content[0] === "string") {
+                return { role: msg.role, content: msg.content.join("") };
             }
             return msg;
         });
 
-        const messagesToSend: Message[] = [];
-        const queryWithImages = [];
-        if (images && images?.length !== 0) {
-            console.log("[Stream] Handling message with files:", images.length);
-            
-            // Create a properly structured message with text content
-            const textContent = { 
-              role: "user", 
-              content: [{ type: "text", text: currentQuery }]
-            };
-            
-            // Add the text message first
-            queryWithImages.push(textContent);
-            
-            // Process image objects
-            console.log("[Stream] Images to process:", images);
-            
-            // Create a single message with multiple content items including text and images/PDFs
-            const mediaContent: any[] = [];
-            mediaContent.push({ type: "text", text: currentQuery });
-            
-            // Add each image/PDF as a content item
-            for (const img of images) {
-                console.log(`[Stream] Processing file object: ${JSON.stringify(img).substring(0, 100)}...`);
-                
-                // Check for in-progress transcriptions - these should not be sent
-                if (img.type === "pdf_url" && img.pdf_url?.isTranscribing) {
-                    console.warn("[Stream] Skipping PDF that is still being transcribed");
-                    continue;
-                }
-                
-                if (img.type === "image_url" && img.image_url) {
-                    mediaContent.push({
-                        type: "image_url",
-                        image_url: {
-                            url: img.image_url.url,
-                            detail: img.image_url.detail || "high",
-                            transcription: img.image_url.transcription
-                        }
-                    });
-                } 
-                else if (img.type === "pdf_url" && img.pdf_url) {
-                    // For PDFs, don't send the PDF URL to the server
-                    // Instead, just send the transcription as text
-                    if (img.pdf_url.transcription) {
-                        console.log("[Stream] Using PDF transcription instead of sending PDF URL");
-                        
-                        // Add the transcription as text
-                        mediaContent.push({
-                            type: "text",
-                            text: `\`\`\`pdf_transcription\n\n${img.pdf_url.transcription}\n\`\`\``
-                        });
-                    } else {
-                        console.warn("[Stream] PDF has no transcription, skipping");
-                    }
-                }
-            }
-            
-            // Add a single message with all content items
-            messagesToSend.push({ 
-                role: "user", 
-                content: mediaContent 
-            });
-            
-            console.log("[Stream] Final message structure:", `${JSON.stringify(messagesToSend).substring(0, 100)}...`);
-        } else {
-            messagesToSend.push({ role: "user", "content": currentQuery });
+        const messagesToSend = [...previousMessages];
+        const imageContent: Image[] = [];
+
+        if (images && images.length > 0) {
+            imageContent.push(...images);
         }
 
-        for (const message of messagesToSend) {
-            addMessage(message);
+        if (currentQuery) {
+            const userMessage = { role: "user", content: currentQuery };
+            messagesToSend.push(userMessage);
+            addMessage(userMessage);
         }
-
-        query.value = "";
 
         // check if the last message has #bildungsplan in the content (case insensitive)
         // #bildungsplan: wofür braucht man eigentlich trigonometrie:5
@@ -268,14 +206,19 @@ export const startStream = async (
             return;
         }
 
+        // Start with an empty assistant message that we'll stream into
+        const assistantMessage = { role: "assistant", content: "" };
+        addMessage(assistantMessage);
+
         await fetchEventSource("/api/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
+                messages: messagesToSend,
+                images: imageContent,
                 lang: lang.value,
-                messages: [...previousMessages, ...messagesToSend],
                 universalApiKey: settings.value.universalApiKey,
                 llmApiUrl: settings.value.apiUrl,
                 llmApiKey: settings.value.apiKey,
@@ -287,68 +230,15 @@ export const startStream = async (
                 systemPrompt: settings.value.systemPrompt,
             }),
             onmessage(ev: EventSourceMessage) {
-                
                 const parsedData = JSON.parse(ev.data);
-                console.debug("parsedData", parsedData);
-
                 ongoingStream.push(parsedData);
-                if (ttsFromFirstSentence === false) {
-                    const combinedText = ongoingStream.join("");
-                    // Find last occurrence of .!? that's not after a digit
-                    const match = combinedText.match(/(?<!\d)[.!?][^.!?]*$/);
-
-                    if (match && combinedText.length > 20) {
-                        const splitIndex = match.index ?? 0 + 1; // Include the punctuation
-                        const textToSpeak = combinedText.slice(0, splitIndex);
-                        const remaining = combinedText.slice(splitIndex);
-
-                        if (textToSpeak.trim() !== "") {
-                            getTTS(
-                                textToSpeak,
-                                messages.value.length - 1,
-                                `stream${currentAudioIndex}`,
-                            );
-
-                            currentAudioIndex++;
-                            ongoingStream.length = 0; // Clear array
-                            if (remaining.trim()) {
-                                ongoingStream.push(remaining); // Push remaining text
-                            }
-                            ttsFromFirstSentence = true;
-                        }
-                    }
-                } else {
-                    // check for \n\n in the parsedData, e.g., ' \n\n', or '\n\n ' etc.
-                    const combinedText = ongoingStream.join("");
-                    if (
-                        /\n\n/.test(combinedText.slice(5)) &&
-                        combinedText.length > 15
-                    ) {
-                        const paragraphSplit = combinedText.split(/\n\n/);
-                        // console.warn("paragraphSplit", paragraphSplit)
-                        const textToSpeak = paragraphSplit.slice(0, -1).join(
-                            "\n\n",
-                        );
-
-                        const remaining =
-                            paragraphSplit[paragraphSplit.length - 1];
-
-                        getTTS(
-                            textToSpeak,
-                            messages.value.length - 1,
-                            `stream${currentAudioIndex}`,
-                        );
-
-                        currentAudioIndex++;
-                        ongoingStream.length = 0;
-                        if (remaining.trim()) {
-                            ongoingStream.push(remaining);
-                        }
-                    }
-                }
 
                 const lastMessage = messages.value[messages.value.length - 1];
-                (lastMessage.content as string[]).push(parsedData);
+                if (typeof lastMessage.content === "string") {
+                    lastMessage.content += parsedData;
+                } else {
+                    lastMessage.content.push(parsedData);
+                }
 
                 editMessage(messages.value.length - 1, {
                     role: "assistant",
@@ -356,40 +246,26 @@ export const startStream = async (
                 });
             },
             async onopen(response: Response) {
-                const prevMessagesRoundTwo = messages.value;
-                prevMessagesRoundTwo.push({
-                    "role": "assistant",
-                    "content": [],
-                });
-                if (response.ok) {
-                    return; // everything's good
-                }
-                if (response.status !== 200) {
-                    // client-side errors are usually non-retriable:
-                    const errorText = await response.text();
-                    throw new FatalError(
-                        `**BACKEND ERROR**\nStatuscode: ${response.status}\nMessage: ${errorText}`,
-                    );
+                if (response.ok && response.headers.get("content-type")?.includes("text/event-stream")) {
+                    return;
                 }
                 throw new RetriableError();
-            },
-            onerror(err: FatalError) {
-                streamComplete.value = true;
-                /// add err.message to messages
-                // appendToMessage(messages.value.length - 1, err.message);
-                throw err;
             },
             onclose() {
                 console.log("Stream closed");
                 streamComplete.value = true;
                 query.value = "";
-                getTTS(
-                    ongoingStream.join(""),
-                    messages.value.length - 1,
-                    `stream${currentAudioIndex}`,
-                );
-                console.log("ONGOING STREAM: ", ongoingStream);
+                
+                const finalText = ongoingStream.join("");
+                if (finalText.trim()) {
+                    getTTS(finalText, messages.value.length - 1, "stream1");
+                }
             },
+            onerror(err: Error) {
+                if (err instanceof RetriableError) {
+                    throw err;
+                }
+            }
         });
     }
 };

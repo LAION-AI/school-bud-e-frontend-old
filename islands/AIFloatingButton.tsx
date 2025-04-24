@@ -132,13 +132,16 @@ export default function AIFloatingButton() {
           ttsKey: settings.value.ttsKey,
           ttsUrl: settings.value.ttsUrl,
           ttsModel: settings.value.ttsModel,
+          shopApiKey: settings.value.universalApiKey,
         }),
       });
+      console.log("ttsResponse", ttsResponse);
       
       if (!ttsResponse.ok) throw new Error("Failed to convert text to speech");
       
       const audioBlob = await ttsResponse.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
+      console.log("audioUrl", audioUrl);
       
       if (!audioPlayerRef.current) {
         audioPlayerRef.current = new Audio();

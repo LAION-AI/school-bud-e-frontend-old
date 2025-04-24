@@ -35,8 +35,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   const [isStreamComplete] = useState(true);
   const tourInitialized = useRef(false);
 
+  const lastMessage = messages.value[messages.value.length - 1];
   useEffect(() => {
-    const lastMessage = messages.value[messages.value.length - 1];
     if (isStreamComplete && lastMessage) {
       if ("content" in messages.value[messages.value.length - 1]) {
         let lastMessageFromBuddy: string;
@@ -48,24 +48,20 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
           lastMessageFromBuddy = (lastMessageContent as string[]).join("");
         }
 
-        if (lastMessageFromBuddy !== "" && messages.value.length > 1) {
-          messages.value[messages.value.length - 1]["content"] = lastMessageFromBuddy;
-
-          console.log("IS_STREAM_COMPLETE", chatSuffix.value);
-        }
         if (lastMessageFromBuddy !== "") {
-          const groupIndex = messages.value.length - 1;
-          if (groupIndex === 0) {
-            // TODO: Enable TTS
-            getTTS(lastMessageFromBuddy, groupIndex, "stream");
-          }
+          messages.value[messages.value.length - 1]["content"] = lastMessageFromBuddy;
         }
       }
     }
-  }, [isStreamComplete]);
+  }, [isStreamComplete, lastMessage]);
 
   useEffect(() => {
-    if (!readAlways) return;
+    console.log("--------------------------------");
+    console.log("audioFileDict", audioFileDict);
+    console.log("readAlways", readAlways.value);
+    console.log("--------------------------------");
+    if (!readAlways.value) return;
+    debugger;
 
     for (const [groupIndex, groupAudios] of Object.entries(audioFileDict)) {
       const nextUnplayedIndex = findNextUnplayedAudio(groupAudios);
@@ -103,7 +99,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         }
       }
     };
-  }, [audioFileDict, readAlways, stopList.value]);
+  }, [JSON.stringify(audioFileDict), readAlways, stopList.value]);
 
   // Initialize tour guide on client-side only once
   useEffect(() => {
@@ -145,14 +141,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   ) => {
     audio.play();
     audioFileDict[groupIndex][audioIndex].played = true;
-
-    // Add onended handler to update state when audio finishes
-    audio.onended = () => {
-      audioFileDict[groupIndex][audioIndex].played = true;
-      setAudioFileDict({ ...audioFileDict }); // Force state update
-    };
-
-    // Force immediate state update when starting playback
     setAudioFileDict({ ...audioFileDict });
   };
   
@@ -165,6 +153,12 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         audioFileDict={audioFileDict}
         onRefreshAction={handleRefreshAction}
         onEditAction={() => { }}
+        onSpeakAtGroupIndexAction={(groupIndex: number) => {
+          const audioFile = audioFileDict[groupIndex][0];
+          if (audioFile) {
+            audioFile.audio.play();
+          }
+        }}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>

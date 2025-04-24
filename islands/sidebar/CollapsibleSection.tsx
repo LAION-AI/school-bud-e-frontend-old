@@ -38,7 +38,6 @@ export default function CollapsibleSection({
 
   const getButtonColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
         return "bg-blue-100 text-blue-900 hover:bg-blue-200 border-2 border-blue-500 focus-visible:ring-blue-500";
@@ -48,28 +47,18 @@ export default function CollapsibleSection({
 
   const getIconColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
-      if (variant === "blue") return "text-blue-800";
-      if (variant === "red") return "text-red-800";
-      if (variant === "purple") return "text-purple-800";
-      if (variant === "green") return "text-green-800";
-      return "text-amber-800";
+      return "text-blue-800";
     }
     return "text-gray-600 group-hover:text-gray-800";
   };
 
   const getChevronColorClasses = (
     active: boolean,
-    variant: "amber" | "blue" | "red" | "purple" | "green"
   ) => {
     if (active) {
-      if (variant === "blue") return "text-blue-800";
-      if (variant === "red") return "text-red-800";
-      if (variant === "purple") return "text-purple-800";
-      if (variant === "green") return "text-green-800";
-      return "text-amber-800";
+      return "text-blue-800";
     }
     return "text-gray-500 group-hover:text-gray-700";
   };

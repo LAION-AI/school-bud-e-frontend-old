@@ -1,5 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { Buffer } from "npm:buffer";
+import { deductInputTokens } from "./chat/(_utils)/shop.ts";
 
 const TTS_KEY = Deno.env.get("TTS_KEY") || "";
 const TTS_URL = Deno.env.get("TTS_URL") || "";
@@ -118,6 +119,7 @@ async function textToSpeech(
   ttsUrl: string,
   ttsKey: string,
   ttsModel: string,
+  shopApiKey?: string,
 ): Promise<Buffer | null> {
   const boldTextRegex = /\*\*(.*?)\*\*/g;
   text = String(text).replace(boldTextRegex, "$1");
@@ -130,10 +132,26 @@ async function textToSpeech(
   console.log("ttsUrl", ttsUrl);
   console.log("ttsKey", ttsKey);
   console.log("ttsModel", ttsModel);
+  console.log("shopApiKey", shopApiKey);
 
-  const useThisTttsUrl = ttsUrl !== "" ? ttsUrl : TTS_URL;
-  const useThisTtsKey = ttsKey !== "" ? ttsKey : TTS_KEY;
-  const useThisTtsModel = ttsModel !== "" ? ttsModel : TTS_MODEL;
+  let useThisTttsUrl = ttsUrl !== "" ? ttsUrl : TTS_URL;
+  let useThisTtsKey = ttsKey !== "" ? ttsKey : TTS_KEY;
+  let useThisTtsModel = ttsModel !== "" ? ttsModel : TTS_MODEL;
+
+  if (shopApiKey) {
+    const { endpoint, apiKey, model } = await deductInputTokens(
+      [{ role: "user", content: text }],
+      shopApiKey,
+      "en-us-Chirp3-HD-Leda" //"en-us-Chirp3-HD-Leda"
+    );
+    useThisTttsUrl = endpoint;
+    useThisTtsKey = apiKey;
+    useThisTtsModel = "en-us-Chirp3-HD-Leda"; //"en-us-Chirp3-HD-Leda"
+  }
+
+  console.log("useThisTttsUrl", useThisTttsUrl);
+  console.log("useThisTtsKey", useThisTtsKey);
+  console.log("useThisTtsModel", useThisTtsModel);  
 
   //   Deepgram random with 40 chars
   // 9371dfaed6d8b42e9eaf9458ba8604126fb373d0
@@ -193,6 +211,104 @@ async function textToSpeech(
         }
         break;
       }
+      // Example: Replace "aura-helios-en" with the specific Google Voice Name
+      // You might have multiple cases for different Google voices.
+      case "en-us-Chirp3-HD-Leda": // <-- Replace with the desired Google Chirp/Standard/WaveNet voice name
+      // Add other Google voice cases if needed:
+      // case "en-US-News-K":
+      // case "en-GB-Standard-A":
+      {
+        const startTime = Date.now();
+        const googleApiKey = useThisTtsKey; // Assuming this holds your Google Cloud API Key
+        const voiceName = "en-us-Chirp3-HD-Leda"; // The specific voice for this case block
+
+        // Extract language code from voice name (e.g., "en-US" from "en-us-Chirp3-HD-Leda")
+        // This is a basic assumption, might need adjustment for complex voice names
+        const languageCode = voiceName.split("-").slice(0, 2).join("-");
+
+        // Google TTS API v1 endpoint (works for Chirp models too)
+        const googleTtsUrl =
+          `https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleApiKey}`;
+        // Alternatively, use the API key in the header:
+        // const googleTtsUrl = "https://texttospeech.googleapis.com/v1/text:synthesize";
+        // And add header: "X-Goog-Api-Key": googleApiKey
+
+        const requestBody = {
+          input: {
+            text: text, // The text to synthesize
+          },
+          voice: {
+            languageCode: languageCode, // e.g., "en-US"
+            name: voiceName, // e.g., "en-us-Chirp3-HD-Leda"
+          },
+          audioConfig: {
+            audioEncoding: "MP3", // Common encoding. Others: LINEAR16, OGG_OPUS
+            // Optional: Adjust speakingRate, pitch, volumeGainDb, sampleRateHertz etc.
+            // speakingRate: 1.0,
+            // pitch: 0,
+          },
+        };
+
+        try {
+          const response = await fetch(googleTtsUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              // If using header auth instead of query param:
+              // "X-Goog-Api-Key": googleApiKey,
+              // If using OAuth 2.0 Bearer Token instead of API Key:
+              // "Authorization": `Bearer YOUR_ACCESS_TOKEN`,
+            },
+            body: JSON.stringify(requestBody),
+          });
+
+          if (response.ok) {
+            const responseData = await response.json(); // Google TTS returns JSON
+            if (responseData.audioContent) {
+              // audioContent is Base64 encoded, decode it into a Buffer
+              const audioData = Buffer.from(
+                responseData.audioContent,
+                "base64",
+              );
+              console.log(
+                `Audio file received for ${textPosition} using ${voiceName}, Latency:`,
+                Date.now() - startTime,
+                "ms",
+              );
+              return audioData; // Return the audio data as a Buffer
+            } else {
+              // Should not happen if response.ok, but good practice
+              console.error(
+                `Failed to synthesize speech with ${voiceName}: No audioContent in response.`,
+                responseData,
+              );
+              return null; // Or throw an error
+            }
+          } else {
+            // Log detailed error from Google Cloud TTS if possible
+            let errorBody = null;
+            try {
+              errorBody = await response.json(); // Google usually returns JSON errors
+            } catch (e) {
+              errorBody = await response.text(); // Fallback if error response isn't JSON
+            }
+            console.error(
+              `Failed to synthesize speech with ${voiceName}. Status: ${response.status} ${response.statusText}. Response:`,
+              errorBody,
+            );
+            return null; // Or throw an error
+          }
+        } catch (error) {
+          console.error(
+            `Network or other error during TTS request for ${voiceName}:`,
+            error,
+          );
+          return null; // Or throw an error
+        }
+        // Note: 'break;' is usually unreachable here because of 'return',
+        // but keep it if you change the logic to not always return.
+        // break;
+      } // End of case block
       default: {
         const startTime = Date.now();
         const response = await fetch(useThisTttsUrl, {
@@ -202,14 +318,13 @@ async function textToSpeech(
             "Authorization": `Bearer ${useThisTtsKey}`,
           },
           body: JSON.stringify({
-            voice: "alloy",
-            input: text,
-            normalize: true,
-            format: "mp3",
             model: useThisTtsModel,
-            mp3_bitrate: 64,
-            opus_bitrate: -1000,
-            latency: "normal",
+            input: text,
+            voice: "Fritz-PlayAI",
+            response_format: "wav",
+            // mp3_bitrate: 64,
+            // opus_bitrate: -1000,
+            // latency: "normal",
           }),
         });
 
@@ -234,7 +349,7 @@ async function textToSpeech(
 
 export const handler: Handlers = {
   async POST(req) {
-    const { text, textPosition, ttsUrl, ttsKey, ttsModel } = await req.json();
+    const { text, textPosition, ttsUrl, ttsKey, ttsModel, shopApiKey } = await req.json();
     // console.log("Text:", text);
 
     if (!text) {
@@ -247,6 +362,7 @@ export const handler: Handlers = {
       ttsUrl,
       ttsKey,
       ttsModel,
+      shopApiKey,
     );
 
     if (audioData) {
