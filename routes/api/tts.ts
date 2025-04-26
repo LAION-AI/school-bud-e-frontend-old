@@ -124,6 +124,19 @@ async function textToSpeech(
   const boldTextRegex = /\*\*(.*?)\*\*/g;
   text = String(text).replace(boldTextRegex, "$1");
 
+  // Lowercase all text
+  text = text.toLowerCase();
+
+  // Replace 'mit ' with 'mitt '
+  text = text.replace(/mit /g, "mitt ");
+
+  // Replace German umlauts and ß with ASCII equivalents
+  text = text
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss");
+
   const buddyRegex = /bud-e/gi;
   text = text.replace(buddyRegex, "buddy");
 

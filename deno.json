@@ -19,7 +19,7 @@
     "test": "deno test -A",
     "start": "deno run -A --watch=static/,routes/ dev.ts",
     "build": "deno run -A dev.ts build",
-    "preview": "deno run -A --no-check --watch=routes/,islands/,components/ --watch-exclude=static/,logs/,data/,*.log main.ts",
+    "preview": "deno run -A --no-check --watch=routes/,islands/,components/ main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
     "cypress": "deno run -A npm:cypress@latest open"
   },
