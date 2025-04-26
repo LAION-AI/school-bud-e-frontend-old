@@ -579,7 +579,7 @@ export default function TestsListIsland() {
 
   return (
     <div class="container mx-auto px-6 py-10">
-      <div class="flex justify-between items-center mb-8">
+      <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Tests</h1>
           <p class="mt-2 text-gray-600">Create and manage your tests</p>

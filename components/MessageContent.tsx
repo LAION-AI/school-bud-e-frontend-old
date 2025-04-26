@@ -1,6 +1,7 @@
 import { renderTextWithLinksAndBold } from "../routes/api/(_utils)/textUtils.tsx";
 import { GraphLoadingState } from "./GraphLoadingState.tsx";
 import { IconLoader2 } from "@tabler/icons-preact";
+import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
 // Define supported content types
 type ContentType = "text" | "image_url" | "pdf_url";
@@ -137,9 +138,7 @@ export function MessageContent({ content }: MessageContentProps) {
         {segments.map((seg, idx) => {
           if (seg.type === "text") {
             return (
-              <span key={idx}>
-                {renderTextWithLinksAndBold(seg.content)}
-              </span>
+              <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: marked(seg.content) }} />
             );
           } 
           if (seg.type === "json" || seg.type === "webresult" || seg.type === "game") {
@@ -180,9 +179,7 @@ export function MessageContent({ content }: MessageContentProps) {
                 {segments.map((seg, idx) => {
                   if (seg.type === "text") {
                     return (
-                      <span key={idx}>
-                        {renderTextWithLinksAndBold(seg.content)}
-                      </span>
+                      <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: marked(seg.content) }} />
                     );
                   } 
                   if (["json", "webresult", "game"].includes(seg.type)) {
@@ -251,7 +248,7 @@ export function MessageContent({ content }: MessageContentProps) {
                     {isError ? 'PDF Transcription Error' : 'PDF Document (Transcribed)'}
                   </div>
                   <div className={`pdf-transcription border ${isError ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}>
-                    {renderTextWithLinksAndBold(item.pdf_url.transcription)}
+                    <span className="flex" dangerouslySetInnerHTML={{ __html: marked(item.pdf_url.transcription) }} />
                   </div>
                   {/* PDF viewer toggle button */}
                   <details className="pdf-viewer-toggle">

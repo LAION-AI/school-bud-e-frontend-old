@@ -4,6 +4,7 @@
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
     "preact": "https://esm.sh/preact@10.26.4",
+    "preact-markdown": "npm:preact-markdown@^2.1.0",
     "preact/": "https://esm.sh/preact@10.26.4/",
     "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
