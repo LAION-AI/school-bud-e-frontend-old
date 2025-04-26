@@ -44,6 +44,13 @@ body {
   scrollbar-gutter: stable;
 }
 
+.message {
+  li {
+    list-style-type: disc;
+    margin-left: 1rem;
+  }
+}
+
 .highlight-score {
   animation: highlight 0.5s ease-in-out;
 }

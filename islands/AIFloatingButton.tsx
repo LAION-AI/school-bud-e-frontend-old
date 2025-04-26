@@ -272,7 +272,7 @@ export default function AIFloatingButton() {
           </div>
         )}
         
-        <div class="bg-gradient-to-r from-primary-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full flex items-center gap-3">
+        <div class="hidden md:flex bg-gradient-to-r from-primary-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full items-center gap-3">
           <button
             type="button"
             onClick={() => buttonState === "chat" ? setButtonState("idle") : setButtonState("chat")}

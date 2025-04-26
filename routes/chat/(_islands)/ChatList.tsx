@@ -30,13 +30,13 @@ export default function ChatList({ lang = "en" }: ChatListProps) {
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
-    <div class="space-y-2">
+    <div>
       {chatList.length > 0 ? (
         chatList.map((chat) => (
           <a
             key={chat.id}
             href={`/chat/${chat.id}`}
-            class="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            class="block bg-white rounded-lg border-b"
           >
             <div class="p-4">
               <div class="flex justify-between items-start mb-1">
