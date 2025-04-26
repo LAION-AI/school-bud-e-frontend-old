@@ -121,6 +121,7 @@ async function textToSpeech(
   ttsModel: string,
   shopApiKey?: string,
 ): Promise<Buffer | null> {
+  console.log("text", text);
   const boldTextRegex = /\*\*(.*?)\*\*/g;
   text = String(text).replace(boldTextRegex, "$1");
 
@@ -132,10 +133,25 @@ async function textToSpeech(
 
   // Replace German umlauts and ß with ASCII equivalents
   text = text
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss");
+    //.replace(/ä/g, "ae")
+    //.replace(/ö/g, "oe")
+    //.replace(/ü/g, "ue")
+    //.replace(/ß/g, "ss")
+    // Remove code blocks
+    .replace(/```[\s\S]*?```/g, '')
+    // Remove inline code
+    .replace(/`[^`]*`/g, '')
+    // Remove URLs
+    .replace(/https?:\/\/[^\s]+/g, '')
+    // Remove markdown links
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    // Remove markdown bold/italic
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+    // Remove special characters but keep basic punctuation
+    .replace(/[\u{1F300}-\u{1F9FF}]/gu, ' ')
+    // Remove extra whitespace
+    .replace(/\s+/g, ' ')
+    .trim();
 
   const buddyRegex = /bud-e/gi;
   text = text.replace(buddyRegex, "buddy");

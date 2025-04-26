@@ -14,24 +14,6 @@ export const toggleReadAlways = (value: boolean) => {
     }
 };
 
-const cleanTextForSpeech = (text: string): string => {
-    return text
-        // Remove code blocks
-        .replace(/```[\s\S]*?```/g, '')
-        // Remove inline code
-        .replace(/`[^`]*`/g, '')
-        // Remove URLs
-        .replace(/https?:\/\/[^\s]+/g, '')
-        // Remove markdown links
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        // Remove markdown bold/italic
-        .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
-        // Remove special characters but keep basic punctuation
-        .replace(/[^a-zA-Z0-9\s.,!?;:'"()[\]-]/g, ' ')
-        // Remove extra whitespace
-        .replace(/\s+/g, ' ')
-        .trim();
-};
 
 export const getTTS = async (
     text: string,
@@ -53,7 +35,7 @@ export const getTTS = async (
     }
 
     // Clean the text for speech
-    const cleanedText = cleanTextForSpeech(text);
+    const cleanedText = text;
     if (!cleanedText) return;
 
     // Don't process if we already have audio for this message

@@ -19,7 +19,7 @@ export default function PresentationsPage() {
           <div class="px-4 py-6 sm:px-0">
             <div class="flex flex-col md:flex-row gap-6">
               {/* Left column - Presentation Generator */}
-              <div class="w-full md:w-1/2 bg-white rounded-lg shadow-lg p-6">
+              <div class="w-full md:w-1/2 bg-primary-50 border border-primary-500 rounded-lg shadow-lg p-6">
                 <h2 class="text-2xl font-bold mb-4">Create New Presentation</h2>
                 <p class="text-gray-600 mb-6">
                   Generate a new PowerPoint presentation using AI. Simply enter
