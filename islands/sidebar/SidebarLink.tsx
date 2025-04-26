@@ -6,18 +6,9 @@ interface SidebarLinkProps {
   isActive?: boolean;
   children: ComponentChildren;
   className?: string;
-  variant?: "amber" | "blue" | "red" | "purple" | "green";
 }
 
-const variantClasses = {
-  amber:
-    "bg-amber-100 text-amber-900 hover:bg-amber-200 focus-visible:ring-amber-500",
-  blue: "bg-blue-100 text-blue-900 hover:bg-blue-200 focus-visible:ring-blue-500",
-  red: "bg-red-100 text-red-900 hover:bg-red-200 focus-visible:ring-red-500",
-  purple:
-    "bg-purple-100 text-purple-900 hover:bg-purple-200 focus-visible:ring-purple-500",
-  green: "bg-green-100 text-green-900 hover:bg-green-200 focus-visible:ring-green-500",
-};
+const activeClass = "bg-primary-100 text-primary-900 hover:bg-primary-200 focus-visible:ring-primary-500";
 
 const defaultClass = "text-gray-700 hover:bg-gray-50 hover:text-gray-900";
 
@@ -26,7 +17,6 @@ export default function SidebarLink({
   isActive: propIsActive,
   children,
   className = "",
-  variant = "amber",
 }: SidebarLinkProps) {
   const [isActive, setIsActive] = useState(propIsActive);
 
@@ -44,7 +34,6 @@ export default function SidebarLink({
     return () => globalThis.removeEventListener("popstate", updateActive);
   }, [href, propIsActive]);
 
-  const activeClass = variantClasses[variant];
 
   return (
     <a

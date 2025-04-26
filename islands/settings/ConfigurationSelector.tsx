@@ -105,7 +105,7 @@ export default function ConfigurationSelector({
                                     localStorage.removeItem(`${serviceType}SelectedConfig`);
                                 }
                             }}
-                            class="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            class="flex-1 p-2 border rounded focus:ring-2 focus:ring-primary-500"
                             value={selectedConfig ? savedConfigs.findIndex(config => config.name === selectedConfig.name).toString() : ""}
                         >
                             <option value="">
@@ -186,7 +186,7 @@ export default function ConfigurationSelector({
                                         setSavedConfigs(updatedConfigs);
                                         localStorage.setItem(`${serviceType}Configs`, JSON.stringify(updatedConfigs));
                                     }}
-                                    class="w-full font-mono p-2 border rounded focus:ring-2 focus:ring-blue-500 mt-1"
+                                    class="w-full font-mono p-2 border rounded focus:ring-2 focus:ring-primary-500 mt-1"
                                 />
                             </div>
                         </div>
@@ -199,35 +199,35 @@ export default function ConfigurationSelector({
                             type="text"
                             value={newConfigName}
                             onChange={(e) => setNewConfigName((e.target as HTMLInputElement).value)}
-                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
                             placeholder="Configuration name"
                         />
                         <input
                             type="password"
                             value={currentConfig.key || ''}
                             onChange={(e) => onUpdateSettings(`${serviceType}Key`, (e.target as HTMLInputElement).value)}
-                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 bg-yellow-50"
                             placeholder="API Key"
                         />
                         <input
                             type="text"
                             value={currentConfig.url}
                             onChange={(e) => onUpdateSettings(`${serviceType}Url`, (e.target as HTMLInputElement).value)}
-                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
                             placeholder="API URL"
                         />
                         <input
                             type="text"
                             value={currentConfig.model}
                             onChange={(e) => onUpdateSettings(`${serviceType}Model`, (e.target as HTMLInputElement).value)}
-                            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
                             placeholder="Model"
                         />
                         <div class="flex gap-2">
                             <button
                                 onClick={saveNewConfiguration}
                                 disabled={!newConfigName}
-                                class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
+                                class="flex-1 px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 disabled:bg-gray-300"
                             >
                                 Save Configuration
                             </button>

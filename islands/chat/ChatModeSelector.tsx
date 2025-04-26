@@ -260,11 +260,11 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
                                 }}
                                 class={`text-left p-3 rounded-lg border transition-colors ${
                                     keyboardFocusIndex.value === index 
-                                        ? 'ring-2 ring-blue-500 ' 
+                                        ? 'ring-2 ring-primary-500 ' 
                                         : ''
                                 }${
                                     props.selectedMode === mode.id
-                                        ? 'bg-blue-50 border-blue-200'
+                                        ? 'bg-primary-50 border-primary-200'
                                         : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                                 }`}
                                 tabIndex={keyboardFocusIndex.value === index ? 0 : -1}
@@ -306,11 +306,11 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
                                 }}
                                 class={`text-left p-3 rounded-lg border transition-colors ${
                                     keyboardSubmodeFocusIndex.value === index 
-                                        ? 'ring-2 ring-blue-500 ' 
+                                        ? 'ring-2 ring-primary-500 ' 
                                         : ''
                                 }${
                                     props.selectedSubMode === submode.id
-                                        ? 'bg-blue-50 border-blue-200'
+                                        ? 'bg-primary-50 border-primary-200'
                                         : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                                 }`}
                                 tabIndex={keyboardSubmodeFocusIndex.value === index ? 0 : -1}

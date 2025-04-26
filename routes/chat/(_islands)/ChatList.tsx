@@ -50,7 +50,7 @@ export default function ChatList({ lang = "en" }: ChatListProps) {
               </div>
               <div class="flex items-center gap-2">
                 {chat.isAI && (
-                  <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+                  <span class="inline-flex items-center rounded-full bg-primary-100 px-2 py-1 text-xs font-medium text-primary-700">
                     AI
                   </span>
                 )}
@@ -64,7 +64,7 @@ export default function ChatList({ lang = "en" }: ChatListProps) {
           <p class="text-gray-500 mb-4">No chats yet</p>
           <a
             href="/chat/new"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
             <IconMessagePlus size={20} />
             <span>{t.actions.newChat}</span>

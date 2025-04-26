@@ -58,12 +58,12 @@ export default function GraphList() {
             <a
               key={id}
               href={`/graph/${id}`}
-              class="group border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer w-full text-left"
+              class="group border border-gray-200 hover:border-primary-200 hover:bg-primary-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer w-full text-left"
               aria-label={`View graph: ${graph.name || "Untitled Graph"}`}
             >
               <div class="flex-1 min-w-0 mr-4">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h2 class="text-lg font-bold text-gray-800 group-hover:text-blue-700">
+                  <h2 class="text-lg font-bold text-gray-800 group-hover:text-primary-700">
                     {graph.name || "Untitled Graph"}
                   </h2>
                   <span class="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded-full">
@@ -99,7 +99,7 @@ export default function GraphList() {
               </div>
               
               <div 
-                class="flex-shrink-0 flex items-center justify-center opacity-80 group-hover:opacity-100 bg-blue-100 group-hover:bg-blue-600 p-2 rounded-full text-blue-600 group-hover:text-white transition-colors"
+                class="flex-shrink-0 flex items-center justify-center opacity-80 group-hover:opacity-100 bg-primary-100 group-hover:bg-primary-600 p-2 rounded-full text-primary-600 group-hover:text-white transition-colors"
                 title="View Graph"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-labelledby="viewGraphIconTitle">
@@ -122,7 +122,7 @@ export default function GraphList() {
           <p class="text-gray-500 mb-4">Create a new graph to get started with your knowledge base</p>
           <a 
             href="/graph/new" 
-            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            class="inline-block px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
           >
             Create New Graph
           </a>

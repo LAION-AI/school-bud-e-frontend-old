@@ -677,7 +677,7 @@ Format your response as a JSON object with the following structure:
   return (
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="mb-8">
-        <a href="/tests" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <a href="/tests" class="inline-flex items-center text-primary-600 hover:text-primary-800">
           <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Tests
         </a>
@@ -708,7 +708,7 @@ Format your response as a JSON object with the following structure:
               <input
                 id="test-name"
                 type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter test name"
                 value={test.name}
                 onInput={handleNameChange}
@@ -722,7 +722,7 @@ Format your response as a JSON object with the following structure:
               </label>
               <select
                 id="test-node"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                 value={test.nodeId}
                 onChange={handleNodeChange}
               >
@@ -741,7 +741,7 @@ Format your response as a JSON object with the following structure:
               </label>
               <textarea
                 id="test-description"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                 rows={3}
                 placeholder="Enter test description or instructions"
                 value={test.content}
@@ -751,11 +751,11 @@ Format your response as a JSON object with the following structure:
           </div>
           
           {/* AI Question Generation Button */}
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="bg-primary-50 border border-primary-200 rounded-lg p-4">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <h3 class="text-lg font-medium text-blue-800">Generate Questions with AI</h3>
-                <p class="text-sm text-blue-600">Let AI help you create test questions based on your test information</p>
+                <h3 class="text-lg font-medium text-primary-800">Generate Questions with AI</h3>
+                <p class="text-sm text-primary-600">Let AI help you create test questions based on your test information</p>
               </div>
               <button
                 type="button"
@@ -763,8 +763,8 @@ Format your response as a JSON object with the following structure:
                 disabled={isGeneratingQuestions}
                 class={`px-4 py-2 rounded-lg text-white transition-colors flex items-center ${
                   isGeneratingQuestions
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
+                    ? "bg-primary-400 cursor-not-allowed"
+                    : "bg-primary-600 hover:bg-primary-700"
                 }`}
               >
                 {isGeneratingQuestions ? (
@@ -824,7 +824,7 @@ Format your response as a JSON object with the following structure:
                         </label>
                         <textarea
                           id={`question-${questionIndex}-text`}
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                           rows={2}
                           placeholder="Enter question text"
                           value={question.question}
@@ -885,7 +885,7 @@ Format your response as a JSON object with the following structure:
                         </label>
                         <select
                           id={`question-${questionIndex}-type`}
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                           value={question.type}
                           onChange={(e) => handleQuestionChange(questionIndex, "type", (e.target as HTMLSelectElement).value)}
                         >
@@ -910,7 +910,7 @@ Format your response as a JSON object with the following structure:
                                 name={`question-${questionIndex}-correct`}
                                 checked={question.correctAnswer === optionIndex}
                                 onChange={() => handleCorrectAnswerChange(questionIndex, optionIndex)}
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500"
                               />
                               <input
                                 type="text"
@@ -918,7 +918,7 @@ Format your response as a JSON object with the following structure:
                                 placeholder={`Option ${optionIndex + 1}`}
                                 value={option}
                                 onInput={(e) => handleOptionChange(questionIndex, optionIndex, (e.target as HTMLInputElement).value)}
-                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                               />
                               
                               {question.options && question.options.length > 2 && (
@@ -937,7 +937,7 @@ Format your response as a JSON object with the following structure:
                           <button
                             type="button"
                             onClick={() => addOption(questionIndex)}
-                            class="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+                            class="mt-2 inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
                           >
                             <IconPlus class="w-4 h-4 mr-1" />
                             Add Option
@@ -958,7 +958,7 @@ Format your response as a JSON object with the following structure:
                                 value="true"
                                 checked={question.correctAnswer === "true"}
                                 onChange={() => handleCorrectAnswerChange(questionIndex, "true")}
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500"
                               />
                               <span class="ml-2">True</span>
                             </label>
@@ -969,7 +969,7 @@ Format your response as a JSON object with the following structure:
                                 value="false"
                                 checked={question.correctAnswer === "false"}
                                 onChange={() => handleCorrectAnswerChange(questionIndex, "false")}
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500"
                               />
                               <span class="ml-2">False</span>
                             </label>
@@ -984,7 +984,7 @@ Format your response as a JSON object with the following structure:
                           </label>
                           <textarea
                             id={`question-${questionIndex}-answer`}
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                             rows={2}
                             placeholder="Enter the correct answer"
                             value={question.correctAnswer as string}
@@ -1029,7 +1029,7 @@ Format your response as a JSON object with the following structure:
             {/* Chat Header */}
             <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-medium text-gray-800 flex items-center gap-2">
-                <IconMessageCircle size={18} class="text-blue-500" />
+                <IconMessageCircle size={18} class="text-primary-500" />
                 Test Assistant
               </h3>
               <button
@@ -1053,7 +1053,7 @@ Format your response as a JSON object with the following structure:
 
             {/* Chat Input */}
             <div class="p-3 bg-white border-t border-gray-200">
-              <div class="flex rounded-lg border border-gray-300 overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+              <div class="flex rounded-lg border border-gray-300 overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-primary-500 focus-within:border-primary-500">
                 <textarea
                   ref={chatInputRef}
                   placeholder="Ask for help with your test..."
@@ -1073,7 +1073,7 @@ Format your response as a JSON object with the following structure:
                   class={`px-3 flex items-center justify-center ${
                     isProcessingChat
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-500 text-white hover:bg-blue-600"
+                      : "bg-primary-500 text-white hover:bg-primary-600"
                   }`}
                   aria-label="Send message"
                 >
@@ -1090,7 +1090,7 @@ Format your response as a JSON object with the following structure:
           <button
             type="button"
             onClick={handleOpenChat}
-            class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="bg-primary-500 hover:bg-primary-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-300"
             aria-label="Open chat"
           >
             <IconMessageCircle size={24} />

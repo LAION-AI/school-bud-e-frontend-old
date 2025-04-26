@@ -142,11 +142,11 @@ async function textToSpeech(
     const { endpoint, apiKey, model } = await deductInputTokens(
       [{ role: "user", content: text }],
       shopApiKey,
-      "en-us-Chirp3-HD-Leda" //"en-us-Chirp3-HD-Leda"
+      "de-de-Chirp3-HD-Leda" //"en-us-Chirp3-HD-Leda"
     );
     useThisTttsUrl = endpoint;
     useThisTtsKey = apiKey;
-    useThisTtsModel = "en-us-Chirp3-HD-Leda"; //"en-us-Chirp3-HD-Leda"
+    useThisTtsModel = "de-de-Chirp3-HD-Leda"; //"en-us-Chirp3-HD-Leda"
   }
 
   console.log("useThisTttsUrl", useThisTttsUrl);
@@ -213,14 +213,14 @@ async function textToSpeech(
       }
       // Example: Replace "aura-helios-en" with the specific Google Voice Name
       // You might have multiple cases for different Google voices.
-      case "en-us-Chirp3-HD-Leda": // <-- Replace with the desired Google Chirp/Standard/WaveNet voice name
+      case "de-de-Chirp3-HD-Leda": // <-- Replace with the desired Google Chirp/Standard/WaveNet voice name
       // Add other Google voice cases if needed:
       // case "en-US-News-K":
       // case "en-GB-Standard-A":
       {
         const startTime = Date.now();
         const googleApiKey = useThisTtsKey; // Assuming this holds your Google Cloud API Key
-        const voiceName = "en-us-Chirp3-HD-Leda"; // The specific voice for this case block
+        const voiceName = "de-de-Chirp3-HD-Leda"; // The specific voice for this case block
 
         // Extract language code from voice name (e.g., "en-US" from "en-us-Chirp3-HD-Leda")
         // This is a basic assumption, might need adjustment for complex voice names

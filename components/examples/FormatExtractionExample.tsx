@@ -112,7 +112,7 @@ export function FormatExtractionExample() {
       <h3 class="text-lg font-medium text-gray-900 mb-2">Web Results</h3>
       <div class="divide-y divide-gray-200">
         <div class="py-3">
-          <a href={data.url} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+          <a href={data.url} target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">
             <h4 class="font-medium">{data.title}</h4>
           </a>
           <p class="text-sm text-gray-600">{data.snippet}</p>

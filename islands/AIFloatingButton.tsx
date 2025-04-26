@@ -209,7 +209,7 @@ export default function AIFloatingButton() {
     rounded-full
     transition-all duration-300 ease-in-out
     border-white border-4
-    ${isActive ? "bg-gradient-to-r from-blue-500 to-purple-600" : "bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600"}
+    ${isActive ? "bg-gradient-to-r from-primary-500 to-purple-600" : "bg-gradient-to-r from-primary-400 to-purple-500 hover:from-primary-500 hover:to-purple-600"}
     text-white
     w-[50px] h-[50px]
     ${isActive ? "shadow-[0_0_15px_rgba(0,123,255,0.8),0_0_30px_rgba(255,0,0,0.4),0_0_45px_rgba(0,255,0,0.3)]" : "shadow-[0_4px_12px_rgba(0,0,0,0.25)]"}
@@ -222,7 +222,7 @@ export default function AIFloatingButton() {
           <div class="absolute bottom-[80px] md:bottom-[80px] right-0 bg-white rounded-lg shadow-xl w-[calc(100vw-32px)] md:w-96 h-[60vh] md:h-[500px] flex flex-col overflow-hidden border border-gray-300">
             <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-medium text-gray-800 flex items-center gap-2">
-                <IconMessageCircle size={18} className="text-blue-500" />
+                <IconMessageCircle size={18} className="text-primary-500" />
                 Chat Assistant
               </h3>
               <button
@@ -241,7 +241,7 @@ export default function AIFloatingButton() {
             </div>
 
             <div class="p-3 bg-white border-t border-gray-200">
-              <div class="flex rounded-lg border border-gray-300 overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+              <div class="flex rounded-lg border border-gray-300 overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-primary-500 focus-within:border-primary-500">
                 <textarea
                   ref={inputRef}
                   placeholder="Type your message..."
@@ -261,7 +261,7 @@ export default function AIFloatingButton() {
                   class={`px-3 flex items-center justify-center ${
                     isProcessing.value
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-500 text-white hover:bg-blue-600"
+                      : "bg-primary-500 text-white hover:bg-primary-600"
                   }`}
                   aria-label="Send message"
                 >
@@ -272,7 +272,7 @@ export default function AIFloatingButton() {
           </div>
         )}
         
-        <div class="bg-gradient-to-r from-blue-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full flex items-center gap-3">
+        <div class="bg-gradient-to-r from-primary-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full flex items-center gap-3">
           <button
             type="button"
             onClick={() => buttonState === "chat" ? setButtonState("idle") : setButtonState("chat")}

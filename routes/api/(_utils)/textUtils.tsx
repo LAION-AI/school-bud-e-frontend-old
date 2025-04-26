@@ -26,7 +26,7 @@ export function renderTextWithLinksAndBold(text: string) {
           href={convertDoiToUrl(part)}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-blue-600 hover:text-blue-800 underline"
+          class="text-primary-600 hover:text-primary-800 underline"
         >
           {part}
         </a>
@@ -39,7 +39,7 @@ export function renderTextWithLinksAndBold(text: string) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-blue-600 hover:text-blue-800 underline"
+          class="text-primary-600 hover:text-primary-800 underline"
         >
           {part}
         </a>

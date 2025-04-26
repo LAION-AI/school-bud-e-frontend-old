@@ -255,7 +255,7 @@ export function MessageContent({ content }: MessageContentProps) {
                   </div>
                   {/* PDF viewer toggle button */}
                   <details className="pdf-viewer-toggle">
-                    <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
+                    <summary className="cursor-pointer text-primary-600 hover:text-primary-800">
                       Show/Hide PDF Viewer
                     </summary>
                     <div className="mt-3">
@@ -273,7 +273,7 @@ export function MessageContent({ content }: MessageContentProps) {
                         download="document.pdf"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block mt-2 text-blue-500 hover:underline"
+                        className="block mt-2 text-primary-500 hover:underline"
                       >
                         {isLarge ? "Download large PDF" : "Download PDF"}
                       </a>

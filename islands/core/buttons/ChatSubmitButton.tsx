@@ -25,7 +25,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
+    primary: "bg-primary-600 hover:bg-primary-700 text-white",
     secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
     tertiary: "bg-transparent hover:bg-gray-100 text-gray-800",
     danger: "bg-red-600 hover:bg-red-700 text-white",
@@ -42,7 +42,7 @@ export function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
+      className={`rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 
         ${variants[variant]} 
         ${sizes[size]} 
         ${fullWidth ? "w-full" : ""} 

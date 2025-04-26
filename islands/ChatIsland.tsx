@@ -56,10 +56,6 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   }, [isStreamComplete, lastMessage]);
 
   useEffect(() => {
-    console.log("--------------------------------");
-    console.log("audioFileDict", audioFileDict);
-    console.log("readAlways", readAlways.value);
-    console.log("--------------------------------");
     if (!readAlways.value) return;
 
     for (const [groupIndex, groupAudios] of Object.entries(audioFileDict)) {

@@ -273,7 +273,7 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                           href={result.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="text-blue-500 hover:text-blue-600 block mb-2 text-sm break-all"
+                          class="text-primary-500 hover:text-primary-600 block mb-2 text-sm break-all"
                         >
                           {result.url}
                         </a>
@@ -307,7 +307,7 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                     {graphStack.length > 0 && (
                       <button
                         onClick={goBack}
-                        class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
+                        class="bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded"
                       >
                         Back
                       </button>

@@ -376,16 +376,16 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
 				{activeTab.value === "general" && (
 					<>
 						{/* Add a highlight box for model configuration */}
-						<div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+						<div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
 							<div className="flex">
 								<div className="flex-shrink-0">
-									<IconInfoCircleFilled class="h-5 w-5 text-blue-500" />
+									<IconInfoCircleFilled class="h-5 w-5 text-primary-500" />
 								</div>
 								<div className="ml-3">
-									<h3 className="text-sm font-medium text-blue-800">
+									<h3 className="text-sm font-medium text-primary-800">
 										{t.configureAiModels}
 									</h3>
-									<div className="mt-2 text-sm text-blue-700">
+									<div className="mt-2 text-sm text-primary-700">
 										<p>{t.configureAiModelsDescription}</p>
 									</div>
 								</div>

@@ -1284,7 +1284,7 @@ export function InteractiveGraph({
 					<div class="absolute bottom-20 md:bottom-4 md:left-1/2 transform left-4 md:-translate-x-1/2 z-20 flex flex-col items-center space-y-3">
 						{/* Inline Prompt for AI Connections */}
 						{showInlinePrompt && promptType === 'connection' && (
-							<div class="inline-flex items-center justify-center p-2 bg-white border border-blue-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90 mb-2 max-w-lg transition-all duration-200 ease-in-out">
+							<div class="inline-flex items-center justify-center p-2 bg-white border border-primary-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90 mb-2 max-w-lg transition-all duration-200 ease-in-out">
 								<input 
 									type="text"
 									class="bg-transparent border-none outline-none p-1 w-60 text-sm placeholder-gray-400 text-gray-700 rounded-l-full"
@@ -1301,7 +1301,7 @@ export function InteractiveGraph({
 											generateAIConnections(aiCustomPrompt);
 											setAICustomPrompt("");
 										}}
-										class="p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center space-x-1 text-white"
+										class="p-2 rounded-full bg-primary-500 hover:bg-primary-600 transition-colors flex items-center space-x-1 text-white"
 										title="Generate connections"
 									>
 										<IconMessageCircle size={16} />
@@ -1400,7 +1400,7 @@ export function InteractiveGraph({
 									onClick={() => setIsChatOpen(!isChatOpen)}
 									class={`p-2 rounded-full transition-colors flex items-center space-x-1 border ${
 										isChatOpen
-											? "bg-blue-100 text-blue-700 border-blue-200"
+											? "bg-primary-100 text-primary-700 border-primary-200"
 											: "hover:bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
 									}`}
 									title={isChatOpen ? "Close chat" : "Open chat"}
@@ -1419,7 +1419,7 @@ export function InteractiveGraph({
 											setAICustomPrompt("");
 										}}
 										disabled={isGeneratingConnections}
-										class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors flex items-center space-x-1 text-blue-700 border border-blue-200"
+										class="p-2 rounded-full bg-primary-50 hover:bg-primary-100 transition-colors flex items-center space-x-1 text-primary-700 border border-primary-200"
 										title="Generate AI connections between selected nodes"
 									>
 										<IconMessageCircle size={16} />

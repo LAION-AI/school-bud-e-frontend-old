@@ -39,7 +39,7 @@ export function TourProgressSidebarSection() {
               variant="ghost"
               size="sm"
               onClick={() => setIsModalOpen(true)}
-              class="text-xs text-blue-600 hover:text-blue-800 h-auto p-0"
+              class="text-xs text-primary-600 hover:text-primary-800 h-auto p-0"
             >
               View all
             </Button>
@@ -48,7 +48,7 @@ export function TourProgressSidebarSection() {
           {/* Progress bar */}
           <div class="w-full h-1.5 bg-gray-200 rounded-full mb-1">
             <div
-              class="h-1.5 rounded-full bg-blue-600 transition-all duration-300 ease-in-out"
+              class="h-1.5 rounded-full bg-primary-600 transition-all duration-300 ease-in-out"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -72,7 +72,7 @@ export function TourProgressSidebarSection() {
                   onClick={() => startTour(tour.id)}
                   class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 transition-colors flex-grow h-auto"
                 >
-                  <div class="w-4 h-4 flex items-center justify-center bg-blue-500 rounded-full text-white text-xs">
+                  <div class="w-4 h-4 flex items-center justify-center bg-primary-500 rounded-full text-white text-xs">
                     {i + 1}
                   </div>
                   <div class="flex-1 text-left">

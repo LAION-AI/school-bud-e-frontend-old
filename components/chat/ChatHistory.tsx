@@ -22,7 +22,7 @@ export default function ChatHistory({ messages, isProcessing = false }: ChatHist
     <div class="flex-1 p-4 space-y-4">
       {messages.map((message, index) => (
         <div key={messageKey(message, index)} class={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-          <div class={`max-w-[80%] rounded-lg px-4 py-2 ${message.role === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800"}`}>
+          <div class={`max-w-[80%] rounded-lg px-4 py-2 ${message.role === "user" ? "bg-primary-500 text-white" : "bg-gray-100 text-gray-800"}`}>
             {getMessageContent(message)}
           </div>
         </div>

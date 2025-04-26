@@ -17,7 +17,7 @@ export default function About(req: Request) {
         </h1>
         <p class="text-md text-gray-700">
           {aboutContent[lang]["partOneOne"]}{" "}
-          <a class="text-blue-600 hover:underline" href="https://laion.ai">
+          <a class="text-primary-600 hover:underline" href="https://laion.ai">
             LAION
           </a>{" "}
           {aboutContent[lang]["partOneTwo"]}
@@ -69,14 +69,14 @@ export default function About(req: Request) {
           {aboutContent[lang]["partFourTwo"]}{" "}
           <a
             href="https://discord.com/invite/eq3cAMZtCC"
-            class="text-blue-600 hover:underline"
+            class="text-primary-600 hover:underline"
           >
             Discord Server
           </a>{" "}
           {aboutContent[lang]["partFourThree"]}{" "}
           <a
             href="mailto:contact@laion.ai"
-            class="text-blue-600 hover:underline"
+            class="text-primary-600 hover:underline"
           >
             contact@laion.ai
           </a>.

@@ -21,7 +21,7 @@ export default function BasicSettings({ settings, onUpdateSettings, lang }: Basi
             "universalApiKey",
             (e.target as HTMLInputElement).value,
           )}
-        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
+        class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 bg-yellow-50"
         placeholder={settingsContent[lang].universalApiKeyPlaceholder}
       />
     </div>

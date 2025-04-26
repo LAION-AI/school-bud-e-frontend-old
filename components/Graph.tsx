@@ -177,7 +177,7 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
       {isPositioning && (
         <div class="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-80 z-10">
           <div class="flex flex-col items-center">
-            <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-2"></div>
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-2"></div>
             <p class="text-gray-700">Calculating optimal node positions...</p>
           </div>
         </div>

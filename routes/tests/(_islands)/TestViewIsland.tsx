@@ -333,7 +333,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 <label 
                   key={`option-${option}-${index}`}
                   class={`block p-4 border-l-4 rounded transition-colors ${
-                    isSelected ? 'border-l-blue-500 bg-blue-50' : 'border-l-transparent hover:border-l-gray-300 hover:bg-gray-50'
+                    isSelected ? 'border-l-primary-500 bg-primary-50' : 'border-l-transparent hover:border-l-gray-300 hover:bg-gray-50'
                   } ${showResults && isCorrect ? 'border-l-green-500 bg-green-50' : ''}
                   ${isWrong ? 'border-l-red-500 bg-red-50' : ''}`}
                 >
@@ -388,7 +388,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 <label 
                   key={`tf-${option}-${index}`} 
                   class={`block p-4 border-l-4 rounded transition-colors ${
-                    isSelected ? 'border-l-blue-500 bg-blue-50' : 'border-l-transparent hover:border-l-gray-300 hover:bg-gray-50'
+                    isSelected ? 'border-l-primary-500 bg-primary-50' : 'border-l-transparent hover:border-l-gray-300 hover:bg-gray-50'
                   } ${showResults && isCorrect ? 'border-l-green-500 bg-green-50' : ''}
                   ${isWrong ? 'border-l-red-500 bg-red-50' : ''}`}
                 >
@@ -417,7 +417,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
           <div>
             <input
               type="text"
-              class="w-full p-4 border-b-2 border-gray-300 focus:border-blue-500 outline-none text-lg bg-gray-50"
+              class="w-full p-4 border-b-2 border-gray-300 focus:border-primary-500 outline-none text-lg bg-gray-50"
               value={selectedAnswers[index.toString()] as string}
               disabled={showResults}
               onInput={(e) => !showResults && handleAnswerSelect(index, (e.target as HTMLInputElement).value)}
@@ -436,7 +436,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               }}
             />
             {showResults && (
-              <div class="mt-6 pl-4 border-l-4 border-l-blue-500 bg-blue-50 p-4">
+              <div class="mt-6 pl-4 border-l-4 border-l-primary-500 bg-primary-50 p-4">
                 <p class="text-lg font-semibold">Correct answer: <span class="text-green-600">{question.correctAnswer}</span></p>
                 <p class="text-lg font-semibold mt-2">Your answer: <span class={selectedAnswers[index.toString()] === question.correctAnswer ? "text-green-600" : "text-red-600"}>
                   {selectedAnswers[index.toString()] as string || "(No answer provided)"}
@@ -515,7 +515,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
   return (
     <div class="container mx-auto px-6 py-10 max-w-4xl">
       <div class="mb-8">
-        <a href="/graph" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <a href="/graph" class="inline-flex items-center text-primary-600 hover:text-primary-800">
           <IconArrowLeft class="w-5 h-5 mr-2" />
           Back to Graph
         </a>
@@ -530,7 +530,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             {submission && !revisitMode && (
               <button
                 onClick={showTestResults}
-                class="text-blue-500 hover:text-blue-700 flex items-center"
+                class="text-primary-500 hover:text-primary-700 flex items-center"
                 aria-label="View submissions"
                 type="button"
               >
@@ -708,8 +708,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                         onClick={() => handleAnswerSelect(index, option)}
                         class={`w-full text-left p-3 rounded-lg border transition-colors ${
                           (selectedAnswers[index] as string[])?.includes(option)
-                            ? "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-gray-200 hover:border-blue-200 hover:bg-blue-50"
+                            ? "border-primary-500 bg-primary-50 text-primary-700"
+                            : "border-gray-200 hover:border-primary-200 hover:bg-primary-50"
                         }`}
                       >
                         {option}
@@ -726,8 +726,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                         onClick={() => handleAnswerSelect(index, option)}
                         class={`w-full text-left p-3 rounded-lg border transition-colors ${
                           selectedAnswers[index] === option
-                            ? "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-gray-200 hover:border-blue-200 hover:bg-blue-50"
+                            ? "border-primary-500 bg-primary-50 text-primary-700"
+                            : "border-gray-200 hover:border-primary-200 hover:bg-primary-50"
                         }`}
                       >
                         {option}
@@ -741,7 +741,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                     <textarea
                       value={selectedAnswers[index] as string}
                       onChange={(e) => handleAnswerSelect(index, (e.target as HTMLTextAreaElement).value)}
-                      class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                      class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900"
                       rows={4}
                       placeholder="Enter your answer here..."
                     />

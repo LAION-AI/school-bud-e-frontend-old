@@ -15,13 +15,13 @@ export const handler: Handlers = {
 
 export default function ChatPage({ params }: PageProps) {
     const { id } = params;
-
+    const lang = "en";
     return (
         <>
             <Head>
                 <title>Chat {id} - School Bud-E</title>
             </Head>
-            <ChatIsland key={id} lang="en" id={id} />
+            <ChatIsland key={id} lang={lang} id={id} />
         </>
     );
 }

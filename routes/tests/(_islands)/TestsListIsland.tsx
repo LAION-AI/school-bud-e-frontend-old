@@ -616,7 +616,7 @@ export default function TestsListIsland() {
             {tests.map((test) => (
               <div
                 key={test.id}
-                class="group border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
+                class="group border border-gray-200 hover:border-primary-200 hover:bg-primary-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
                 onClick={() => handleStartTest(test.id)}
                 role="button"
                 aria-label={`Take test: ${test.name}`}
@@ -672,7 +672,7 @@ export default function TestsListIsland() {
 
                   <button
                     type="button"
-                    class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-blue-100 group-hover:bg-blue-600 p-2 rounded-full text-blue-600 group-hover:text-white transition-colors"
+                    class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-primary-100 group-hover:bg-primary-600 p-2 rounded-full text-primary-600 group-hover:text-white transition-colors"
                     title="Take Test"
                     onClick={(e) => {
                       e.stopPropagation();

@@ -17,10 +17,10 @@ export default function BottomNavigation({ lang = "en" }: BottomNavigationProps)
         <a
           href="/chat"
           class={`flex flex-col items-center justify-center w-full h-full  ${
-            isActive("/chat") ? "text-blue-600" : "text-gray-600"
+            isActive("/chat") ? "text-primary-600" : "text-gray-600"
           }`}
         >
-          <div class="bg-blue-50 box-border border-2 border-blue-300 rounded-lg p-2">
+          <div class="bg-primary-50 box-border border-2 border-primary-300 rounded-lg p-2">
 
           <svg width="36" height="36" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
           <title>{t.navigation.chats}</title>
@@ -70,7 +70,7 @@ export default function BottomNavigation({ lang = "en" }: BottomNavigationProps)
         <a
           href="/presentations"
           class={`flex flex-col items-center justify-center w-full h-full ${
-            isActive("/presentations") ? "text-blue-600" : "text-gray-600"
+            isActive("/presentations") ? "text-primary-600" : "text-gray-600"
           }`}
         >
           <IconPresentation size={24} />

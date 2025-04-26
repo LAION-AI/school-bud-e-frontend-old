@@ -10,7 +10,7 @@ export default function Home(req: Request) {
     : "de";
 
   return (
-    <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white w-full">
+    <div class="min-h-screen bg-gradient-to-b from-primary-50 to-white w-full">
       {/* Hero Section */}
       <div class="relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,23 +26,9 @@ export default function Home(req: Request) {
                     ? "Entdecke eine neue Art des Lernens mit School Bud-E, deinem persönlichen KI-Lernbegleiter. Verbessere deine Lernerfahrung und erreiche deine Bildungsziele schneller."
                     : "Discover a new way of learning with School Bud-E, your personal AI learning companion. Enhance your learning experience and achieve your educational goals faster."}
                 </p>
-                <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  <div class="rounded-md shadow">
-                    <a
-                      href="/signin"
-                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
-                    >
-                      {lang === "de" ? "Jetzt starten" : "Get Started"}
-                    </a>
-                  </div>
-                  <div class="mt-3 sm:mt-0 sm:ml-3">
-                    <a
-                      href="/press"
-                      class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 md:py-4 md:text-lg md:px-10"
-                    >
-                      {lang === "de" ? "Mehr erfahren" : "Learn More"}
-                    </a>
-                  </div>
+                <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-4">
+                    <Button href="/signin" variant="primary">{lang === "de" ? "Jetzt starten" : "Get Started"}</Button>
+                    <Button href="/press" variant="primary">{lang === "de" ? "Mehr erfahren" : "Learn More"}</Button>
                 </div>
               </div>
             </main>

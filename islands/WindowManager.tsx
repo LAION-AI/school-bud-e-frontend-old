@@ -28,7 +28,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
   };
 
   return (
-    <div class="relative md:min-h-screen bg-gray-100">
+    <div class="relative md:min-h-screen">
       <div class="flex space-x-2 p-4 bg-white shadow-sm">
         {windows.value.map(window => (
           <button
@@ -37,7 +37,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
             onClick={() => handleMinimize(window.id)}
             class={`px-4 py-2 rounded-lg transition-colors ${
               window.id === activeWindowId.value
-                ? "bg-blue-500 text-white"
+                ? "bg-primary-500 text-white"
                 : "bg-gray-200 hover:bg-gray-300 text-gray-700"
             }`}
           >

@@ -26,7 +26,7 @@ export default function CheckTestsPage() {
                   id="test-pdf"
                   type="file"
                   accept=".pdf"
-                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
               <div>
@@ -40,7 +40,7 @@ export default function CheckTestsPage() {
                   id="answers-pdf"
                   type="file"
                   accept=".pdf"
-                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
               <div>
@@ -52,7 +52,7 @@ export default function CheckTestsPage() {
                 </label>
                 <select
                   id="grading-scheme"
-                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="points">Points Based</option>
                   <option value="percentage">Percentage Based</option>

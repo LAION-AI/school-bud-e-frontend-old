@@ -22,7 +22,7 @@ export default function TTSSettings({ settings, onUpdateSettings, lang }: TTSSet
               "ttsKey",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 bg-yellow-50"
           placeholder={settingsContent[lang].ttsKeyPlaceholder}
         />
         <input
@@ -33,7 +33,7 @@ export default function TTSSettings({ settings, onUpdateSettings, lang }: TTSSet
               "ttsUrl",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
           placeholder={settingsContent[lang].ttsUrlPlaceholder}
         />
         <input
@@ -44,7 +44,7 @@ export default function TTSSettings({ settings, onUpdateSettings, lang }: TTSSet
               "ttsModel",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
           placeholder={settingsContent[lang].ttsModelPlaceholder}
         />
       </div>

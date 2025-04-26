@@ -269,7 +269,7 @@ export function ImageUploadButton({
           <IconPhoto class="h-5 w-5" />
         )}
         {transcribingFiles.size > 0 && (
-          <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             {transcribingFiles.size}
           </span>
         )}

@@ -261,28 +261,28 @@ The output should be ONLY the JSON object in the specified format.`;
         </div>
 
         {hasTestForNode(nodeId) && !showTestPreview && (
-          <div class="mb-6 p-4 bg-blue-50 rounded-lg">
-            <p class="text-blue-700 mb-2">
+          <div class="mb-6 p-4 bg-primary-50 rounded-lg">
+            <p class="text-primary-700 mb-2">
               A test for this node already exists. What would you like to do?
             </p>
             <div class="flex flex-wrap gap-2">
               <button
                 onClick={handleViewExistingTest}
-                class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded transition-colors"
+                class="px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-800 rounded transition-colors"
                 aria-label="View existing test"
               >
                 View Existing Test
               </button>
               <button
                 onClick={() => setShowTestPreview(true)}
-                class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded transition-colors"
+                class="px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-800 rounded transition-colors"
                 aria-label="Edit existing test"
               >
                 Edit Existing Test
               </button>
               <button
                 onClick={handleGenerateTest}
-                class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+                class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded transition-colors"
                 aria-label="Generate new test"
               >
                 Generate New Test
@@ -315,15 +315,15 @@ The output should be ONLY the JSON object in the specified format.`;
 
         <div class="space-y-4">
           {isGenerating && (
-            <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4 animate-pulse">
+            <div class="bg-primary-50 border border-primary-200 rounded-md p-4 mb-4 animate-pulse">
               <div class="flex items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="font-medium text-blue-800">Generating your test...</span>
+                <span class="font-medium text-primary-800">Generating your test...</span>
               </div>
-              <p class="text-blue-700 text-sm mt-2">
+              <p class="text-primary-700 text-sm mt-2">
                 This may take a few moments as we're crafting {questionCount.value} questions at {difficulty.value} level.
               </p>
             </div>
@@ -333,7 +333,7 @@ The output should be ONLY the JSON object in the specified format.`;
             <select
               value={difficulty.value}
               onChange={(e) => difficulty.value = (e.target as HTMLSelectElement).value as any}
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
@@ -349,7 +349,7 @@ The output should be ONLY the JSON object in the specified format.`;
               max="20"
               value={questionCount.value}
               onInput={(e) => questionCount.value = parseInt((e.target as HTMLInputElement).value) || 5}
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
@@ -361,7 +361,7 @@ The output should be ONLY the JSON object in the specified format.`;
                   type="checkbox"
                   checked={includeMultipleChoice.value}
                   onChange={() => includeMultipleChoice.value = !includeMultipleChoice.value}
-                  class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">Multiple Choice</span>
               </label>
@@ -371,7 +371,7 @@ The output should be ONLY the JSON object in the specified format.`;
                   type="checkbox"
                   checked={includeTrueFalse.value}
                   onChange={() => includeTrueFalse.value = !includeTrueFalse.value}
-                  class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">True/False</span>
               </label>
@@ -381,7 +381,7 @@ The output should be ONLY the JSON object in the specified format.`;
                   type="checkbox"
                   checked={includeShortAnswer.value}
                   onChange={() => includeShortAnswer.value = !includeShortAnswer.value}
-                  class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">Short Answer</span>
               </label>
@@ -393,7 +393,7 @@ The output should be ONLY the JSON object in the specified format.`;
               onClick={handleGenerateTest}
               disabled={isGenerating}
               class={`w-full px-4 py-2 text-white rounded-md transition-colors ${
-                isGenerating ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                isGenerating ? 'bg-primary-400 cursor-not-allowed' : 'bg-primary-600 hover:bg-primary-700'
               }`}
             >
               {isGenerating ? 'Generating Test...' : 'Generate New Test'}

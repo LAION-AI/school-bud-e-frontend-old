@@ -56,7 +56,7 @@ export default function ChatAgreement({ lang }: ChatAgreementProps) {
         <button
           onClick={handleAgree}
           disabled={!agreed}
-          class={`w-full p-2 rounded ${agreed ? "bg-blue-500 text-white" : "bg-gray-300 cursor-not-allowed"
+          class={`w-full p-2 rounded ${agreed ? "bg-primary-500 text-white" : "bg-gray-300 cursor-not-allowed"
             }`}
         >
           {agreementContent[lang].accept}

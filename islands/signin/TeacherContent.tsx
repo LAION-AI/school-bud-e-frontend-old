@@ -93,8 +93,8 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
 
       {selectedOption.value === "store" && (
         <div class="space-y-4">
-          <div class="bg-blue-50 p-4 rounded-lg">
-            <p class="text-sm text-blue-700 mb-2">
+          <div class="bg-primary-50 p-4 rounded-lg">
+            <p class="text-sm text-primary-700 mb-2">
               {lang === "de"
                 ? "Bitte fragen Sie Ihren Lehrer nach dem API-Schlüssel für die Klasse."
                 : "Please ask your teacher for the class API key."}

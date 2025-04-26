@@ -260,19 +260,19 @@ export default function ChatInput() {
 													deleteImage(e);
 												}
 											}}
-											class={`w-32 h-32 relative group rounded-lg shadow-xl overflow-hidden cursor-pointer grid place-content-center bg-white ${isPdfTranscribing ? 'ring-2 ring-blue-500' : ''}`}
+											class={`w-32 h-32 relative group rounded-lg shadow-xl overflow-hidden cursor-pointer grid place-content-center bg-white ${isPdfTranscribing ? 'ring-2 ring-primary-500' : ''}`}
 											aria-label="PDF document, click to remove"
 										>
 											<IconPdf />
 											{isPdfTranscribing && (
 												<div class="absolute inset-0 bg-white/70 flex items-center justify-center">
 													<div class="flex flex-col items-center">
-														<IconLoader2 class="animate-spin text-blue-500 mb-1" size={28} />
-														<span class="text-xs text-blue-600 text-center">Transcribing...</span>
+														<IconLoader2 class="animate-spin text-primary-500 mb-1" size={28} />
+														<span class="text-xs text-primary-600 text-center">Transcribing...</span>
 													</div>
 												</div>
 											)}
-											<div class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
+											<div class="absolute top-0 right-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
 												<IconX />
 											</div>
 										</button>
@@ -347,7 +347,7 @@ export default function ChatInput() {
 								isTranscribing.value ||
 								files.value.some(file => "pdf_url" in file && file.pdf_url?.isTranscribing)
 							}
-							class="p-2 rounded-full transition-colors flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-blue-500 text-white hover:bg-blue-600"
+							class="p-2 rounded-full transition-colors flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-primary-500 text-white hover:bg-primary-600"
 							data-tour="chat-submit"
 							aria-label="Send message"
 						>

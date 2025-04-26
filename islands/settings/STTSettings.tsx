@@ -22,7 +22,7 @@ export default function STTSettings({ settings, onUpdateSettings, lang }: STTSet
               "sttKey",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 bg-yellow-50"
           placeholder={settingsContent[lang].sttKeyPlaceholder}
         />
         <input
@@ -33,7 +33,7 @@ export default function STTSettings({ settings, onUpdateSettings, lang }: STTSet
               "sttUrl",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
           placeholder={settingsContent[lang].sttUrlPlaceholder}
         />
         <input
@@ -44,7 +44,7 @@ export default function STTSettings({ settings, onUpdateSettings, lang }: STTSet
               "sttModel",
               (e.target as HTMLInputElement).value,
             )}
-          class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
           placeholder={settingsContent[lang].sttModelPlaceholder}
         />
       </div>

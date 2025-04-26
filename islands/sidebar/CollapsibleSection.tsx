@@ -40,7 +40,7 @@ export default function CollapsibleSection({
     active: boolean,
   ) => {
     if (active) {
-        return "bg-blue-100 text-blue-900 hover:bg-blue-200 border-2 border-blue-500 focus-visible:ring-blue-500";
+        return "bg-primary-100 text-primary-900 hover:bg-primary-200 border-2 border-primary-500 focus-visible:ring-primary-500";
     }
     return "hover:bg-gray-50 text-gray-700 hover:text-gray-900 border-2 border-transparent";
   };
@@ -49,7 +49,7 @@ export default function CollapsibleSection({
     active: boolean,
   ) => {
     if (active) {
-      return "text-blue-800";
+      return "text-primary-800";
     }
     return "text-gray-600 group-hover:text-gray-800";
   };
@@ -58,7 +58,7 @@ export default function CollapsibleSection({
     active: boolean,
   ) => {
     if (active) {
-      return "text-blue-800";
+      return "text-primary-800";
     }
     return "text-gray-500 group-hover:text-gray-700";
   };
@@ -117,24 +117,7 @@ export default function CollapsibleSection({
     <div class="relative group">
       <button
         type="button"
-        onClick={(e) => {
-          handleToggle();
-
-          // Only navigate if this is a direct click on the section header button
-          // and not already on the section's route
-          if (!shouldBeExpanded && !isCollapsed) {
-            const path = globalThis.location?.pathname;
-            // Only navigate if we're not already on a path that starts with the baseRoute
-            if (baseRoute && !path?.startsWith(baseRoute)) {
-              // Use preventDefault to avoid any default navigation
-              e.preventDefault();
-              // Use history.pushState instead of changing location.href to avoid page reload
-              globalThis.history?.pushState(null, "", baseRoute);
-              // Manually update the active state since we're not reloading the page
-              setIsActive(true);
-            }
-          }
-        }}
+        onClick={handleToggle}
         aria-expanded={shouldBeExpanded}
         aria-controls={`${title.toLowerCase()}-content`}
         class={`${buttonBaseClasses} ${getButtonColorClasses(

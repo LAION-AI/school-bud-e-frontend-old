@@ -15,7 +15,7 @@ export default function ChatListPage({ lang = "en" }: ChatListPageProps) {
         <h1 class="text-2xl font-bold text-gray-900">{t.navigation.chats}</h1>
         <a
           href="/chat/new"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
           <IconMessagePlus size={20} />
           <span>{t.actions.newChat}</span>

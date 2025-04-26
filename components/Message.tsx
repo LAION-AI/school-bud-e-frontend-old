@@ -41,7 +41,7 @@ export function Message({
       class={`message-group flex flex-col group pb-2 ${item.role === "user" ? "items-end" : "items-start"}`}
     >
       <span
-        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${item.role === "user" ? "text-blue-600" : "text-gray-600"}`}
+        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${item.role === "user" ? "text-primary-600" : "text-gray-600"}`}
       >
         {groupIndex !== 0 && (
           <button onClick={() => onEditAction(groupIndex)} type="button">
@@ -79,8 +79,8 @@ export function Message({
       </span>
       <div
         class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${item.role === "user"
-          ? "bg-blue-100 rounded-tr-md ml-auto"
-          : "bg-gray-50"
+          ? "bg-primary-100 rounded-tr-md ml-auto"
+          : "bg-gray-100"
           } p-4`}
       >
         <MessageContent content={item.content} />

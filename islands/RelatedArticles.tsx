@@ -29,7 +29,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                 <div>
                     <div className="flex gap-3">
                         <a href="/category/technology">
-                            <span className="inline-block text-xs font-medium tracking-wider uppercase   mt-5 text-blue-600">
+                            <span className="inline-block text-xs font-medium tracking-wider uppercase   mt-5 text-primary-600">
                                 Technology
                             </span>
                         </a>
@@ -135,7 +135,7 @@ export default function RelatedArticles({relatedArticles: articles, ...params}: 
                         <div>
                             <div className="flex gap-3">
                                 <a href="/category/technology">
-                                    <span className="inline-block text-xs font-medium tracking-wider uppercase   mt-5 text-blue-600">
+                                    <span className="inline-block text-xs font-medium tracking-wider uppercase   mt-5 text-primary-600">
                                         Technology
                                     </span>
                                 </a>

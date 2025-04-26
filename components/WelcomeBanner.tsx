@@ -34,7 +34,7 @@ export default function WelcomeBanner({
 
   return (
     <div
-      className="mx-auto max-w-xl bg-white rounded-lg shadow-md p-6 mb-6 animate-fadeIn"
+      className="mx-auto max-w-xl bg-primary-50 border-2 border-primary-500 rounded-lg p-6 mb-6 animate-fadeIn"
       data-tour="welcome-banner"
     >
       <h2 className="text-xl font-bold text-primary-700 mb-2">

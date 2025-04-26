@@ -237,26 +237,26 @@ export default function PresentationGeneratorIsland() {
             ) : isLoading ? (
               <div class="flex-1 flex flex-col items-center justify-center">
                 <div class="text-center max-w-md">
-                  <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                    <p class="text-blue-800 font-medium mb-2">
+                  <div class="mb-6 bg-primary-50 p-4 rounded-lg border border-primary-100">
+                    <p class="text-primary-800 font-medium mb-2">
                       Generating your presentation...
                     </p>
                     
                     {generationProgress?.title && (
-                      <p class="text-blue-700 mb-2">
+                      <p class="text-primary-700 mb-2">
                         Title: {generationProgress.title}
                       </p>
                     )}
                     
                     {currentSlide > 0 && (
                       <div class="mt-3">
-                        <div class="flex justify-between text-sm text-blue-700 mb-1">
+                        <div class="flex justify-between text-sm text-primary-700 mb-1">
                           <span>Creating slides</span>
                           <span>{currentSlide} {totalSlides > 0 ? `/ ${totalSlides}` : ''}</span>
                         </div>
-                        <div class="w-full bg-blue-200 rounded-full h-2.5">
+                        <div class="w-full bg-primary-200 rounded-full h-2.5">
                           <div 
-                            class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                            class="bg-primary-600 h-2.5 rounded-full transition-all duration-300" 
                             style={`width: ${totalSlides > 0 ? (currentSlide / totalSlides) * 100 : currentSlide * 10}%`}
                           />
                         </div>

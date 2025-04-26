@@ -1,4 +1,5 @@
 import { asset } from "$fresh/runtime.ts";
+import { Button } from "../../components/Button.tsx";
 
 interface NavbarProps {
   lang: string;
@@ -25,12 +26,9 @@ export default function Navbar({ lang }: NavbarProps) {
           </div>
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <a
-                href="/chat/0"
-                class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
+              <Button href="/chat/0" variant="primary">
                 {lang === "de" ? "Jetzt starten" : "Start Now"}
-              </a>
+              </Button>
             </div>
             <div class="ml-4">
               <a

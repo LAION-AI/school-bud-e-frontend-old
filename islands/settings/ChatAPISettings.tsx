@@ -26,7 +26,7 @@ export default function ChatAPISettings({ settings, onUpdateSettings, lang }: Ch
                 "apiKey",
                 (e.target as HTMLInputElement).value,
               )}
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 bg-yellow-50"
+            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500 bg-yellow-50"
             placeholder={settingsContent[lang].apiKeyPlaceholder}
           />
         </div>
@@ -42,7 +42,7 @@ export default function ChatAPISettings({ settings, onUpdateSettings, lang }: Ch
                 "apiUrl",
                 (e.target as HTMLInputElement).value,
               )}
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
             placeholder={settingsContent[lang].apiUrlPlaceholder}
           />
         </div>
@@ -58,7 +58,7 @@ export default function ChatAPISettings({ settings, onUpdateSettings, lang }: Ch
                 "apiModel",
                 (e.target as HTMLInputElement).value,
               )}
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-500"
             placeholder={settingsContent[lang].modelPlaceholder}
           />
         </div>

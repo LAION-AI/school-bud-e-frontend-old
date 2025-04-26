@@ -45,7 +45,6 @@ function VoiceRecordButton({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  console.log("shopApiKey", shopApiKey);
 
   // deno-lint-ignore no-explicit-any
   (globalThis as any).SpeechRecognition =
