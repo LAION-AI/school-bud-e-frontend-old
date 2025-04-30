@@ -32,6 +32,7 @@ export default function App({ Component, url }: AppProps) {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<title>School Bud-E</title>
 				<link rel="stylesheet" href="/styles.css" />
+				<link rel="stylesheet" href="/katex.min.css" />
 			</head>
 			<body>
 				{!showSidebar ? (

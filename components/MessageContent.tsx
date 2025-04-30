@@ -1,7 +1,32 @@
-import { renderTextWithLinksAndBold } from "../routes/api/(_utils)/textUtils.tsx";
 import { GraphLoadingState } from "./GraphLoadingState.tsx";
 import { IconLoader2 } from "@tabler/icons-preact";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.mjs";
+
+// Configure marked to handle LaTeX
+const renderLatex = (text: string) => {
+  // Handle inline math: $...$
+  text = text.replace(/\$([^$]+)\$/g, (_match: string, math: string) => {
+    try {
+      return katex.renderToString(math, { displayMode: false });
+    } catch (e) {
+      console.error('KaTeX error:', e);
+      return math;
+    }
+  });
+
+  // Handle display math: $$...$$
+  text = text.replace(/\$\$([^$]+)\$\$/g, (_match: string, math: string) => {
+    try {
+      return katex.renderToString(math, { displayMode: true });
+    } catch (e) {
+      console.error('KaTeX error:', e);
+      return math;
+    }
+  });
+
+  return marked(text);
+};
 
 // Define supported content types
 type ContentType = "text" | "image_url" | "pdf_url";
@@ -138,7 +163,7 @@ export function MessageContent({ content }: MessageContentProps) {
         {segments.map((seg, idx) => {
           if (seg.type === "text") {
             return (
-              <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: marked(seg.content) }} />
+              <span className="flex flex-col gap-4 leading-7" key={idx} dangerouslySetInnerHTML={{ __html: renderLatex(seg.content || '') }} />
             );
           } 
           if (seg.type === "json" || seg.type === "webresult" || seg.type === "game") {
@@ -179,7 +204,7 @@ export function MessageContent({ content }: MessageContentProps) {
                 {segments.map((seg, idx) => {
                   if (seg.type === "text") {
                     return (
-                      <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: marked(seg.content) }} />
+                      <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: renderLatex(seg.content || '') }} />
                     );
                   } 
                   if (["json", "webresult", "game"].includes(seg.type)) {
@@ -248,7 +273,7 @@ export function MessageContent({ content }: MessageContentProps) {
                     {isError ? 'PDF Transcription Error' : 'PDF Document (Transcribed)'}
                   </div>
                   <div className={`pdf-transcription border ${isError ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}>
-                    <span className="flex" dangerouslySetInnerHTML={{ __html: marked(item.pdf_url.transcription) }} />
+                    <span className="flex" dangerouslySetInnerHTML={{ __html: renderLatex(item.pdf_url.transcription) }} />
                   </div>
                   {/* PDF viewer toggle button */}
                   <details className="pdf-viewer-toggle">

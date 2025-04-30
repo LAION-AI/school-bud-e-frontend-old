@@ -596,7 +596,7 @@ export default function TestsListIsland() {
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="">
         {loading ? (
           <div class="text-gray-600">Loading tests...</div>
         ) : tests.length === 0 ? (

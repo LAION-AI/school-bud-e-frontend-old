@@ -1234,6 +1234,7 @@
     "https://esm.sh/vfile@^6.0.0?target=denonext": "https://esm.sh/vfile@6.0.3?target=denonext"
   },
   "remote": {
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.mjs": "a435a52a5956e424a2e2f9cb269ed0ef188009eb4c90bc14b87a2b9bc8cd6907",
     "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js": "d13d8a415fe47946d4e9b88e4bcf8bd4fda617dba2755b6300862d938c49973f",
     "https://deno.land/std@0.208.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
     "https://deno.land/std@0.208.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
