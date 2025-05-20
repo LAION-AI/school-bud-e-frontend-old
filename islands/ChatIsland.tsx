@@ -9,6 +9,7 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
 import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
 import { initTourGuide } from "../utils/tourGuide.ts";
+import { Partial } from "fresh/runtime";
 
 // Define the AudioItem interface if not already defined
 interface AudioItem {

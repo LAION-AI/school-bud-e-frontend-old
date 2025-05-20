@@ -12,14 +12,12 @@ import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarProps {
   currentChatSuffix: string;
-  onDownloadChat: () => void;
   lang?: string;
 }
 
 export default function Sidebar({
   currentChatSuffix,
   lang = "en",
-  onDownloadChat,
 }: SidebarProps) {
   const t = translations[lang as keyof typeof translations];
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -27,6 +25,10 @@ export default function Sidebar({
     const collapsed = urlParams.get("collapsed");
     return collapsed === "true";
   });
+
+  const onDownloadChat = () => {
+    console.log("Download chat not yet implemented");
+  };
 
   // State to manage which section is highlighted
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -88,10 +90,9 @@ export default function Sidebar({
         translations={t}
       />
 
-      <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
+      <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300" onClick={() => alert("test")}>
         <nav
           class="p-3 space-y-3"
-          onClick={handleLinkClick}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               handleLinkClick(e as unknown as MouseEvent);

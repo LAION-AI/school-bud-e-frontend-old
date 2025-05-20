@@ -1,251 +1,29 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-html,
-body {
-  @apply text-content overscroll-none;
+@theme {
+  --color-primary-50: #e6f7fa;
+  --color-primary-100: #cceff5;
+  --color-primary-200: #99dfeb;
+  --color-primary-300: #66cfe1;
+  --color-primary-400: #33bfd7;
+  --color-primary-500: #2BBDE5;
+  --color-primary-600: #2297b7;
+  --color-primary-700: #1a7189;
+  --color-primary-800: #114c5c;
+  --color-primary-900: #09262e;
+  --color-surface: #fff;
+  --color-surface-dark: #1a1a1a;
+  --color-content: #000;
+  --color-content-dark: #fff;
+  --color-*: #e6e7e7;
 }
 
-#phaser-game > canvas {
-  height: 100%;
-}
-
-@font-face {
-  font-family: "Pixelify Sans";
-  src: url(/fonts/PixelifySans-VariableFont_wght.ttf);
-}
-
-.pixelify-sans {
-  font-family: "Pixelify Sans", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-}
-
-@keyframes highlight {
-  0% {
-    color: inherit;
-    transform: scale(1);
-  }
-
-  50% {
-    color: #22c55e;
-    transform: scale(1.1);
-  }
-
-  100% {
-    color: inherit;
-    transform: scale(1);
-  }
-}
-
-.chat-history {
-  scrollbar-gutter: stable;
-}
-
-.message {
-  li {
-    list-style-type: disc;
-    margin-left: 1rem;
-  }
-}
-
-.highlight-score {
-  animation: highlight 0.5s ease-in-out;
-}
-
-/* Shepherd Tour Styling */
-.shepherd-element {
-  max-width: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  /* Keep Shepherd's positioning behavior */
-  opacity: 1;
-  outline: none;
-  z-index: 9999;
-}
-
-.shepherd-content {
-  border-radius: 8px;
-  padding: 0;
-}
-
-.shepherd-header {
-  background-color: #4f46e5;
-  padding: 12px 16px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.shepherd-title {
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
-  margin: 0;
-  flex: 1;
-}
-
-.shepherd-cancel-icon {
-  color: white;
-  font-size: 18px;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-  margin-left: 8px;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.shepherd-cancel-icon span {
-  color: white;
-  font-size: 18px;
-}
-
-.shepherd-cancel-icon:hover {
-  opacity: 1;
-}
-
-.shepherd-text {
-  padding: 16px;
-  color: #374151;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.shepherd-footer {
-  padding: 8px 16px 16px;
-  justify-content: flex-end;
-}
-
-.shepherd-button {
-  background-color: #4f46e5;
-  color: white;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 14px;
-  transition: background-color 0.2s;
-  margin-left: 8px;
-  border: 0;
-  cursor: pointer;
-}
-
-.shepherd-button-secondary {
-  background-color: transparent;
-  color: #4f46e5;
-  border: 1px solid #4f46e5;
-}
-
-.shepherd-button:hover {
-  background-color: #4338ca;
-}
-
-.shepherd-button-secondary:hover {
-  background-color: rgba(79, 70, 229, 0.1);
-}
-
-/* Keep Shepherd's positioning for arrows */
-.shepherd-arrow,
-.shepherd-arrow:before {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  z-index: -1;
-}
-
-.shepherd-arrow:before {
-  content: "";
-  transform: rotate(45deg);
-  background: #fff;
-}
-
-/* Hide arrow when there's no attachment */
-.shepherd-element:not([data-popper-placement]) .shepherd-arrow,
-.shepherd-element.shepherd-centered .shepherd-arrow,
-.shepherd-element[data-shepherd-step-id]
-  .shepherd-arrow[data-popper-reference-hidden],
-.shepherd-element .shepherd-arrow[style*="display: none"] {
-  display: none !important;
-}
-
-/* Ensure arrow is visible when it should be */
-.shepherd-element[data-popper-placement] .shepherd-arrow {
-  display: block;
-}
-
-.shepherd-element[data-popper-placement^="top"] > .shepherd-arrow {
-  bottom: -8px;
-}
-
-.shepherd-element[data-popper-placement^="bottom"] > .shepherd-arrow {
-  top: -8px;
-}
-
-.shepherd-element[data-popper-placement^="left"] > .shepherd-arrow {
-  right: -8px;
-}
-
-.shepherd-element[data-popper-placement^="right"] > .shepherd-arrow {
-  left: -8px;
-}
-
-.shepherd-element[data-popper-placement^="bottom"] > .shepherd-arrow:before {
-  background-color: #4f46e5;
-}
-
-/* Modal overlay styling */
-.shepherd-modal-overlay-container {
-  height: 0;
-  left: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  transition: all 0.3s ease-out, height 0ms 0.3s, opacity 0.3s 0ms;
-  width: 100vw;
-  z-index: 9997;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.shepherd-modal-overlay-container.shepherd-modal-is-visible {
-  height: 100vh;
-  opacity: 0.5;
-  transition: all 0.3s ease-out, height 0s 0s, opacity 0.3s 0s;
-  pointer-events: auto;
-}
-
-/* Fix for overflow when starting the tour */
-body.shepherd-active {
-  overflow: hidden;
-}
-
-/* Ensure tour steps are properly positioned */
-.shepherd-enabled.shepherd-target {
-  position: relative;
-  z-index: 10001;
-}
-
-/* Fix for specific attachment points */
-.shepherd-element[data-popper-placement^="top"] {
-  margin-bottom: 16px;
-}
-
-.shepherd-element[data-popper-placement^="bottom"] {
-  margin-top: 16px;
-}
-
-.shepherd-element[data-popper-placement^="left"] {
-  margin-right: 16px;
-}
-
-.shepherd-element[data-popper-placement^="right"] {
-  margin-left: 16px;
+.fresh-gradient {
+  background-color: rgb(134, 239, 172);
+  background-image: linear-gradient(
+    to right bottom,
+    rgb(219, 234, 254),
+    rgb(187, 247, 208),
+    rgb(254, 249, 195)
+  );
 }

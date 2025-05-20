@@ -1,4 +1,3 @@
-import { Partial } from "$fresh/runtime.ts";
 import type { AppProps } from "$fresh/server.ts";
 import BottomNavigation from "../islands/navbar/BottomNavigation.tsx";
 import Navbar from "../islands/navbar/index.tsx";
@@ -21,9 +20,6 @@ export default function App({ Component, url }: AppProps) {
 			? (url.searchParams.get("lang") as string)
 			: "de";
 
-	const handleDownloadChat = () => {
-		console.log("Download chat not yet implemented");
-	};
 
 	return (
 		<html lang="en">
@@ -31,7 +27,7 @@ export default function App({ Component, url }: AppProps) {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<title>School Bud-E</title>
-				<link rel="stylesheet" href="/styles.css" />
+				<link rel="stylesheet" href="/output.css" />
 				<link rel="stylesheet" href="/katex.min.css" />
 			</head>
 			<body>
@@ -45,23 +41,18 @@ export default function App({ Component, url }: AppProps) {
 						</div>
 					</div>
 				) : (
-					<div class="h-[calc(100dvh-4rem)] md:h-screen flex" f-client-nav>
-						<Partial name="sidebar">
+					<div class="h-[calc(100dvh-4rem)] md:h-screen flex">
 							<Sidebar
 								currentChatSuffix=""
-								onDownloadChat={handleDownloadChat}
 								lang={lang}
 							/>
 							<AIFloatingButton />
-						</Partial>
-						<Partial name="main-content">
 							<div class="flex-1">
 								<div class="pb-16 md:pb-0">
 									<Component />
 									{showBottomNav && <BottomNavigation lang={lang} />}
 								</div>
 							</div>
-						</Partial>
 					</div>
 				)}
 			</body>

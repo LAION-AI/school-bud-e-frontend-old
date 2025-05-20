@@ -1,6 +1,4 @@
-import { HandlerContext } from "$fresh/server.ts";
-
-export const handler = (_req: Request, _ctx: HandlerContext): Promise<Response> => {
+export const handler = (_req: Request): Response => {
   try {
     // TODO: Implement actual chat history retrieval and graph extraction
     // For now, return an empty array as placeholder

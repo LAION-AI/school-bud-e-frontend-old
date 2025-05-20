@@ -1,17 +1,30 @@
-/// <reference no-default-lib="true" />
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-/// <reference lib="dom.asynciterable" />
-/// <reference lib="deno.ns" />
+import { App, fsRoutes, staticFiles } from "fresh";
+import { define, type State } from "./utils.ts";
 
-import "$std/dotenv/load.ts";
+export const app = new App<State>();
+app.use(staticFiles());
 
-import { start } from "$fresh/server.ts";
-import manifest from "./fresh.gen.ts";
-import config from "./fresh.config.ts";
+// this is the same as the /api/:name route defined via a file. feel free to delete this!
+app.get("/api2/:name", (ctx) => {
+  const name = ctx.params.name;
+  return new Response(
+    `Hello, ${name.charAt(0).toUpperCase() + name.slice(1)}!`,
+  );
+});
 
-// Your regular console.logs will now be captured
-console.log("Server started successfully");
-console.error("Database connection failed");
+// this can also be defined via a file. feel free to delete this!
+const exampleLoggerMiddleware = define.middleware((ctx) => {
+  // console.log(`${ctx.req.method} ${ctx.req.url}`);
+  return ctx.next();
+});
+app.use(exampleLoggerMiddleware);
 
-await start(manifest, config);
+await fsRoutes(app, {
+  dir: "./",
+  loadIsland: (path) => import(`./islands/${path}`),
+  loadRoute: (path) => import(`./routes/${path}`),
+});
+
+if (import.meta.main) {
+  await app.listen();
+}

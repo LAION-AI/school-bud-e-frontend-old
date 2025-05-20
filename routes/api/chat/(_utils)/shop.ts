@@ -1,5 +1,6 @@
-import tiktoken from "tiktoken";
 const SHOP_API_URL = Deno.env.get("SHOP_API_URL") || "http://localhost:3000";
+
+let tiktoken: any;
 
 /**
  * Shop API Communication Module
@@ -16,6 +17,9 @@ export async function deductOutputTokens(
   universalShopApiKey: string,
   model = "gemini-2.5-flash-online"
 ) {
+  if (!tiktoken) {
+    tiktoken = await import("tiktoken");
+  }
   const encoder = await tiktoken.get_encoding("cl100k_base");
   const tokens = encoder.encode(response).length;
   console.log("tokens", tokens);
@@ -70,6 +74,9 @@ export async function deductInputTokens(
 }
 
 async function countTokens(messages: Message[]) {
+  if (!tiktoken) {
+    tiktoken = await import("tiktoken");
+  }
   const encoder = await tiktoken.get_encoding("cl100k_base");
 
   const tokensPerMessage = 3;

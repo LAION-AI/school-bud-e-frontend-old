@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import cytoscape from "cytoscape";
 import { GraphNode } from "../islands/RightSidebar.tsx";
+
+// Add type for cytoscape
+type Cytoscape = {
+  default: any;
+  Core: any;
+  NodeSingular: any;
+  EventObject: any;
+  ElementDefinition: any;
+};
 
 interface GraphProps {
   graphData: GraphNode[];
@@ -13,12 +21,13 @@ interface GraphProps {
 
 export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false, height = "400px", zoomingEnabled = true}: GraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cyRef = useRef<cytoscape.Core | null>(null);
+  const cyRef = useRef<Cytoscape['Core'] | null>(null);
   const [isPositioning, setIsPositioning] = useState(true);
+  const [isCytoscapeLoaded, setIsCytoscapeLoaded] = useState(false);
 
   // Convert graph data to Cytoscape format
-  const convertGraphData = (items: GraphNode[]): cytoscape.ElementDefinition[] => {
-    const elements: cytoscape.ElementDefinition[] = [];
+  const convertGraphData = (items: GraphNode[]): Cytoscape['ElementDefinition'][] => {
+    const elements: Cytoscape['ElementDefinition'][] = [];
     const nodeSet = new Set<string>();
 
     items.forEach((node) => {
@@ -63,8 +72,8 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
   };
 
   // Function to save node positions back to the graph data
-  const saveNodePositions = (cy: cytoscape.Core) => {
-    cy.nodes().forEach((node: cytoscape.NodeSingular) => {
+  const saveNodePositions = (cy: Cytoscape['Core']) => {
+    cy.nodes().forEach((node: Cytoscape['NodeSingular']) => {
       const nodeId = node.id();
       const position = node.position();
       
@@ -85,90 +94,96 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
       setIsPositioning(true);
       const elements = convertGraphData(graphData);
 
-      // Create Cytoscape instance
-      const cy = cytoscape({
-        zoomingEnabled,
-        container: containerRef.current,
-        elements,
-        style: [
-          {
-            selector: "node",
-            style: {
-              "background-color": "#aaa",
-              label: "data(label)",
-              color: "#000",
-              "text-valign": "center",
-              "text-halign": "center",
-              "font-size": "10px",
-              "text-wrap": "wrap",
-              "text-max-width": "80px",
-              "border-width": "1px",
-              "border-color": "#555",
+      // Lazy load cytoscape
+      import("cytoscape").then((cytoscapeModule: Cytoscape) => {
+        const cytoscape = cytoscapeModule.default;
+
+        // Create Cytoscape instance
+        const cy = cytoscape({
+          zoomingEnabled,
+          container: containerRef.current,
+          elements,
+          style: [
+            {
+              selector: "node",
+              style: {
+                "background-color": "#aaa",
+                label: "data(label)",
+                color: "#000",
+                "text-valign": "center",
+                "text-halign": "center",
+                "font-size": "10px",
+                "text-wrap": "wrap",
+                "text-max-width": "80px",
+                "border-width": "1px",
+                "border-color": "#555",
+              },
             },
-          },
-          {
-            selector: "node.selected",
-            style: {
-              "border-width": "2px",
-              "border-color": "#f00",
+            {
+              selector: "node.selected",
+              style: {
+                "border-width": "2px",
+                "border-color": "#f00",
+              },
             },
-          },
-          {
-            selector: 'node[type="root"]',
-            style: {
-              "background-color": "#0a84ff",
-              "border-width": "3px",
-              "border-color": "#fff",
+            {
+              selector: 'node[type="root"]',
+              style: {
+                "background-color": "#0a84ff",
+                "border-width": "3px",
+                "border-color": "#fff",
+              },
             },
-          },
-          {
-            selector: "edge",
-            style: {
-              width: 2,
-              "line-color": "#ccc",
-              "target-arrow-color": "#ccc",
-              "target-arrow-shape": "triangle",
-              "curve-style": "bezier",
+            {
+              selector: "edge",
+              style: {
+                width: 2,
+                "line-color": "#ccc",
+                "target-arrow-color": "#ccc",
+                "target-arrow-shape": "triangle",
+                "curve-style": "bezier",
+              },
             },
+          ],
+          layout: {
+            name: "cose",
+            animate: true,
+            // Listen for layout events
+            ready: function() {
+              // Layout is initialized but not started
+            },
+            stop: function() {
+              // Layout is complete
+              saveNodePositions(cy);
+              setIsPositioning(false);
+            }
           },
-        ],
-        layout: {
-          name: "cose",
-          animate: true,
-          // Listen for layout events
-          ready: function() {
-            // Layout is initialized but not started
-          },
-          stop: function() {
-            // Layout is complete
-            saveNodePositions(cy);
-            setIsPositioning(false);
-          }
-        },
+        });
+
+        // Save instance for cleanup
+        cyRef.current = cy;
+        setIsCytoscapeLoaded(true);
+
+        // Handle node selection
+        cy.on("tap", "node", (event: Cytoscape['EventObject']) => {
+          const node = event.target;
+          const nodeId = node.data("id");
+
+          cy.$("node").removeClass("selected");
+          node.addClass("selected");
+          onNodeSelect?.(nodeId);
+        });
+
+        // Update selected node if provided externally
+        if (selectedNodeId) {
+          cy.$(`node[id="${selectedNodeId}"]`).addClass("selected");
+        }
+
+        return () => {
+          cy.destroy();
+          cyRef.current = null;
+        };
       });
-
-      // Save instance for cleanup
-      cyRef.current = cy;
-
-      // Handle node selection
-      cy.on("tap", "node", (event: cytoscape.EventObject) => {
-        const node = event.target;
-        const nodeId = node.data("id");
-
-        cy.$("node").removeClass("selected");
-        node.addClass("selected");
-        onNodeSelect?.(nodeId);
-      });
-
-      // Update selected node if provided externally
-      if (selectedNodeId) {
-        cy.$(`node[id="${selectedNodeId}"]`).addClass("selected");
-      }
-
-      return () => {
-        cy.destroy();
-        cyRef.current = null;
-      };
     }
   }, [graphData, selectedNodeId, isRoot]);
 

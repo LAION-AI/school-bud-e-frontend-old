@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="332417eb-c47d-40b0-bd53-a083d7fc2a66" name="Bud-E">
+        <fileTransfer rootFolder="/home/robvanvolt/school-bud-e-frontend_next" accessType="SFTP" host="128.140.93.112" port="22" sshConfigId="f4d86c39-3e8a-4ec4-acc9-2bfe7889899d" sshConfig="michael@128.140.93.112:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -238,7 +238,7 @@ export default function RightSidebar({ data }: RightSidebarProps) {
         </svg>
       </button>
       <div class={`bg-surface border-l h-full flex flex-col  transition-all ${isCollapsed  ? 'w-0 overflow-hidden': 'w-[40vw]'}`}>
-        <h3 class={"p-4 font-semibold border-b"}>Ergebnisse</h3>
+        <h3 class="p-4 font-semibold border-b">Ergebnisse</h3>
         {/* Display all data elements */}
         {data?.map((item, dataIndex) => {
           // Skip rendering if the item has no results/items

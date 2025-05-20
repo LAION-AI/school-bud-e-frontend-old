@@ -1,4 +1,3 @@
-import { asset } from "$fresh/runtime.ts";
 import { Button } from "../components/Button.tsx";
 import Footer from "../components/Footer.tsx";
 
