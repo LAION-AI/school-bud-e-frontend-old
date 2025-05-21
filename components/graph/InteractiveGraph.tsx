@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import cytoscape from "cytoscape";
 import type { GraphNode } from "../../islands/RightSidebar.tsx";
 import * as graphStore from "./store.ts";
 import {
@@ -22,19 +23,11 @@ type ExtendedGraphNode = GraphNode & {
 	savedPosition?: { x: number; y: number };
 };
 
-// Add type for cytoscape
-type Cytoscape = {
-	default: any;
-	Core: any;
-	NodeSingular: any;
-	EventObject: any;
-};
-
 export function InteractiveGraph({
 	isRoot = false,
 }: InteractiveGraphProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const cyRef = useRef<Cytoscape['Core'] | null>(null);
+	const cyRef = useRef<cytoscape.Core | null>(null);
 	const nodeMap = useRef(new Map<string, GraphNode>());
 	const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
 	const [isGeneratingConnections, setIsGeneratingConnections] =
@@ -43,7 +36,6 @@ export function InteractiveGraph({
 	const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 	const chatInputRef = useRef<HTMLTextAreaElement>(null);
 	const [isProcessing, setIsProcessing] = useState(false);
-	const [isCytoscapeLoaded, setIsCytoscapeLoaded] = useState(false);
 
 	// Add state for test generator
 	const [showTestGenerator, setShowTestGenerator] = useState(false);
@@ -148,346 +140,341 @@ export function InteractiveGraph({
 					cyRef.current = null;
 				}
 
-				// Lazy load cytoscape
-				import("cytoscape").then((cytoscapeModule: Cytoscape) => {
-					const cytoscape = cytoscapeModule.default;
-					
-					const cy = cytoscape({
-						container: containerRef.current,
-						maxZoom: 5,
-						minZoom: 0.5,
-						boxSelectionEnabled: true,
-						elements,
-						style: [
-							{
-								selector: "node",
-								style: {
-									shape: "ellipse",
-									"background-color": "#eee", // Default color
-									width: 65, // Larger nodes for visibility
-									height: 65, // Larger nodes for visibility
-									label: "data(label)",
-									"text-valign": "center", // Center text for visibility
-									"text-halign": "center",
-									"text-margin-y": "0px", // Move text to center
-									"text-wrap": "wrap",
-									"text-max-width": "50px", // Wider text area
-									"font-size": "12px", // Larger font
-									"font-weight": "bold", // Bold text
-									color: "#000000", // Black text
-									"text-outline-width": "1px",
-									"text-outline-color": "#ffffff", // White outline for visibility
-									"font-family": "'Poppins', sans-serif",
-									"background-image": (ele: { data: (id: string) => string }) => {
-										const nodeData = nodeMap.current.get(ele.data("id"));
-										return nodeData?.image ? `url(${nodeData.image})` : "none";
-									},
-									"background-fit": "cover",
-									"border-width": "1px",
-									"border-color": "#aaa", // Black border for visibility
-									"border-style": "solid",
-									"shadow-blur": "10px",
-									"shadow-color": "rgba(0, 0, 0, 0.5)", // Darker shadow for visibility
-									"shadow-offset-x": "0px",
-									"shadow-offset-y": "2px",
-									"z-index": "10", // Ensure nodes are above other elements
+				const cy = cytoscape({
+					container: containerRef.current,
+					maxZoom: 5, // Increased from 3 to 5 for better zoom capability
+					minZoom: 0.5, // Decreased from 0.75 to 0.5 for better overview
+					boxSelectionEnabled: true, // Allow box selection for multiple nodes
+					elements,
+					style: [
+						{
+							selector: "node",
+							style: {
+								shape: "ellipse",
+								"background-color": "#eee", // Default color
+								width: 65, // Larger nodes for visibility
+								height: 65, // Larger nodes for visibility
+								label: "data(label)",
+								"text-valign": "center", // Center text for visibility
+								"text-halign": "center",
+								"text-margin-y": "0px", // Move text to center
+								"text-wrap": "wrap",
+								"text-max-width": "50px", // Wider text area
+								"font-size": "12px", // Larger font
+								"font-weight": "bold", // Bold text
+								color: "#000000", // Black text
+								"text-outline-width": "1px",
+								"text-outline-color": "#ffffff", // White outline for visibility
+								"font-family": "'Poppins', sans-serif",
+								"background-image": (ele: { data: (id: string) => string }) => {
+									const nodeData = nodeMap.current.get(ele.data("id"));
+									return nodeData?.image ? `url(${nodeData.image})` : "none";
 								},
+								"background-fit": "cover",
+								"border-width": "1px",
+								"border-color": "#aaa", // Black border for visibility
+								"border-style": "solid",
+								"shadow-blur": "10px",
+								"shadow-color": "rgba(0, 0, 0, 0.5)", // Darker shadow for visibility
+								"shadow-offset-x": "0px",
+								"shadow-offset-y": "2px",
+								"z-index": "10", // Ensure nodes are above other elements
 							},
-							{
-								selector: "node:selected",
-								style: {
-									"border-width": "4px",
-									"border-color": "#ffd700", // Gold border on selection
-									"background-color": "#a0e81c", // Lighter green when selected
-								},
-							},
-							{
-								selector: "node.secondary-selected",
-								style: {
-									"border-width": "3px",
-									"border-color": "#00f",
-								},
-							},
-							{
-								selector: 'node[type="root"]',
-								style: {
-									"background-color": "#0a84ff",
-									"border-width": "3px",
-									"border-color": "#fff",
-								},
-							},
-							{
-								selector: "edge",
-								style: {
-									width: 3, // Thicker edges
-									"line-color": "#000", // Black edges for visibility
-									"target-arrow-color": "#000",
-									"target-arrow-shape": "triangle",
-									"curve-style": "bezier",
-									"z-index": "5", // Ensure edges are visible
-									"opacity": 1, // Always fully opaque
-									"visibility": "visible", // Always visible
-									"min-zoomed-font-size": 0, // Ensure edges are visible at all zoom levels
-									"overlay-opacity": 0, // Make overlay transparent for better edge interaction
-									"text-opacity": 1, // Ensure text is always visible
-									"text-outline-width": 2, // Add outline to text for better visibility
-									"text-outline-color": "#ffffff", // White outline for text
-									"text-outline-opacity": 1, // Full opacity for outline
-								},
-							},
-							// Add a specific style for edges connected to selected nodes
-							{
-								selector: "node:selected + edge, edge:selected, node:selected node:selected + edge",
-								style: {
-									"line-color": "#000", // Keep the same color for consistency
-									"width": 3, // Keep the same width
-									"z-index": "6", // Slightly higher z-index to ensure they appear on top
-									"opacity": 1, // Ensure full opacity
-								},
-							},
-							{
-								selector: "node.has-test",
-								style: {
-									"border-color": "#ffc107", // Yellow border for nodes with tests
-									"border-width": "4px",
-									// Add a badge or indicator that this node has a test
-									"background-image": (ele: { data: (id: string) => string }) => {
-										const nodeData = nodeMap.current.get(ele.data("id"));
-										return nodeData?.image ? `url(${nodeData.image})` : "none";
-									},
-								},
-							},
-						],
-						layout: {
-							name: "preset",
-							fit: true,
-							padding: 50,
 						},
-					});
+						{
+							selector: "node:selected",
+							style: {
+								"border-width": "4px",
+								"border-color": "#ffd700", // Gold border on selection
+								"background-color": "#a0e81c", // Lighter green when selected
+							},
+						},
+						{
+							selector: "node.secondary-selected",
+							style: {
+								"border-width": "3px",
+								"border-color": "#00f",
+							},
+						},
+						{
+							selector: 'node[type="root"]',
+							style: {
+								"background-color": "#0a84ff",
+								"border-width": "3px",
+								"border-color": "#fff",
+							},
+						},
+						{
+							selector: "edge",
+							style: {
+								width: 3, // Thicker edges
+								"line-color": "#000", // Black edges for visibility
+								"target-arrow-color": "#000",
+								"target-arrow-shape": "triangle",
+								"curve-style": "bezier",
+								"z-index": "5", // Ensure edges are visible
+								"opacity": 1, // Always fully opaque
+								"visibility": "visible", // Always visible
+								"min-zoomed-font-size": 0, // Ensure edges are visible at all zoom levels
+								"overlay-opacity": 0, // Make overlay transparent for better edge interaction
+								"text-opacity": 1, // Ensure text is always visible
+								"text-outline-width": 2, // Add outline to text for better visibility
+								"text-outline-color": "#ffffff", // White outline for text
+								"text-outline-opacity": 1, // Full opacity for outline
+							},
+						},
+						// Add a specific style for edges connected to selected nodes
+						{
+							selector: "node:selected + edge, edge:selected, node:selected node:selected + edge",
+							style: {
+								"line-color": "#000", // Keep the same color for consistency
+								"width": 3, // Keep the same width
+								"z-index": "6", // Slightly higher z-index to ensure they appear on top
+								"opacity": 1, // Ensure full opacity
+							},
+						},
+						{
+							selector: "node.has-test",
+							style: {
+								"border-color": "#ffc107", // Yellow border for nodes with tests
+								"border-width": "4px",
+								// Add a badge or indicator that this node has a test
+								"background-image": (ele: { data: (id: string) => string }) => {
+									const nodeData = nodeMap.current.get(ele.data("id"));
+									return nodeData?.image ? `url(${nodeData.image})` : "none";
+								},
+							},
+						},
+					],
+					layout: {
+						name: "preset", // Always use preset layout to respect saved positions
+						fit: true, // Fit all nodes in the view
+						padding: 50, // Add padding around the layout
+					},
+				});
 
-					// Only run the secondary layout if no positions are defined
-					const nodesWithoutPositions = cy.nodes().filter((node: Cytoscape['NodeSingular']) => {
-						const nodeId = node.id();
-						const nodeData = items.find(item => item.item === nodeId);
-						return !nodeData?.position || 
-							   (nodeData.position.x === undefined && nodeData.position.y === undefined);
-					});
-					
-					if (nodesWithoutPositions.length > 0) {
-						// If we need to calculate positions, keep the container hidden
-						setTimeout(() => {
-							if (cy) {
-								nodesWithoutPositions.layout({
-									name: "cose",
-									animate: false, // Don't animate to avoid flickering
-									randomize: true,
-									nodeOverlap: 20,
-									componentSpacing: 100,
-									nodeRepulsion: 10000,
-									idealEdgeLength: 100,
-									edgeElasticity: 100,
-								}).run();
-								
-								// After layout is complete, show the graph
-								setTimeout(() => {
-									if (containerRef.current) {
-										containerRef.current.style.opacity = "1";
-									}
-									setIsGraphReady(true);
-								}, 100);
-							}
-						}, 100);
-					} else {
-						// If all positions are already defined, show the graph immediately
-						if (containerRef.current) {
-							containerRef.current.style.opacity = "1";
+				// Only run the secondary layout if no positions are defined
+				const nodesWithoutPositions = cy.nodes().filter((node: cytoscape.NodeSingular) => {
+					const nodeId = node.id();
+					const nodeData = items.find(item => item.item === nodeId);
+					return !nodeData?.position || 
+					       (nodeData.position.x === undefined && nodeData.position.y === undefined);
+				});
+				
+				if (nodesWithoutPositions.length > 0) {
+					// If we need to calculate positions, keep the container hidden
+					setTimeout(() => {
+						if (cy) {
+							nodesWithoutPositions.layout({
+								name: "cose",
+								animate: false, // Don't animate to avoid flickering
+								randomize: true,
+								nodeOverlap: 20,
+								componentSpacing: 100,
+								nodeRepulsion: 10000,
+								idealEdgeLength: 100,
+								edgeElasticity: 100,
+							}).run();
+							
+							// After layout is complete, show the graph
+							setTimeout(() => {
+								if (containerRef.current) {
+									containerRef.current.style.opacity = "1";
+								}
+								setIsGraphReady(true);
+							}, 100);
 						}
-						setIsGraphReady(true);
+					}, 100);
+				} else {
+					// If all positions are already defined, show the graph immediately
+					if (containerRef.current) {
+						containerRef.current.style.opacity = "1";
 					}
+					setIsGraphReady(true);
+				}
+				
+				// Add event listener for position changes to save node positions
+				cy.on("position", "node", (event: cytoscape.EventObject) => {
+					const nodeId = event.target.id();
+					const position = event.target.position();
 					
-					// Add event listener for position changes to save node positions
-					cy.on("position", "node", (event: Cytoscape['EventObject']) => {
-						const nodeId = event.target.id();
-						const position = event.target.position();
+					// Update the position in the graph data
+					if (graphStore.graphData.value?.items) {
+						const nodeIndex = graphStore.graphData.value.items.findIndex(
+							item => item.item === nodeId
+						);
 						
-						// Update the position in the graph data
-						if (graphStore.graphData.value?.items) {
-							const nodeIndex = graphStore.graphData.value.items.findIndex(
-								item => item.item === nodeId
-							);
+						if (nodeIndex >= 0) {
+							// Update position in the node data
+							graphStore.graphData.value.items[nodeIndex].position = { 
+								x: position.x, 
+								y: position.y 
+							};
 							
-							if (nodeIndex >= 0) {
-								// Update position in the node data
-								graphStore.graphData.value.items[nodeIndex].position = { 
-									x: position.x, 
-									y: position.y 
-								};
-								
-								// Save changes to persist positions
-								graphStore.saveCurrentGraph();
-							}
+							// Save changes to persist positions
+							graphStore.saveCurrentGraph();
 						}
-					});
+					}
+				});
 
-					// Handle window resize to properly size the graph
-					const handleResize = () => {
-						if (cyRef.current && containerRef.current) {
-							cyRef.current.resize();
-							cyRef.current.fit();
-						}
-					};
+				// Handle window resize to properly size the graph
+				const handleResize = () => {
+					if (cyRef.current && containerRef.current) {
+						cyRef.current.resize();
+						cyRef.current.fit();
+					}
+				};
+				
+				// Add resize event listener
+				window.addEventListener('resize', handleResize);
+
+				// Make sure to save positions after any layout completes
+				cy.on("layoutstop", () => {
+					ensureReferencedNodesExist();
 					
-					// Add resize event listener
-					window.addEventListener('resize', handleResize);
-
-					// Make sure to save positions after any layout completes
-					cy.on("layoutstop", () => {
-						ensureReferencedNodesExist();
+					// Save all node positions after layout stops
+					if (graphStore.graphData.value?.items) {
+						let positionsChanged = false;
 						
-						// Save all node positions after layout stops
-						if (graphStore.graphData.value?.items) {
-							let positionsChanged = false;
-							
-							// Update all node positions based on cytoscape positions
-							for (const node of graphStore.graphData.value.items) {
-								const cyNode = cy.$(`node[id="${node.item}"]`);
-								if (cyNode.length > 0) {
-									const pos = cyNode.position();
-									// Only update if position has changed
-									if (!node.position || 
-										node.position.x !== pos.x || 
-										node.position.y !== pos.y) {
-										node.position = { x: pos.x, y: pos.y };
-										positionsChanged = true;
-									}
+						// Update all node positions based on cytoscape positions
+						for (const node of graphStore.graphData.value.items) {
+							const cyNode = cy.$(`node[id="${node.item}"]`);
+							if (cyNode.length > 0) {
+								const pos = cyNode.position();
+								// Only update if position has changed
+								if (!node.position || 
+									node.position.x !== pos.x || 
+									node.position.y !== pos.y) {
+									node.position = { x: pos.x, y: pos.y };
+									positionsChanged = true;
 								}
 							}
-							
-							// Only save if positions actually changed
-							if (positionsChanged) {
-								graphStore.saveCurrentGraph();
-							}
 						}
-					});
+						
+						// Only save if positions actually changed
+						if (positionsChanged) {
+							graphStore.saveCurrentGraph();
+						}
+					}
+				});
 
-					// Add event for edge selection
-					cy.on("select", "edge", (event: Cytoscape['EventObject']) => {
-						const source = event.target.source().id();
-						const target = event.target.target().id();
-						setSelectedEdge({ source, target });
-					});
+				// Add event for edge selection
+				cy.on("select", "edge", (event: cytoscape.EventObject) => {
+					const source = event.target.source().id();
+					const target = event.target.target().id();
+					setSelectedEdge({ source, target });
+				});
 
-					// Add event for edge deselection
-					cy.on("unselect", "edge", () => {
+				// Add event for edge deselection
+				cy.on("unselect", "edge", () => {
+					setSelectedEdge(null);
+				});
+
+				// Add event to deselect edges when clicking on canvas
+				cy.on("tap", (event: cytoscape.EventObject) => {
+					if (event.target === cy) {
+						// Clicked on background
 						setSelectedEdge(null);
-					});
+					}
+				});
 
-					// Add event to deselect edges when clicking on canvas
-					cy.on("tap", (event: Cytoscape['EventObject']) => {
-						if (event.target === cy) {
-							// Clicked on background
-							setSelectedEdge(null);
+				// Add event listeners for node selection
+				cy.on("select", "node", (event: { target: { id: () => string } }) => {
+					const selectedNode = event.target.id();
+					graphStore.selectedNode.value = selectedNode;
+					setSelectedNodes((prev) => {
+						if (!prev.includes(selectedNode)) {
+							return [...prev, selectedNode];
 						}
+						return prev;
 					});
-
-					// Add event listeners for node selection
-					cy.on("select", "node", (event: { target: { id: () => string } }) => {
-						const selectedNode = event.target.id();
-						graphStore.selectedNode.value = selectedNode;
-						setSelectedNodes((prev) => {
-							if (!prev.includes(selectedNode)) {
-								return [...prev, selectedNode];
-							}
-							return prev;
+					
+					// Make sure all edges remain visible when a node is selected
+					cy.edges().style('opacity', 1);
+					
+					// Highlight the edges connected to the selected node
+					const connectedEdges = cy.$(`edge[source="${selectedNode}"], edge[target="${selectedNode}"]`);
+					if (connectedEdges.length > 0) {
+						// Make connected edges more prominent
+						connectedEdges.style({
+							'width': 4,
+							'line-color': '#0a84ff',
+							'target-arrow-color': '#0a84ff',
+							'z-index': 10
 						});
+					}
+				});
+
+				cy.on("unselect", "node", (event: { target: { id: () => string } }) => {
+					const unselectedNode = event.target.id();
+					
+					// Reset the style of edges connected to the unselected node
+					const connectedEdges = cy.$(`edge[source="${unselectedNode}"], edge[target="${unselectedNode}"]`);
+					if (connectedEdges.length > 0) {
+						connectedEdges.style({
+							'width': 3,
+							'line-color': '#000',
+							'target-arrow-color': '#000',
+							'z-index': 5
+						});
+					}
+					
+					setSelectedNodes((prev) =>
+						prev.filter((id) => id !== unselectedNode),
+					);
+
+					// If all nodes are unselected, clear the selected node in the store
+					if (cy.nodes(":selected").length === 0) {
+						graphStore.selectedNode.value = null;
+					} else if (cy.nodes(":selected").length === 1) {
+						// If only one node remains selected, make it the selected node in the store
+						graphStore.selectedNode.value = cy.nodes(":selected")[0].id();
 						
-						// Make sure all edges remain visible when a node is selected
-						cy.edges().style('opacity', 1);
-						
-						// Highlight the edges connected to the selected node
-						const connectedEdges = cy.$(`edge[source="${selectedNode}"], edge[target="${selectedNode}"]`);
-						if (connectedEdges.length > 0) {
-							// Make connected edges more prominent
-							connectedEdges.style({
+						// Highlight edges of the remaining selected node
+						const remainingNode = cy.nodes(":selected")[0].id();
+						const remainingConnectedEdges = cy.$(`edge[source="${remainingNode}"], edge[target="${remainingNode}"]`);
+						if (remainingConnectedEdges.length > 0) {
+							remainingConnectedEdges.style({
 								'width': 4,
 								'line-color': '#0a84ff',
 								'target-arrow-color': '#0a84ff',
 								'z-index': 10
 							});
 						}
-					});
-
-					cy.on("unselect", "node", (event: { target: { id: () => string } }) => {
-						const unselectedNode = event.target.id();
-						
-						// Reset the style of edges connected to the unselected node
-						const connectedEdges = cy.$(`edge[source="${unselectedNode}"], edge[target="${unselectedNode}"]`);
-						if (connectedEdges.length > 0) {
-							connectedEdges.style({
-								'width': 3,
-								'line-color': '#000',
-								'target-arrow-color': '#000',
-								'z-index': 5
-							});
-						}
-						
-						setSelectedNodes((prev) =>
-							prev.filter((id) => id !== unselectedNode),
-						);
-
-						// If all nodes are unselected, clear the selected node in the store
-						if (cy.nodes(":selected").length === 0) {
-							graphStore.selectedNode.value = null;
-						} else if (cy.nodes(":selected").length === 1) {
-							// If only one node remains selected, make it the selected node in the store
-							graphStore.selectedNode.value = cy.nodes(":selected")[0].id();
-							
-							// Highlight edges of the remaining selected node
-							const remainingNode = cy.nodes(":selected")[0].id();
-							const remainingConnectedEdges = cy.$(`edge[source="${remainingNode}"], edge[target="${remainingNode}"]`);
-							if (remainingConnectedEdges.length > 0) {
-								remainingConnectedEdges.style({
-									'width': 4,
-									'line-color': '#0a84ff',
-									'target-arrow-color': '#0a84ff',
-									'z-index': 10
-								});
-							}
-						}
-						
-						// Ensure edges remain visible
-						cy.edges().style('opacity', 1);
-					});
-
-					// Add event listeners
-					const handleKeyDown = (e: KeyboardEvent) => {
-						if (e.ctrlKey && e.key.toLowerCase() === "c") {
-							graphStore.handleConnectNodes();
-						}
-
-						// Handle delete key for multiple node deletion
-						if (e.key === "Delete" && selectedNodes.length > 0) {
-							deleteSelectedNodes();
-						}
-					};
-
-					window.addEventListener("keydown", handleKeyDown);
-
-					cyRef.current = cy;
-					setIsCytoscapeLoaded(true);
-
-					// Cleanup on component unmount
-					return () => {
-						if (cyRef.current) {
-							cyRef.current.destroy();
-							cyRef.current = null;
-						}
-						window.removeEventListener("keydown", handleKeyDown);
-						window.removeEventListener('resize', handleResize);
-					};
+					}
+					
+					// Ensure edges remain visible
+					cy.edges().style('opacity', 1);
 				});
+
+				// Add event listeners
+				const handleKeyDown = (e: KeyboardEvent) => {
+					if (e.ctrlKey && e.key.toLowerCase() === "c") {
+						graphStore.handleConnectNodes();
+					}
+
+					// Handle delete key for multiple node deletion
+					if (e.key === "Delete" && selectedNodes.length > 0) {
+						deleteSelectedNodes();
+					}
+				};
+
+				window.addEventListener("keydown", handleKeyDown);
+
+				cyRef.current = cy;
+
+				// Cleanup on component unmount
+				return () => {
+					if (cyRef.current) {
+						cyRef.current.destroy();
+						cyRef.current = null;
+					}
+					window.removeEventListener("keydown", handleKeyDown);
+					window.removeEventListener('resize', handleResize);
+				};
 			} catch (error) {
-				setIsGraphReady(true);
+				// Display error in the UI instead
+				setIsGraphReady(true); // Still set ready to avoid infinite loading
 			}
 		}
 	}, [graphStore.graphData.value]);
