@@ -26,3 +26,23 @@
     rgb(254, 249, 195)
   );
 }
+
+.message {
+  & ol {
+    list-style-type: decimal;
+    display: flex;
+    flex-flow: column;
+  }
+
+  & ul {
+    list-style-type: disc;
+    display: flex;
+    flex-flow: column;
+  }
+
+  & li {
+    margin-left: 1.5rem;
+  }
+  
+
+}

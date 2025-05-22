@@ -50,7 +50,6 @@ export default function TestsSection({
       onToggle={() => setIsExpanded(!isExpanded)}
       baseRoute="/tests"
       onRouteMatch={(match) => setCurrentPath(match?.[0] || "")}
-      variant={sectionVariant}
     >
       <a href="/tests" class={getLinkClasses("/tests")}>
         {translations.actions.allTests}

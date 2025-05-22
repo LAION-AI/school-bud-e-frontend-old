@@ -25,7 +25,7 @@ export function GraphLoadingState(
   }
 
   return (
-    <div class="flex items-center justify-center p-4 space-x-2 border rounded-md bg-white">
+    <div class="flex items-center justify-center p-4 my-3 space-x-2 border border-gray-200 rounded-md bg-white">
       {isLoading && !isComplete && (
         <>
           <IconLoader class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent" />

@@ -21,12 +21,13 @@ export const handler = define.handlers<Data>({
 export default function ChatPage({ params }: PageProps) {
   const { id } = params;
   const lang = "en";
+  const componentToRender = <ChatIsland key={`chat-${id}`} lang={lang} id={id} />;
   return (
     <>
       <head>
         <title>Chat {id} - School Bud-E</title>
       </head>
-      <ChatIsland key={id} lang={lang} id={id} />
+      {componentToRender}
     </>
   );
 }

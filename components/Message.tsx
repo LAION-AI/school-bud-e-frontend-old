@@ -45,26 +45,23 @@ export function Message({
       }`}
     >
       <span
-        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${
+        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible bg-white rounded-xl gap-1 group-hover:shadow-sm ${
           item.role === "user" ? "text-primary-600" : "text-gray-600"
         }`}
       >
         {groupIndex !== 0 && (
-          <button onClick={() => onEditAction(groupIndex)} type="button">
+          <button onClick={() => onEditAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <EditIcon isActive={currentEditIndex === groupIndex} />
           </button>
         )}
 
         {item.role !== "user" && groupIndex !== 0 && (
-          <button onClick={() => onRefreshAction(groupIndex)} type="button">
+          <button onClick={() => onRefreshAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <RefreshIcon />
           </button>
         )}
         {item.role !== "user" && (
-          <button
-            onClick={() => onSpeakAtGroupIndexAction(groupIndex)}
-            type="button"
-          >
+          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <SpeakIcon
               isPlaying={audioFileDict[groupIndex] &&
                 Object.values(audioFileDict[groupIndex]).some(
@@ -88,8 +85,8 @@ export function Message({
         class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${
           item.role === "user"
             ? "bg-primary-100 rounded-tr-md ml-auto"
-            : "bg-gray-100"
-        } p-4`}
+            : ""
+        } px-4`}
       >
         <MessageContent content={item.content} />
       </div>

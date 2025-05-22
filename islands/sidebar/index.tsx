@@ -79,7 +79,7 @@ export default function Sidebar({
 
   return (
     <div
-      class={`sidebar border-r-2 border-gray-200 bg-white h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
+      class={`sidebar border-r border-gray-200 bg-white h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
         isCollapsed ? "w-0 overflow-hidden" : "w-[21rem]"
       }`}
     >

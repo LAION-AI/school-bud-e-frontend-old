@@ -38,6 +38,7 @@ export default function SidebarLink({
   return (
     <a
       href={href}
+      f-client-nav
       class={`block px-3 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 ${
         isActive ? activeClass : defaultClass
       } ${className}`}

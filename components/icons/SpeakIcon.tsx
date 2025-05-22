@@ -7,7 +7,7 @@ export default function SpeakIcon({ isPlaying }: SpeakIconProps) {
     ? (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        style="margin-left: 0.5rem; width: 24px; height: 24px;"
+        style="margin-left: 0.5rem; width: 22px; height: 22px;"
         viewBox="0 -960 960 960"
         fill="currentColor"
       >
@@ -18,7 +18,7 @@ export default function SpeakIcon({ isPlaying }: SpeakIconProps) {
     : (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        style="margin-left: 0.5rem; width: 24px; height: 24px;"
+        style="margin-left: 0.5rem; width: 22px; height: 22px;"
         viewBox="0 -960 960 960"
         fill="currentColor"
       >

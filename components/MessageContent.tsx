@@ -28,42 +28,9 @@ const renderLatex = (text: string) => {
   return marked(text);
 };
 
-// Define supported content types
-type ContentType = "text" | "image_url" | "pdf_url";
-type JsonBlockType = "json";
-type BlockStatus = "loading" | "completed";
-
-// Base content segment interface
-interface BaseSegment {
-  type: ContentType | JsonBlockType;
-}
-
-// Text segment interface
-interface TextSegment extends BaseSegment {
-  type: "text";
-  content: string;
-}
-
-// JSON block segment interface
-interface JsonBlockSegment extends BaseSegment {
-  type: JsonBlockType;
-  status: BlockStatus;
-  code?: string; // Optional code field for game
-}
-
-// Combined type for all possible segments
-type GraphSegment = TextSegment | JsonBlockSegment;
-
 // Props interface for the component
 interface MessageContentProps {
   content: Message["content"];
-}
-
-// Content item interface for structured content
-interface ContentItem {
-  type: ContentType;
-  text?: string;
-  image_url?: { url: string };
 }
 
 interface Segment {
@@ -173,7 +140,7 @@ export function MessageContent({ content }: MessageContentProps) {
           if (seg.type === "text") {
             return (
               <span
-                className="flex flex-col gap-4 leading-7"
+                className="flex flex-col gap-3 leading-7 my-3"
                 key={idx}
                 dangerouslySetInnerHTML={{
                   __html: renderLatex(seg.content || ""),
@@ -203,7 +170,7 @@ export function MessageContent({ content }: MessageContentProps) {
   // Otherwise, assume content is an array of objects.
   return (
     <span>
-      <div>
+      <div className="flex flex-col">
         {(content as {
           type: string;
           text: string;
@@ -222,12 +189,12 @@ export function MessageContent({ content }: MessageContentProps) {
               "game",
             ], item.text);
             return (
-              <span key={contentIndex}>
+              <span key={contentIndex} className="my-3">
                 {segments.map((seg, idx) => {
                   if (seg.type === "text") {
                     return (
                       <span
-                        className="flex"
+                        className="flex flex-col"
                         key={idx}
                         dangerouslySetInnerHTML={{
                           __html: renderLatex(seg.content || ""),
@@ -256,7 +223,7 @@ export function MessageContent({ content }: MessageContentProps) {
                 key={contentIndex}
                 src={item.image_url.url}
                 alt="User Upload"
-                className="max-w-full h-auto rounded-lg shadow-sm"
+                className="max-w-full h-auto rounded-lg shadow-sm my-3"
               />
             );
           }
@@ -277,7 +244,7 @@ export function MessageContent({ content }: MessageContentProps) {
             // Check if the PDF is being transcribed
             if (item.pdf_url.isTranscribing) {
               return (
-                <div key={contentIndex} className="pdf-container w-full">
+                <div key={contentIndex} className="pdf-container w-full my-3">
                   <div className="pdf-info text-sm text-gray-500 mb-2 flex items-center">
                     <IconLoader2 className="animate-spin mr-2" size={16} />
                     <span>Transcribing PDF... Please wait</span>
@@ -306,7 +273,7 @@ export function MessageContent({ content }: MessageContentProps) {
                 item.pdf_url.transcription.startsWith("Transcription error:");
 
               return (
-                <div key={contentIndex} className="pdf-container w-full">
+                <div key={contentIndex} className="pdf-container w-full my-3">
                   <div
                     className={`pdf-info text-sm ${
                       isError ? "text-red-500" : "text-gray-500"
@@ -324,7 +291,7 @@ export function MessageContent({ content }: MessageContentProps) {
                     } rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}
                   >
                     <span
-                      className="flex"
+                      className="flex flex-col"
                       dangerouslySetInnerHTML={{
                         __html: renderLatex(item.pdf_url.transcription),
                       }}

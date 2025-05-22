@@ -4,6 +4,7 @@ import { IconInfoCircleFilled } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import { settings } from "../../components/chat/store.ts";
 import Capabilities from "./Capabilities.tsx";
+import ModelManager from "./ModelManager.tsx";
 import TokenUsage from "./TokenUsage.tsx";
 import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
@@ -27,7 +28,7 @@ const STORAGE_KEYS = {
 export default function Settings({ lang = "en" }: { lang?: string }) {
   const t = (translations as Translations)[lang as keyof Translations];
   const newSettings = useSignal({
-    ...settings.value,
+    ...settings.peek(),
   });
   const activeTab = useSignal("general");
   const models = useSignal<Model[]>([]);
@@ -66,7 +67,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
       // Clear signals on unmount to prevent memory leaks
       models.value = [];
       selectedModels.value = {};
-      newSettings.value = { ...settings.value };
+      newSettings.value = { ...settings.peek() };
       showPassword.value = false;
       activeTab.value = "general";
     };
@@ -403,6 +404,18 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 lang={lang}
               />
             </div>
+
+            {/* Model Manager */}
+            <ModelManager
+              models={models.value}
+              onUpdateModel={handleUpdateModel}
+              onDeleteModel={handleDeleteModel}
+              onAddModel={handleAddModel}
+              showNewModelForm={showNewModelForm}
+              editingModel={editingModel}
+              preselectedCapability={preselectedCapability}
+              lang={lang}
+            />
 
             {/* Universal API Key */}
             <div className="mt-8">

@@ -190,7 +190,7 @@ export function Graph(
 
   return (
     <div
-      class="relative border rounded-2xl mb-4 bg-gray-50"
+      class="relative border border-gray-200 rounded-2xl mb-4 bg-gray-50"
       style={{ width: "100%", height }}
     >
       {isPositioning && (

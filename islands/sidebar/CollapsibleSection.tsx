@@ -28,7 +28,6 @@ export default function CollapsibleSection({
   baseRoute,
   routePattern,
   onRouteMatch,
-  variant = "amber",
 }: CollapsibleSectionProps) {
   const [isActive, setIsActive] = useState(false);
   const [shouldBeExpanded, setShouldBeExpanded] = useState(propIsExpanded);

@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { chatIslandContent } from "../../internalization/content.ts";
-import { stopAndResetAudio, stopList } from "./speech.ts";
+import { stopList } from "./speech.ts";
 import { startStream } from "./stream.ts";
 import * as chatDB from "./chatDB.ts";
 
@@ -163,7 +163,6 @@ effect(() => {
     const newUrl = `/chat/${suffix}`;
     if (location.pathname !== newUrl) {
       if (suffix === "new") {
-        // Don't update URL here, let startNewChat handle it
         startNewChat();
         return;
       }
@@ -261,7 +260,6 @@ export const startNewChat = () => {
 // If more than one chat exists, delete the current chat and switch to another.
 // Otherwise, clear the current chat.
 export const deleteChat = (suffix: string) => {
-  console.log("Trying to delete", { suffix });
   const currentKey = `bude-chat-${suffix}`;
   const chatKeys = Object.keys(chats.value);
 

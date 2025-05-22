@@ -1,5 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
-import AIFloatingButton from "./AIFloatingButton.tsx";
+import { useState } from "preact/hooks";
 import { apiWarningMessage, settings } from "../components/chat/store.ts";
 import { Button } from "../components/Button.tsx";
 
@@ -172,148 +171,146 @@ export default function PresentationGeneratorIsland() {
   const apiWarning = apiWarningMessage.value;
 
   return (
-    <div class="flex h-full gap-4 p-4">
-      <div class="flex-1 bg-white rounded-lg shadow-lg p-6 !pt-0">
-        <div class="h-full flex flex-col">
-          <h2 class="text-2xl font-bold mb-4">
-            PowerPoint Presentation Generator
-          </h2>
+    <div class="flex-1 bg-white rounded-lg shadow-lg p-6 !pt-0">
+      <div class="h-full flex flex-col">
+        <h2 class="text-2xl font-bold mb-4">
+          PowerPoint Presentation Generator
+        </h2>
 
-          {!isApiConfigured && (
-            <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p class="text-yellow-800">
-                API configuration is missing. Please configure your API settings
-                in the chat settings.
-              </p>
-            </div>
-          )}
+        {!isApiConfigured && (
+          <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-yellow-800">
+              API configuration is missing. Please configure your API settings
+              in the chat settings.
+            </p>
+          </div>
+        )}
 
-          {apiWarning && (
-            <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p class="text-yellow-800">{apiWarning}</p>
-            </div>
-          )}
+        {apiWarning && (
+          <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-yellow-800">{apiWarning}</p>
+          </div>
+        )}
 
-          <div class="mb-4">
-            <label
-              for="topic"
-              class="block text-sm font-medium text-gray-700 mb-1"
+        <div class="mb-4">
+          <label
+            for="topic"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Presentation Topic
+          </label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="topic"
+              value={topic}
+              onInput={(e) => setTopic((e.target as HTMLInputElement).value)}
+              placeholder="Enter a topic for your presentation"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+              disabled={isLoading || !isApiConfigured}
+            />
+            <Button
+              onClick={generatePresentation}
+              disabled={isLoading || !isApiConfigured}
+              variant="primary"
+              size="md"
+              class={`${
+                isLoading || !isApiConfigured
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : ""
+              }`}
             >
-              Presentation Topic
-            </label>
-            <div class="flex gap-2">
-              <input
-                type="text"
-                id="topic"
-                value={topic}
-                onInput={(e) => setTopic((e.target as HTMLInputElement).value)}
-                placeholder="Enter a topic for your presentation"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                disabled={isLoading || !isApiConfigured}
-              />
-              <Button
-                onClick={generatePresentation}
-                disabled={isLoading || !isApiConfigured}
-                variant="primary"
-                size="md"
-                class={`${
-                  isLoading || !isApiConfigured
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : ""
-                }`}
-              >
-                {isLoading ? "Generating..." : "Generate Presentation"}
-              </Button>
-            </div>
-            {error && <p class="mt-2 text-sm text-red-600">{error}</p>}
-            {success && <p class="mt-2 text-sm text-green-600">{success}</p>}
+              {isLoading ? "Generating..." : "Generate Presentation"}
+            </Button>
           </div>
+          {error && <p class="mt-2 text-sm text-red-600">{error}</p>}
+          {success && <p class="mt-2 text-sm text-green-600">{success}</p>}
+        </div>
 
-          <div class="flex-1 overflow-hidden">
-            {generatedId
-              ? (
-                <div class="h-full flex flex-col items-center justify-center">
-                  <div class="text-center max-w-md">
-                    <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-100">
-                      <p class="text-green-800">
-                        Your presentation has been generated successfully!
-                      </p>
-                    </div>
-
-                    <a
-                      href={`/presentations/preview?id=${generatedId}`}
-                      class="inline-block px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
-                    >
-                      View Presentation
-                    </a>
-
-                    <p class="mt-4 text-gray-600">
-                      You can generate another presentation by entering a new
-                      topic above.
+        <div class="flex-1 overflow-hidden">
+          {generatedId
+            ? (
+              <div class="h-full flex flex-col items-center justify-center">
+                <div class="text-center max-w-md">
+                  <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-100">
+                    <p class="text-green-800">
+                      Your presentation has been generated successfully!
                     </p>
                   </div>
+
+                  <a
+                    href={`/presentations/preview?id=${generatedId}`}
+                    class="inline-block px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                  >
+                    View Presentation
+                  </a>
+
+                  <p class="mt-4 text-gray-600">
+                    You can generate another presentation by entering a new
+                    topic above.
+                  </p>
                 </div>
-              )
-              : isLoading
-              ? (
-                <div class="flex-1 flex flex-col items-center justify-center">
-                  <div class="text-center max-w-md">
-                    <div class="mb-6 bg-primary-50 p-4 rounded-lg border border-primary-100">
-                      <p class="text-primary-800 font-medium mb-2">
-                        Generating your presentation...
+              </div>
+            )
+            : isLoading
+            ? (
+              <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="text-center max-w-md">
+                  <div class="mb-6 bg-primary-50 p-4 rounded-lg border border-primary-100">
+                    <p class="text-primary-800 font-medium mb-2">
+                      Generating your presentation...
+                    </p>
+
+                    {generationProgress?.title && (
+                      <p class="text-primary-700 mb-2">
+                        Title: {generationProgress.title}
                       </p>
+                    )}
 
-                      {generationProgress?.title && (
-                        <p class="text-primary-700 mb-2">
-                          Title: {generationProgress.title}
-                        </p>
-                      )}
-
-                      {currentSlide > 0 && (
-                        <div class="mt-3">
-                          <div class="flex justify-between text-sm text-primary-700 mb-1">
-                            <span>Creating slides</span>
-                            <span>
-                              {currentSlide}{" "}
-                              {totalSlides > 0 ? `/ ${totalSlides}` : ""}
-                            </span>
-                          </div>
-                          <div class="w-full bg-primary-200 rounded-full h-2.5">
-                            <div
-                              class="bg-primary-600 h-2.5 rounded-full transition-all duration-300"
-                              style={`width: ${
-                                totalSlides > 0
-                                  ? (currentSlide / totalSlides) * 100
-                                  : currentSlide * 10
-                              }%`}
-                            />
-                          </div>
+                    {currentSlide > 0 && (
+                      <div class="mt-3">
+                        <div class="flex justify-between text-sm text-primary-700 mb-1">
+                          <span>Creating slides</span>
+                          <span>
+                            {currentSlide}{" "}
+                            {totalSlides > 0 ? `/ ${totalSlides}` : ""}
+                          </span>
                         </div>
-                      )}
-                    </div>
+                        <div class="w-full bg-primary-200 rounded-full h-2.5">
+                          <div
+                            class="bg-primary-600 h-2.5 rounded-full transition-all duration-300"
+                            style={`width: ${
+                              totalSlides > 0
+                                ? (currentSlide / totalSlides) * 100
+                                : currentSlide * 10
+                            }%`}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-                    <p class="text-gray-600">
-                      This may take a minute or two depending on the complexity
-                      of the topic.
-                    </p>
-                  </div>
+                  <p class="text-gray-600">
+                    This may take a minute or two depending on the complexity of
+                    the topic.
+                  </p>
                 </div>
-              )
-              : (
-                <div class="flex-1 flex items-center justify-center text-gray-500">
-                  <div class="text-center max-w-md">
-                    <p class="mb-4">
-                      Enter a topic above and click "Generate Presentation" to
-                      create a PowerPoint presentation.
-                    </p>
-                    <p class="text-sm text-gray-400">
-                      The AI will create a well-structured presentation with
-                      multiple slides and bullet points.
-                    </p>
-                  </div>
+              </div>
+            )
+            : (
+              <div class="flex-1 flex items-center justify-center text-gray-500">
+                <div class="text-center max-w-md">
+                  <p class="mb-4">
+                    Enter a topic above and click "Generate Presentation" to
+                    create a PowerPoint presentation.
+                  </p>
+                  <p class="text-sm text-gray-400">
+                    The AI will create a well-structured presentation with
+                    multiple slides and bullet points.
+                  </p>
                 </div>
-              )}
-          </div>
+              </div>
+            )}
         </div>
       </div>
     </div>

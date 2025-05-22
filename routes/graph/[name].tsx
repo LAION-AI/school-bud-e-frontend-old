@@ -1,10 +1,10 @@
-import type { PageProps } from "fresh";
+import { page, type PageProps } from "fresh";
 import LearningPathsGraph from "../../islands/LearningPathsGraph.tsx";
 import { Handlers } from "fresh/compat";
 
 export const handler: Handlers = {
-  GET(ctx) {
-    return ctx.render(null);
+  GET() {
+    return page(null);
   },
 };
 

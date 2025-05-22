@@ -32,7 +32,7 @@ export default function UserProfileSection({
   };
 
   return (
-    <div class="border-t pt-2 flex items-center gap-2">
+    <div class="border-t border-gray-200 pt-2 flex items-center gap-2">
       <a
         href="/settings"
         class="p-2 rounded hover:bg-primary-100 transition-colors flex items-center gap-2"

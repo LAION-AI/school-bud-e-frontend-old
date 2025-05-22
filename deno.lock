@@ -28,6 +28,7 @@
     "npm:@opentelemetry/api@^1.9.0": "1.9.0",
     "npm:@preact/signals@^2.0.4": "2.0.4_preact@10.26.6",
     "npm:@tabler/icons-preact@^3.30.0": "3.33.0_preact@10.26.6",
+    "npm:@tailwindcss/cli@*": "4.1.7",
     "npm:@tailwindcss/cli@^4.1.7": "4.1.7",
     "npm:@tailwindcss/postcss@^4.1.7": "4.1.7",
     "npm:autoprefixer@10.4.17": "10.4.17_postcss@8.4.35",

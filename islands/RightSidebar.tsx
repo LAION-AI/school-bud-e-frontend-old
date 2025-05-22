@@ -232,7 +232,7 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     <>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        class="absolute right-4 top-16 z-10 p-2 rounded-full transition-colors"
+        class={"absolute right-4 top-3 z-10 p-2 rounded-full transition-colors bg-white border-gray-200 " + (isCollapsed ? "border" : "")}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <svg
@@ -251,11 +251,11 @@ export default function RightSidebar({ data }: RightSidebarProps) {
         </svg>
       </button>
       <div
-        class={`bg-surface border-l h-full flex flex-col  transition-all ${
+        class={`bg-surface border-l border-gray-200 h-full flex flex-col  transition-all ${
           isCollapsed ? "w-0 overflow-hidden" : "w-[40vw]"
         }`}
       >
-        <h3 class="p-4 font-semibold border-b">Ergebnisse</h3>
+        <h3 class="p-4 font-semibold border-b border-gray-200">Ergebnisse</h3>
         {/* Display all data elements */}
         {data?.map((item, dataIndex) => {
           // Skip rendering if the item has no results/items
@@ -332,49 +332,49 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                     onNodeSelect={setSelectedNodeId}
                     isRoot={!!currentDrilldown}
                   />
-                  <div class="p-2 border-t flex justify-between items-center">
-                    {/* Show Back button if there is drilldown history */}
-                    {graphStack.length > 0 && (
+                  {graphStack.length > 0 && (
+                    <div class="p-2 border-t flex justify-between items-center">
+                      {/* Show Back button if there is drilldown history */}
                       <button
                         onClick={goBack}
                         class="bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded"
                       >
                         Back
                       </button>
-                    )}
-                    {/* If a node is selected (but not drilled down yet), show option buttons */}
-                    {selectedNodeId && (
-                      <div class="space-x-2">
-                        <button
-                          onClick={openDetailed}
-                          class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
-                        >
-                          Open Detailed
-                        </button>
-                        <button
-                          onClick={askQuestion}
-                          class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
-                        >
-                          Ask Question
-                        </button>
-                        <button
-                          onClick={showTasks}
-                          class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
-                        >
-                          Explore Quests
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            saveGraph(mostSignificantNode, lastGraph.items);
-                          }}
-                          class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
-                        >
-                          Save Graph
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                      {/* If a node is selected (but not drilled down yet), show option buttons */}
+                      {selectedNodeId && (
+                        <div class="space-x-2">
+                          <button
+                            onClick={openDetailed}
+                            class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+                          >
+                            Open Detailed
+                          </button>
+                          <button
+                            onClick={askQuestion}
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
+                          >
+                            Ask Question
+                          </button>
+                          <button
+                            onClick={showTasks}
+                            class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
+                          >
+                            Explore Quests
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              saveGraph(mostSignificantNode, lastGraph.items);
+                            }}
+                            class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
+                          >
+                            Save Graph
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

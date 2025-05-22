@@ -1,4 +1,4 @@
-const SHOP_API_URL = Deno.env.get("SHOP_API_URL") || "http://localhost:3000";
+const SHOP_API_URL = Deno.env.get("SHOP_API_URL") || "http://server.budecredits.de";
 
 let tiktoken: any;
 

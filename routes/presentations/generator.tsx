@@ -1,7 +1,5 @@
 // @ts-ignore: Preact JSX
-import type { PageProps } from "fresh";
 import PresentationGeneratorIsland from "../../islands/PresentationGeneratorIsland.tsx";
-import { Handlers } from "fresh/compat";
 
 export default function PresentationGeneratorPage() {
   return (
@@ -16,11 +14,7 @@ export default function PresentationGeneratorPage() {
 
       <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div class="px-4 py-6 sm:px-0">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-              <PresentationGeneratorIsland />
-            </div>
-          </div>
+          <PresentationGeneratorIsland />
         </main>
       </div>
     </>

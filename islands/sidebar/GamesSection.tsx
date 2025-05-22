@@ -42,7 +42,6 @@ export default function GamesSection({
       onToggle={() => setExpanded(!expanded)}
       routePattern={/^\/games(\/.*)?$/}
       onRouteMatch={(match) => setCurrentPath(match?.[0] || "")}
-      variant="purple"
     >
       <div class="space-y-2">
         <a

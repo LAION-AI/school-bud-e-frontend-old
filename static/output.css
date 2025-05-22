@@ -295,9 +295,6 @@
   .visible {
     visibility: visible;
   }
-  .visible\! {
-    visibility: visible !important;
-  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -333,8 +330,8 @@
   .top-1\/2 {
     top: calc(1/2 * 100%);
   }
-  .top-16 {
-    top: calc(var(--spacing) * 16);
+  .top-3 {
+    top: calc(var(--spacing) * 3);
   }
   .top-full {
     top: 100%;
@@ -437,6 +434,9 @@
   }
   .mx-auto {
     margin-inline: auto;
+  }
+  .my-3 {
+    margin-block: calc(var(--spacing) * 3);
   }
   .-mt-1 {
     margin-top: calc(var(--spacing) * -1);
@@ -1194,9 +1194,9 @@
     border-top-style: var(--tw-border-style);
     border-top-width: 2px;
   }
-  .border-r-2 {
+  .border-r {
     border-right-style: var(--tw-border-style);
-    border-right-width: 2px;
+    border-right-width: 1px;
   }
   .border-b {
     border-bottom-style: var(--tw-border-style);
@@ -2296,6 +2296,22 @@
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         opacity: 100%;
+      }
+    }
+  }
+  .group-hover\:shadow-md {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+        box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+      }
+    }
+  }
+  .group-hover\:shadow-sm {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+        box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
       }
     }
   }
@@ -3703,6 +3719,21 @@
 .fresh-gradient {
   background-color: rgb(134, 239, 172);
   background-image: linear-gradient( to right bottom, rgb(219, 234, 254), rgb(187, 247, 208), rgb(254, 249, 195) );
+}
+.message {
+  & ol {
+    list-style-type: decimal;
+    display: flex;
+    flex-flow: column;
+  }
+  & ul {
+    list-style-type: disc;
+    display: flex;
+    flex-flow: column;
+  }
+  & li {
+    margin-left: 1.5rem;
+  }
 }
 @property --tw-translate-x {
   syntax: "*";

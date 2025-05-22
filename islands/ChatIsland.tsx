@@ -5,8 +5,7 @@ import ChatWarning from "../components/Warning.tsx";
 // Necessary for streaming service
 import { useEffect, useRef, useState } from "preact/hooks";
 
-// // Import necessary types from Preact
-import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
+import { readAlways, stopList } from "../components/chat/speech.ts";
 import {
   chats,
   chatSuffix,
@@ -15,7 +14,6 @@ import {
   messages,
 } from "../components/chat/store.ts";
 import { initTourGuide } from "../utils/tourGuide.ts";
-import { Partial } from "fresh/runtime";
 
 // Define the AudioItem interface if not already defined
 interface AudioItem {
