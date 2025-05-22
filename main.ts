@@ -26,5 +26,5 @@ await fsRoutes(app, {
 });
 
 if (import.meta.main) {
-  await app.listen();
+  await app.listen({ port: 8000, hostname: "localhost" });
 }

@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { chatIslandContent } from "../../internalization/content.ts";
-import { stopList, stopAndResetAudio } from "./speech.ts";
+import { stopAndResetAudio, stopList } from "./speech.ts";
 import { startStream } from "./stream.ts";
 import * as chatDB from "./chatDB.ts";
 

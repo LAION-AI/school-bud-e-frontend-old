@@ -6,11 +6,11 @@
     "tailwindcss": "npm:tailwindcss@^4.1.7",
     "tiktoken": "npm:tiktoken@^1.0.20",
     "shepherd.js": "npm:shepherd.js@14.5.0",
-    "cytoscape": "npm:cytoscape@3.28.1",
+    "cytoscape": "npm:cytoscape@3.32.0",
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
     "fresh": "jsr:@fresh/core@^2.0.0-alpha.34",
     "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
-    "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss",
+    "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
     "preact": "npm:preact@^10.26.6",
     "@preact/signals": "npm:@preact/signals@^2.0.4"
   },
