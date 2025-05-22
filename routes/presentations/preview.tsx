@@ -1,14 +1,14 @@
 // @ts-ignore: Preact JSX
-import type { PageProps } from "fresh";
+import { page, PageProps } from "fresh";
 import PresentationPreviewIsland from "../../islands/PresentationPreviewIsland.tsx";
-import { Handlers } from "fresh/compat";
+import { define } from "../../utils.ts";
 
-interface PreviewData {
+interface Data {
   id: string;
 }
 
-export const handler: Handlers<PreviewData> = {
-  async GET(ctx) {
+export const handler = define.handlers<Data>({
+  GET(ctx) {
     const req = ctx.req;
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -17,50 +17,48 @@ export const handler: Handlers<PreviewData> = {
       return new Response("Presentation ID is required", { status: 400 });
     }
 
-    // In a real implementation, we would fetch the presentation data from a database
-    // For now, we'll just pass the ID to the component, which will load from localStorage
-    return ctx.render({ id });
+    return page({ id });
   },
-};
+});
 
-export default function PresentationPreview({ data }: PageProps<PreviewData>) {
+export default function PresentationPreviewPage({ data }: PageProps<Data>) {
   const { id } = data;
 
   return (
-    <>
-      <head>
-        <title>Presentation Preview | School Bud-E</title>
-        <meta
-          name="description"
-          content="Preview your AI-generated presentation"
-        />
-      </head>
+      <>
+        <head>
+          <title>Presentation Preview | School Bud-E</title>
+          <meta
+            name="description"
+            content="Preview your AI-generated presentation"
+          />
+        </head>
 
-      <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
-        <header class="bg-white shadow">
-          <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-              <h1 class="text-3xl font-bold text-gray-900">
-                Presentation Preview
-              </h1>
-              <a
-                href="/presentations"
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Back to Generator
-              </a>
+        <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
+          <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+              <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-900">
+                  Presentation Preview
+                </h1>
+                <a
+                  href="/presentations"
+                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Back to Generator
+                </a>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div class="px-4 py-6 sm:px-0">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-              <PresentationPreviewIsland id={id} />
+          <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+              <div class="bg-white rounded-lg shadow-lg p-6">
+                <PresentationPreviewIsland id={id} />
+              </div>
             </div>
-          </div>
-        </main>
-      </div>
+          </main>
+        </div>
     </>
   );
 }

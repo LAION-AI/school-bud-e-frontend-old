@@ -1,6 +1,7 @@
 import { Signal } from "@preact/signals";
 import { IconEye, IconEyeCancel } from "@tabler/icons-preact";
 import { useRef } from "preact/hooks";
+import Input from "../../components/core/Input.tsx";
 
 interface KeyInputProps {
   universalKey: Signal<string>;
@@ -38,12 +39,11 @@ export function KeyInput(
 
   return (
     <div class="relative">
-      <input
-        type={showPassword.value ? "text" : "password"}
+      <Input
+        type={showPassword.value ? "text": "password"}
         value={universalKey.value}
         onInput={handleInput}
         onPaste={handlePaste}
-        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary-500"
         placeholder={lang === "de" ? "API-Schlüssel eingeben" : "Enter API Key"}
         ref={inputRef}
       />

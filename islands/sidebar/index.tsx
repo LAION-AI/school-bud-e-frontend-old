@@ -91,7 +91,6 @@ export default function Sidebar({
 
       <div
         class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300"
-        onClick={() => alert("test")}
       >
         <nav
           class="p-3 space-y-3"

@@ -10,9 +10,6 @@ interface VideoNovelIslandProps {
   lang: string;
 }
 
-const VIDEO_SERVICE_URL = Deno.env.get("VIDEO_SERVICE_URL") ||
-  "http://localhost:8083";
-
 export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
   // State for modal visibility and form data
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,7 +147,7 @@ export default function VideoNovelIsland({ lang }: VideoNovelIslandProps) {
         `Sending request with prompt: ${formData.prompt?.substring(0, 30)}...`,
       );
       const response = await fetch(
-        `${formData.apiUrl || VIDEO_SERVICE_URL}/api/generate/video`,
+        `http://localhost:8083/api/generate/video`,
         {
           method: "POST",
           headers: {

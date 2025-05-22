@@ -585,7 +585,7 @@ export default function TestsListIsland() {
   };
 
   return (
-    <div class="container mx-auto px-6 py-10">
+    <div class="container mx-auto px-6 py-10 h-screen overflow-auto">
       <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Tests</h1>
