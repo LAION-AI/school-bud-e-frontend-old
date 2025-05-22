@@ -7,13 +7,15 @@ interface ChatActionsProps {
   onShare: () => void;
 }
 
-export default function ChatActions({ onExport, onClear, onShare }: ChatActionsProps): JSX.Element {
+export default function ChatActions(
+  { onExport, onClear, onShare }: ChatActionsProps,
+): JSX.Element {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-  
+
   return (
     <div class="relative">
       <button
@@ -37,7 +39,7 @@ export default function ChatActions({ onExport, onClear, onShare }: ChatActionsP
           />
         </svg>
       </button>
-      
+
       {isDropdownOpen && (
         <div
           class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
@@ -80,4 +82,4 @@ export default function ChatActions({ onExport, onClear, onShare }: ChatActionsP
       )}
     </div>
   );
-} 
+}

@@ -1,5 +1,5 @@
 import { useSignal } from "@preact/signals";
-import { asset } from "$fresh/runtime.ts";
+import { asset } from "fresh/runtime";
 import UserTypeSelector from "./UserTypeSelector.tsx";
 import ApiKeySetup from "./ApiKeySetup.tsx";
 import { settings } from "../../components/chat/store.ts";
@@ -21,10 +21,11 @@ export default function SignInFlow({ lang }: SignInFlowProps) {
     // Save settings and redirect to home
     settings.value = {
       ...settings.value,
-      universalApiKey: (document.querySelector('input[type="password"]') as HTMLInputElement).value,
+      universalApiKey:
+        (document.querySelector('input[type="password"]') as HTMLInputElement)
+          .value,
     };
     window.location.href = "/chat/new";
-    
   };
 
   const handleApiKeyBack = () => {
@@ -44,7 +45,9 @@ export default function SignInFlow({ lang }: SignInFlowProps) {
               class="h-16 mx-auto mb-4"
             />
             <h1 class="text-3xl font-extrabold text-gray-900">
-              {lang === "de" ? "Willkommen bei School Bud-E" : "Welcome to School Bud-E"}
+              {lang === "de"
+                ? "Willkommen bei School Bud-E"
+                : "Welcome to School Bud-E"}
             </h1>
             <p class="mt-2 text-sm text-gray-600">
               {lang === "de"
@@ -54,16 +57,16 @@ export default function SignInFlow({ lang }: SignInFlowProps) {
           </div>
 
           <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            {step.value === "type" ? (
-              <UserTypeSelector onSelect={handleUserTypeSelect} lang={lang} />
-            ) : userType.value && (
-              <ApiKeySetup
-                userType={userType.value}
-                onComplete={handleApiKeyComplete}
-                onBack={handleApiKeyBack}
-                lang={lang}
-              />
-            )}
+            {step.value === "type"
+              ? <UserTypeSelector onSelect={handleUserTypeSelect} lang={lang} />
+              : userType.value && (
+                <ApiKeySetup
+                  userType={userType.value}
+                  onComplete={handleApiKeyComplete}
+                  onBack={handleApiKeyBack}
+                  lang={lang}
+                />
+              )}
           </div>
         </div>
       </div>
@@ -80,10 +83,12 @@ export default function SignInFlow({ lang }: SignInFlowProps) {
           </div>
           <h2 class="text-4xl font-bold text-white mt-8">bud-e</h2>
           <p class="text-xl text-white mt-4">
-            {lang === "de" ? "Lerne was immer du willst." : "Learn whatever you want."}
+            {lang === "de"
+              ? "Lerne was immer du willst."
+              : "Learn whatever you want."}
           </p>
         </div>
       </div>
     </div>
   );
-} 
+}

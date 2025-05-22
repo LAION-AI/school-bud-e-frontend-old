@@ -1,12 +1,13 @@
 import Settings from "../islands/settings/Settings.tsx";
+import { FreshContext } from "fresh";
 
-export default function SettingsPage(req: Request) {
+export default function SettingsPage(ctx: FreshContext) {
+  const req = ctx.req;
   const url = new URL(req.url);
-  let lang =
-    (url.searchParams.get("lang") as string) !== undefined &&
-    url.searchParams.get("lang") !== null
-      ? url.searchParams.get("lang")
-      : "de";
+  let lang = (url.searchParams.get("lang") as string) !== undefined &&
+      url.searchParams.get("lang") !== null
+    ? url.searchParams.get("lang")
+    : "de";
 
   if (lang === null) {
     lang = "de";

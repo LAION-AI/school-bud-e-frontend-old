@@ -47,11 +47,9 @@ export default function GraphsSection({
         >
           <IconList
             size={16}
-            class={
-              currentPath === "/graph/list"
-                ? `text-primary-800`
-                : "text-gray-600"
-            }
+            class={currentPath === "/graph/list"
+              ? `text-primary-800`
+              : "text-gray-600"}
           />
           <span>All Graphs</span>
         </a>
@@ -73,7 +71,8 @@ export default function GraphsSection({
                   </SidebarLink>
                   <button
                     type="button"
-                    onClick={() => deleteGraph(graphId)}
+                    onClick={() =>
+                      deleteGraph(graphId)}
                     class="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-600 transition-all duration-200 outline-none rounded focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:opacity-100"
                     aria-label={`Delete graph ${
                       graphs.value.get(graphId)?.name || graphId

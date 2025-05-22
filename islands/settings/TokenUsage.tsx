@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 
 interface TokenUsageStats {
   totalInput: number;
@@ -25,28 +25,59 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
     const loadData = async () => {
       try {
         isLoading.value = true;
-        
+
         // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // Dummy data with unique IDs
         const dummyData: TokenUsageStats = {
           totalInput: 12458,
           totalOutput: 35672,
           history: [
-            { id: "1", date: "2023-06-01", model: "gemini-2.5-flash-online", input: 1245, output: 3567 },
-            { id: "2", date: "2023-06-02", model: "gemini-2.5-flash-online", input: 2356, output: 4789 },
-            { id: "3", date: "2023-06-03", model: "gemini-1.5-pro", input: 3467, output: 8765 },
-            { id: "4", date: "2023-06-04", model: "llama-3.3-70b", input: 2341, output: 7896 },
-            { id: "5", date: "2023-06-05", model: "llama-3.3-70b", input: 3049, output: 10655 },
-          ]
+            {
+              id: "1",
+              date: "2023-06-01",
+              model: "gemini-2.5-flash-online",
+              input: 1245,
+              output: 3567,
+            },
+            {
+              id: "2",
+              date: "2023-06-02",
+              model: "gemini-2.5-flash-online",
+              input: 2356,
+              output: 4789,
+            },
+            {
+              id: "3",
+              date: "2023-06-03",
+              model: "gemini-1.5-pro",
+              input: 3467,
+              output: 8765,
+            },
+            {
+              id: "4",
+              date: "2023-06-04",
+              model: "llama-3.3-70b",
+              input: 2341,
+              output: 7896,
+            },
+            {
+              id: "5",
+              date: "2023-06-05",
+              model: "llama-3.3-70b",
+              input: 3049,
+              output: 10655,
+            },
+          ],
         };
-        
+
         tokenUsage.value = dummyData;
         isLoading.value = false;
       } catch (err) {
         console.error("Failed to fetch token usage data:", err);
-        error.value = "Failed to load token usage data. Please try again later.";
+        error.value =
+          "Failed to load token usage data. Please try again later.";
         isLoading.value = false;
       }
     };
@@ -77,7 +108,7 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
       <h3 class="text-lg font-medium text-gray-900">
         {lang === "de" ? "Token-Nutzung" : "Token Usage"}
       </h3>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
@@ -89,7 +120,7 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
             </dd>
           </div>
         </div>
-        
+
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <dt class="text-sm font-medium text-gray-500 truncate">
@@ -101,7 +132,7 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
           <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -112,16 +143,28 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   {lang === "de" ? "Datum" : "Date"}
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   {lang === "de" ? "Modell" : "Model"}
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   {lang === "de" ? "Eingabe" : "Input"}
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   {lang === "de" ? "Ausgabe" : "Output"}
                 </th>
               </tr>
@@ -147,12 +190,12 @@ export default function TokenUsage({ lang = "en" }: { lang?: string }) {
           </table>
         </div>
       </div>
-      
+
       <div class="text-sm text-gray-500 italic">
-        {lang === "de" 
-          ? "Hinweis: Dies sind Beispieldaten zu Demonstrationszwecken." 
+        {lang === "de"
+          ? "Hinweis: Dies sind Beispieldaten zu Demonstrationszwecken."
           : "Note: This is sample data for demonstration purposes."}
       </div>
     </div>
   );
-} 
+}

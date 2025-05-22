@@ -1,11 +1,13 @@
-import { asset } from "$fresh/runtime.ts";
+import { asset } from "fresh/runtime";
 import { Button } from "../components/Button.tsx";
 import Footer from "../components/Footer.tsx";
+import { FreshContext } from "fresh";
 
-export default function Press(req: Request) {
+export default function Press(ctx: FreshContext) {
+  const req = ctx.req;
   const url = new URL(req.url);
   const lang = url.searchParams.get("lang") as string !== undefined &&
-    url.searchParams.get("lang") !== null
+      url.searchParams.get("lang") !== null
     ? url.searchParams.get("lang")
     : "de";
 
@@ -19,7 +21,7 @@ export default function Press(req: Request) {
               {lang === "de" ? "Presse & Medien" : "Press & Media"}
             </h1>
             <p class="mt-6 max-w-3xl mx-auto text-xl text-primary-200">
-              {lang === "de" 
+              {lang === "de"
                 ? "Ressourcen und Informationen für Medienvertreter und Partner"
                 : "Resources and information for media representatives and partners"}
             </p>
@@ -36,7 +38,7 @@ export default function Press(req: Request) {
                 {lang === "de" ? "Über LAION" : "About LAION"}
               </h2>
               <p class="mt-3 max-w-3xl text-lg text-gray-500">
-                {lang === "de" 
+                {lang === "de"
                   ? "LAION (Large-scale Artificial Intelligence Open Network) ist eine gemeinnützige Organisation mit Mitgliedern aus der ganzen Welt."
                   : "LAION (Large-scale Artificial Intelligence Open Network) is a non-profit organization with members from all over the world."}
               </p>
@@ -44,8 +46,20 @@ export default function Press(req: Request) {
                 <div class="flex">
                   <div class="flex-shrink-0">
                     <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
-                      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" title="Mission">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        title="Mission"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -54,7 +68,7 @@ export default function Press(req: Request) {
                       {lang === "de" ? "Unsere Mission" : "Our Mission"}
                     </h3>
                     <p class="mt-2 text-base text-gray-500">
-                      {lang === "de" 
+                      {lang === "de"
                         ? "Wir stellen Datensätze, Tools und Modelle zur Verfügung, um die Forschung im Bereich des maschinellen Lernens zu demokratisieren."
                         : "We provide datasets, tools and models to liberate machine learning research."}
                     </p>
@@ -63,8 +77,20 @@ export default function Press(req: Request) {
                 <div class="flex">
                   <div class="flex-shrink-0">
                     <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
-                      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" title="Values">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        title="Values"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -73,7 +99,7 @@ export default function Press(req: Request) {
                       {lang === "de" ? "Unsere Werte" : "Our Values"}
                     </h3>
                     <p class="mt-2 text-base text-gray-500">
-                      {lang === "de" 
+                      {lang === "de"
                         ? "100% gemeinnützig. 100% offen. Wir fördern öffentliche Bildung und einen umweltfreundlicheren Umgang mit Ressourcen."
                         : "100% non-profit. 100% open. We encourage open public education and a more environment-friendly use of resources."}
                     </p>
@@ -102,7 +128,7 @@ export default function Press(req: Request) {
               {lang === "de" ? "Kontaktinformationen" : "Contact Information"}
             </h2>
             <p class="mt-4 text-lg text-gray-500">
-              {lang === "de" 
+              {lang === "de"
                 ? "Für Presseanfragen und weitere Informationen stehen wir Ihnen gerne zur Verfügung."
                 : "For press inquiries and more information, we're here to help."}
             </p>
@@ -112,12 +138,17 @@ export default function Press(req: Request) {
               <div class="p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500">
                 <div class="mt-8">
                   <h3 class="text-lg font-medium text-gray-900">
-                    <a href="https://laion.ai/contact" class="focus:outline-none">
-                      {lang === "de" ? "Allgemeine Anfragen" : "General Inquiries"}
+                    <a
+                      href="https://laion.ai/contact"
+                      class="focus:outline-none"
+                    >
+                      {lang === "de"
+                        ? "Allgemeine Anfragen"
+                        : "General Inquiries"}
                     </a>
                   </h3>
                   <p class="mt-2 text-sm text-gray-500">
-                    {lang === "de" 
+                    {lang === "de"
                       ? "Für allgemeine Fragen und Informationen besuchen Sie bitte unsere Website."
                       : "For general questions and information, please visit our website."}
                   </p>
@@ -136,12 +167,16 @@ export default function Press(req: Request) {
                     </a>
                   </h3>
                   <p class="mt-2 text-sm text-gray-500">
-                    {lang === "de" 
+                    {lang === "de"
                       ? "Bleiben Sie auf dem Laufenden mit unseren neuesten Blogbeiträgen und Updates."
                       : "Stay up to date with our latest blog posts and updates."}
                   </p>
                   <div class="mt-6">
-                    <Button variant="primary" size="lg" href="https://laion.ai/blog">
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      href="https://laion.ai/blog"
+                    >
                       {lang === "de" ? "Blog lesen" : "Read Blog"}
                     </Button>
                   </div>
@@ -160,7 +195,7 @@ export default function Press(req: Request) {
               {lang === "de" ? "Medien-Assets" : "Media Assets"}
             </h2>
             <p class="mt-4 text-lg text-gray-500">
-              {lang === "de" 
+              {lang === "de"
                 ? "Laden Sie Logos, Bilder und andere Medien-Assets für Ihre Berichterstattung herunter."
                 : "Download logos, images, and other media assets for your coverage."}
             </p>
@@ -178,10 +213,17 @@ export default function Press(req: Request) {
                 {lang === "de" ? "LAION Logo" : "LAION Logo"}
               </h3>
               <p class="mt-2 text-sm text-gray-500">
-                {lang === "de" ? "Logo in hoher Auflösung" : "Logo in high resolution"}
+                {lang === "de"
+                  ? "Logo in hoher Auflösung"
+                  : "Logo in high resolution"}
               </p>
               <div class="mt-6">
-                <Button variant="primary" size="lg" href={asset("/logo.png")} download>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  href={asset("/logo.png")}
+                  download
+                >
                   {lang === "de" ? "Logo herunterladen" : "Download Logo"}
                 </Button>
               </div>
@@ -198,10 +240,17 @@ export default function Press(req: Request) {
                 {lang === "de" ? "LAION Banner" : "LAION Banner"}
               </h3>
               <p class="mt-2 text-sm text-gray-500">
-                {lang === "de" ? "Banner für Websites und Präsentationen" : "Banner for websites and presentations"}
+                {lang === "de"
+                  ? "Banner für Websites und Präsentationen"
+                  : "Banner for websites and presentations"}
               </p>
               <div class="mt-6">
-                <Button variant="primary" size="lg" href={asset("/banner.png")} download>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  href={asset("/banner.png")}
+                  download
+                >
                   {lang === "de" ? "Banner herunterladen" : "Download Banner"}
                 </Button>
               </div>
@@ -218,11 +267,20 @@ export default function Press(req: Request) {
                 {lang === "de" ? "LAION Hintergrund" : "LAION Background"}
               </h3>
               <p class="mt-2 text-sm text-gray-500">
-                {lang === "de" ? "Hintergrundbild für Präsentationen" : "Background image for presentations"}
+                {lang === "de"
+                  ? "Hintergrundbild für Präsentationen"
+                  : "Background image for presentations"}
               </p>
               <div class="mt-6">
-                <Button variant="primary" size="lg" href={asset("/lines.svg")} download>
-                  {lang === "de" ? "Hintergrund herunterladen" : "Download Background"}
+                <Button
+                  variant="primary"
+                  size="lg"
+                  href={asset("/lines.svg")}
+                  download
+                >
+                  {lang === "de"
+                    ? "Hintergrund herunterladen"
+                    : "Download Background"}
                 </Button>
               </div>
             </div>
@@ -234,4 +292,4 @@ export default function Press(req: Request) {
       <Footer lang={lang} />
     </div>
   );
-} 
+}

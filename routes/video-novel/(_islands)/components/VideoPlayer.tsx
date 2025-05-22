@@ -1,4 +1,3 @@
-
 interface VideoPlayerProps {
   previewImage: string | null;
   videoId: string | null;
@@ -6,7 +5,9 @@ interface VideoPlayerProps {
   isGenerating: boolean;
 }
 
-export default function VideoPlayer({ previewImage, videoId, logs, isGenerating }: VideoPlayerProps) {
+export default function VideoPlayer(
+  { previewImage, videoId, logs, isGenerating }: VideoPlayerProps,
+) {
   return (
     <div className="space-y-6">
       <div
@@ -44,4 +45,4 @@ export default function VideoPlayer({ previewImage, videoId, logs, isGenerating 
       )}
     </div>
   );
-} 
+}

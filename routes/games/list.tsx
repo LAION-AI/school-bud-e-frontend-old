@@ -1,7 +1,8 @@
-import type { PageProps } from "$fresh/server.ts";
+import type { PageProps } from "fresh";
 import GamesList from "../../islands/GamesList.tsx";
 
-export default function GamesListPage(req: Request, _ctx: PageProps) {
+export default function GamesListPage(_ctx: PageProps) {
+  const req = ctx.req;
   const url = new URL(req.url);
   const lang = url.searchParams.get("lang") || "de";
 
@@ -10,4 +11,4 @@ export default function GamesListPage(req: Request, _ctx: PageProps) {
       <GamesList lang={lang} />
     </div>
   );
-} 
+}

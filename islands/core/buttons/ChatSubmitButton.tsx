@@ -1,4 +1,4 @@
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 
 // Define our own button props instead of extending HTML attributes
 export interface ButtonProps {
@@ -70,7 +70,9 @@ export function ChatSubmitButton(props: ButtonProps) {
       {...buttonProps}
       // Spread the rest of the buttonProps here
       disabled={!IS_BROWSER || props.disabled}
-      class={`disabled:opacity-75 disabled:cursor-not-allowed p-2 ${className ?? ""}`}
+      class={`disabled:opacity-75 disabled:cursor-not-allowed p-2 ${
+        className ?? ""
+      }`}
       type="button"
       aria-label="Send message"
     >
@@ -97,4 +99,4 @@ export function ChatSubmitButton(props: ButtonProps) {
   );
 }
 
-export default ChatSubmitButton; 
+export default ChatSubmitButton;

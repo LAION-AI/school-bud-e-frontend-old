@@ -23,7 +23,9 @@ interface MessageProps {
   onEditAction: (groupIndex: number) => void;
   onRefreshAction: (groupIndex: number) => void;
   onSpeakAtGroupIndexAction: (groupIndex: number) => void;
-  onDownloadAudio: (audioDict: Record<string, { audio: HTMLAudioElement }>) => void;
+  onDownloadAudio: (
+    audioDict: Record<string, { audio: HTMLAudioElement }>,
+  ) => void;
 }
 
 export function Message({
@@ -38,10 +40,14 @@ export function Message({
 }: MessageProps): JSX.Element {
   return (
     <div
-      class={`message-group flex flex-col group pb-2 ${item.role === "user" ? "items-end" : "items-start"}`}
+      class={`message-group flex flex-col group pb-2 ${
+        item.role === "user" ? "items-end" : "items-start"
+      }`}
     >
       <span
-        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${item.role === "user" ? "text-primary-600" : "text-gray-600"}`}
+        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${
+          item.role === "user" ? "text-primary-600" : "text-gray-600"
+        }`}
       >
         {groupIndex !== 0 && (
           <button onClick={() => onEditAction(groupIndex)} type="button">
@@ -55,33 +61,35 @@ export function Message({
           </button>
         )}
         {item.role !== "user" && (
-          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button">
+          <button
+            onClick={() => onSpeakAtGroupIndexAction(groupIndex)}
+            type="button"
+          >
             <SpeakIcon
-              isPlaying={
-                audioFileDict[groupIndex] &&
+              isPlaying={audioFileDict[groupIndex] &&
                 Object.values(audioFileDict[groupIndex]).some(
-                  (audioFile) => !audioFile.audio.paused
-                )
-              }
+                  (audioFile) => !audioFile.audio.paused,
+                )}
             />
           </button>
         )}
         {item.role !== "user" &&
           audioFileDict[groupIndex] &&
           Object.keys(audioFileDict[groupIndex]).length > 0 && (
-            <button
-              onClick={() => onDownloadAudio(audioFileDict[groupIndex])}
-              type="button"
-            >
-              <DownloadIcon />
-            </button>
-          )}
+          <button
+            onClick={() => onDownloadAudio(audioFileDict[groupIndex])}
+            type="button"
+          >
+            <DownloadIcon />
+          </button>
+        )}
       </span>
       <div
-        class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${item.role === "user"
-          ? "bg-primary-100 rounded-tr-md ml-auto"
-          : "bg-gray-100"
-          } p-4`}
+        class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${
+          item.role === "user"
+            ? "bg-primary-100 rounded-tr-md ml-auto"
+            : "bg-gray-100"
+        } p-4`}
       >
         <MessageContent content={item.content} />
       </div>

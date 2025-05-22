@@ -1,4 +1,4 @@
-import { useSignalEffect   } from "@preact/signals";
+import { useSignalEffect } from "@preact/signals";
 import { IconBrain, IconPlus, IconTrash } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import Input from "../../components/core/Input.tsx";
@@ -52,7 +52,7 @@ export default function ModelManager({
 
   useSignalEffect(() => {
     if (showNewModelForm.value) {
-      console.log(nameInputRef.current)
+      console.log(nameInputRef.current);
       setTimeout(() => nameInputRef.current?.focus(), 0);
     }
   });
@@ -63,7 +63,9 @@ export default function ModelManager({
     key: "",
     url: "",
     model: "",
-    capabilities: preselectedCapability.value ? [preselectedCapability.value] : [],
+    capabilities: preselectedCapability.value
+      ? [preselectedCapability.value]
+      : [],
   };
 
   const capabilities = [
@@ -170,15 +172,17 @@ export default function ModelManager({
             <div className="mt-3 flex flex-wrap gap-2">
               {model.capabilities.map((capId) => {
                 const cap = capabilities.find((c) => c.id === capId);
-                return cap ? (
-                  <span
-                    key={capId}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
-                  >
-                    <span className="mr-1">{cap.icon}</span>
-                    {cap.label}
-                  </span>
-                ) : null;
+                return cap
+                  ? (
+                    <span
+                      key={capId}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
+                    >
+                      <span className="mr-1">{cap.icon}</span>
+                      {cap.label}
+                    </span>
+                  )
+                  : null;
               })}
             </div>
           </div>
@@ -191,9 +195,7 @@ export default function ModelManager({
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 border-2 border-gray-200 shadow-[0_4px_0_0_#e5e7eb]">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               {editingModel.value
-                ? lang === "de"
-                  ? "Modell bearbeiten"
-                  : "Edit Model"
+                ? lang === "de" ? "Modell bearbeiten" : "Edit Model"
                 : lang === "de"
                 ? "Neues Modell hinzufügen"
                 : "Add New Model"}
@@ -251,15 +253,17 @@ export default function ModelManager({
                 </legend>
                 <div className="space-y-2">
                   {capabilities.map((capability) => {
-                    const isPreselected = preselectedCapability.value === capability.id;
+                    const isPreselected =
+                      preselectedCapability.value === capability.id;
                     return (
                       <label key={capability.id} className="flex items-center">
                         <input
                           type="checkbox"
                           name={`capability-${capability.id}`}
-                          defaultChecked={
-                            isPreselected || editingModel.value?.capabilities.includes(capability.id)
-                          }
+                          defaultChecked={isPreselected ||
+                            editingModel.value?.capabilities.includes(
+                              capability.id,
+                            )}
                           className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                         />
                         <span className="ml-2">
@@ -289,9 +293,7 @@ export default function ModelManager({
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                 >
                   {editingModel.value
-                    ? lang === "de"
-                      ? "Speichern"
-                      : "Save"
+                    ? lang === "de" ? "Speichern" : "Save"
                     : lang === "de"
                     ? "Hinzufügen"
                     : "Add"}

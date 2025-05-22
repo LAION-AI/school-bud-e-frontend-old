@@ -7,7 +7,9 @@ interface BasicSettingsProps {
   lang: string;
 }
 
-export default function BasicSettings({ settings, onUpdateSettings, lang }: BasicSettingsProps) {
+export default function BasicSettings(
+  { settings, onUpdateSettings, lang }: BasicSettingsProps,
+) {
   return (
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-2">

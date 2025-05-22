@@ -12,4 +12,4 @@ export interface FormData {
   apiUrl?: string;
   apiKey?: string;
   apiModel?: string;
-} 
+}

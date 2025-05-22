@@ -9,7 +9,10 @@ interface TeacherContentProps {
   lang?: string;
 }
 
-export function TeacherContent({ selectedOption, universalKey, showPassword, hasValidKey, lang = "en" }: TeacherContentProps) {
+export function TeacherContent(
+  { selectedOption, universalKey, showPassword, hasValidKey, lang = "en" }:
+    TeacherContentProps,
+) {
   const handleStoreSelect = () => {
     selectedOption.value = "store";
   };
@@ -31,7 +34,9 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "1. Aus dem Store von budeai.com kaufen" : "1. Buy from Store of budeai.com"}
+            {lang === "de"
+              ? "1. Aus dem Store von budeai.com kaufen"
+              : "1. Buy from Store of budeai.com"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"
@@ -49,7 +54,9 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "2. Kostenlos (5 Minuten, nicht Datenschutzkonform)" : "2. Free (5 minutes, not GDPR compliant)"}
+            {lang === "de"
+              ? "2. Kostenlos (5 Minuten, nicht Datenschutzkonform)"
+              : "2. Free (5 minutes, not GDPR compliant)"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"
@@ -69,7 +76,12 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
             </p>
           </div>
 
-          <KeyInput universalKey={universalKey} showPassword={showPassword} hasValidKey={hasValidKey} lang={lang} />
+          <KeyInput
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
 
           <div class="text-sm text-gray-600">
             <p class="mb-2">
@@ -83,9 +95,7 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
               rel="noopener noreferrer"
               class="text-primary-600 hover:text-primary-700 underline"
             >
-              {lang === "de"
-                ? "API-Schlüssel erstellen"
-                : "Create API Key"}
+              {lang === "de" ? "API-Schlüssel erstellen" : "Create API Key"}
             </a>
           </div>
         </div>
@@ -101,9 +111,14 @@ export function TeacherContent({ selectedOption, universalKey, showPassword, has
             </p>
           </div>
 
-          <KeyInput universalKey={universalKey} showPassword={showPassword} hasValidKey={hasValidKey} lang={lang} />
+          <KeyInput
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
         </div>
       )}
     </div>
   );
-} 
+}

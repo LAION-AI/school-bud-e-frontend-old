@@ -1,7 +1,6 @@
 {
   "imports": {
     "$std/": "https://deno.land/std@0.216.0/",
-    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
     "@tailwindcss/cli": "npm:@tailwindcss/cli@^4.1.7",
     "tailwindcss": "npm:tailwindcss@^4.1.7",
@@ -9,11 +8,11 @@
     "shepherd.js": "npm:shepherd.js@14.5.0",
     "cytoscape": "npm:cytoscape@3.28.1",
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
-    "fresh": "jsr:@fresh/core@^2.0.0-alpha.29",
+    "fresh": "jsr:@fresh/core@^2.0.0-alpha.34",
     "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss",
-    "preact": "npm:preact@^10.25.4",
-    "@preact/signals": "npm:@preact/signals@^2.0.1"
+    "preact": "npm:preact@^10.26.6",
+    "@preact/signals": "npm:@preact/signals@^2.0.4"
   },
   "tasks": {
     "test": "deno test -A",
@@ -33,7 +32,5 @@
   "lint": { "rules": { "tags": ["fresh", "recommended"] } },
   "exclude": ["**/_fresh/*"],
   "nodeModulesDir": "auto",
-  "fresh": {
-    "watchIgnorePaths": ["node_modules/", "static/"]
-  }
+  "fresh": { "watchIgnorePaths": ["node_modules/", "static/"] }
 }

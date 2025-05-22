@@ -8,7 +8,9 @@ interface CollapsibleProps {
   defaultExpanded?: boolean;
 }
 
-export default function Collapsible({ title, icon, children, defaultExpanded = false }: CollapsibleProps) {
+export default function Collapsible(
+  { title, icon, children, defaultExpanded = false }: CollapsibleProps,
+) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
@@ -24,7 +26,9 @@ export default function Collapsible({ title, icon, children, defaultExpanded = f
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class={`h-5 w-5 transform transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          class={`h-5 w-5 transform transition-transform ${
+            isExpanded ? "rotate-180" : ""
+          }`}
           viewBox="0 0 20 20"
           fill="currentColor"
           aria-label="Expand/collapse icon"

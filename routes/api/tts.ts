@@ -1,6 +1,6 @@
-import { Handlers } from "$fresh/server.ts";
 import { Buffer } from "npm:buffer";
 import { deductInputTokens } from "./chat/(_utils)/shop.ts";
+import { Handlers } from "fresh/compat";
 
 const TTS_KEY = Deno.env.get("TTS_KEY") || "";
 const TTS_URL = Deno.env.get("TTS_URL") || "";
@@ -138,19 +138,19 @@ async function textToSpeech(
     //.replace(/ü/g, "ue")
     //.replace(/ß/g, "ss")
     // Remove code blocks
-    .replace(/```[\s\S]*?```/g, '')
+    .replace(/```[\s\S]*?```/g, "")
     // Remove inline code
-    .replace(/`[^`]*`/g, '')
+    .replace(/`[^`]*`/g, "")
     // Remove URLs
-    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/https?:\/\/[^\s]+/g, "")
     // Remove markdown links
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     // Remove markdown bold/italic
-    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, "$1")
     // Remove special characters but keep basic punctuation
-    .replace(/[\u{1F300}-\u{1F9FF}]/gu, ' ')
+    .replace(/[\u{1F300}-\u{1F9FF}]/gu, " ")
     // Remove extra whitespace
-    .replace(/\s+/g, ' ')
+    .replace(/\s+/g, " ")
     .trim();
 
   const buddyRegex = /bud-e/gi;
@@ -171,7 +171,7 @@ async function textToSpeech(
     const { endpoint, apiKey, model } = await deductInputTokens(
       [{ role: "user", content: text }],
       shopApiKey,
-      "de-de-Chirp3-HD-Leda" //"en-us-Chirp3-HD-Leda"
+      "de-de-Chirp3-HD-Leda", //"en-us-Chirp3-HD-Leda"
     );
     useThisTttsUrl = endpoint;
     useThisTtsKey = apiKey;
@@ -180,7 +180,7 @@ async function textToSpeech(
 
   console.log("useThisTttsUrl", useThisTttsUrl);
   console.log("useThisTtsKey", useThisTtsKey);
-  console.log("useThisTtsModel", useThisTtsModel);  
+  console.log("useThisTtsModel", useThisTtsModel);
 
   //   Deepgram random with 40 chars
   // 9371dfaed6d8b42e9eaf9458ba8604126fb373d0
@@ -377,8 +377,10 @@ async function textToSpeech(
 }
 
 export const handler: Handlers = {
-  async POST(req) {
-    const { text, textPosition, ttsUrl, ttsKey, ttsModel, shopApiKey } = await req.json();
+  async POST(ctx) {
+    const req = ctx.req;
+    const { text, textPosition, ttsUrl, ttsKey, ttsModel, shopApiKey } =
+      await req.json();
     // console.log("Text:", text);
 
     if (!text) {

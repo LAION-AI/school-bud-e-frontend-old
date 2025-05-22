@@ -1,7 +1,9 @@
 import { aboutContent } from "../internalization/content.ts";
 import Header from "../islands/Header.tsx";
+import { FreshContext } from "fresh";
 
-export default function About(req: Request) {
+export default function About(ctx: FreshContext) {
+  const req = ctx.req;
   const url = new URL(req.url);
   const lang = (url.searchParams.get("lang") as string !== undefined &&
       url.searchParams.get("lang") !== null
@@ -10,7 +12,7 @@ export default function About(req: Request) {
 
   return (
     <div>
-      <Header lang={lang}/>
+      <Header lang={lang} />
       <div class="px-4 py-8 mx-auto max-w-4xl">
         <h1 class="text-3xl md:text-4xl font-bold text-center mb-6">
           {aboutContent[lang]["title"]}

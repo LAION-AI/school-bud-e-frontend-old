@@ -3,8 +3,8 @@
 interface AudioButtonConfig {
   id?: string;
   color?: string;
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
-  size?: 'small' | 'medium' | 'large';
+  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+  size?: "small" | "medium" | "large";
   sttUrl?: string;
   sttKey?: string;
   sttModel?: string;
@@ -21,7 +21,7 @@ export class AudioButton extends HTMLElement {
   constructor(config: AudioButtonConfig = {}) {
     super();
     this.config = this.parseConfig(config);
-    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow = this.attachShadow({ mode: "open" });
     this.initialize();
   }
 
@@ -29,13 +29,14 @@ export class AudioButton extends HTMLElement {
     // Parse URL query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const queryConfig: AudioButtonConfig = {
-      id: urlParams.get('id') || undefined,
-      color: urlParams.get('color') || undefined,
-      position: (urlParams.get('position') as AudioButtonConfig['position']) || 'bottom-right',
-      size: (urlParams.get('size') as AudioButtonConfig['size']) || 'medium',
-      sttUrl: urlParams.get('sttUrl') || '',
-      sttKey: urlParams.get('sttKey') || '',
-      sttModel: urlParams.get('sttModel') || ''
+      id: urlParams.get("id") || undefined,
+      color: urlParams.get("color") || undefined,
+      position: (urlParams.get("position") as AudioButtonConfig["position"]) ||
+        "bottom-right",
+      size: (urlParams.get("size") as AudioButtonConfig["size"]) || "medium",
+      sttUrl: urlParams.get("sttUrl") || "",
+      sttKey: urlParams.get("sttKey") || "",
+      sttModel: urlParams.get("sttModel") || "",
     };
 
     // Merge configurations with priority: query params > passed config > defaults
@@ -44,7 +45,7 @@ export class AudioButton extends HTMLElement {
 
   private initialize() {
     // Add styles
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       :host {
         position: fixed;
@@ -56,7 +57,7 @@ export class AudioButton extends HTMLElement {
         border: none;
         border-radius: 50%;
         cursor: pointer;
-        background-color: ${this.config.color || '#4A90E2'};
+        background-color: ${this.config.color || "#4A90E2"};
         padding: ${this.getSizeStyles()};
         display: flex;
         align-items: center;
@@ -136,10 +137,10 @@ export class AudioButton extends HTMLElement {
     `;
 
     // Create button element
-    const button = document.createElement('button');
-    button.className = 'audio-button';
+    const button = document.createElement("button");
+    button.className = "audio-button";
     button.innerHTML = this.getMicrophoneIcon();
-    button.addEventListener('click', () => this.toggleRecording());
+    button.addEventListener("click", () => this.toggleRecording());
 
     // Create modal
     const modal = this.createModal();
@@ -152,32 +153,38 @@ export class AudioButton extends HTMLElement {
 
   private getPositionStyles(): string {
     switch (this.config.position) {
-      case 'bottom-right':
-        return 'bottom: 20px; right: 20px;';
-      case 'bottom-left':
-        return 'bottom: 20px; left: 20px;';
-      case 'top-right':
-        return 'top: 20px; right: 20px;';
-      case 'top-left':
-        return 'top: 20px; left: 20px;';
+      case "bottom-right":
+        return "bottom: 20px; right: 20px;";
+      case "bottom-left":
+        return "bottom: 20px; left: 20px;";
+      case "top-right":
+        return "top: 20px; right: 20px;";
+      case "top-left":
+        return "top: 20px; left: 20px;";
       default:
-        return 'bottom: 20px; right: 20px;';
+        return "bottom: 20px; right: 20px;";
     }
   }
 
   private getSizeStyles(): string {
     switch (this.config.size) {
-      case 'small': return '12px';
-      case 'large': return '20px';
-      default: return '16px';
+      case "small":
+        return "12px";
+      case "large":
+        return "20px";
+      default:
+        return "16px";
     }
   }
 
   private getIconSize(): string {
     switch (this.config.size) {
-      case 'small': return '16px';
-      case 'large': return '32px';
-      default: return '24px';
+      case "small":
+        return "16px";
+      case "large":
+        return "32px";
+      default:
+        return "24px";
     }
   }
 
@@ -191,26 +198,26 @@ export class AudioButton extends HTMLElement {
   }
 
   private createModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
+    const modal = document.createElement("div");
+    modal.className = "modal";
 
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
+    const modalContent = document.createElement("div");
+    modalContent.className = "modal-content";
 
-    const avatar = document.createElement('img');
-    avatar.className = 'avatar';
-    avatar.src = '/logo.png';
-    avatar.alt = 'School Bud-E Avatar';
+    const avatar = document.createElement("img");
+    avatar.className = "avatar";
+    avatar.src = "/logo.png";
+    avatar.alt = "School Bud-E Avatar";
 
-    const recordingAnimation = document.createElement('div');
-    recordingAnimation.className = 'recording-animation';
-    recordingAnimation.style.display = 'none';
+    const recordingAnimation = document.createElement("div");
+    recordingAnimation.className = "recording-animation";
+    recordingAnimation.style.display = "none";
 
     modalContent.appendChild(avatar);
     modalContent.appendChild(recordingAnimation);
     modal.appendChild(modalContent);
 
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener("click", (e) => {
       if (e.target === modal) {
         this.closeModal();
       }
@@ -220,16 +227,16 @@ export class AudioButton extends HTMLElement {
   }
 
   private showModal() {
-    const modal = this.shadow.querySelector('.modal');
+    const modal = this.shadow.querySelector(".modal");
     if (modal) {
-      modal.classList.add('active');
+      modal.classList.add("active");
     }
   }
 
   private closeModal() {
-    const modal = this.shadow.querySelector('.modal');
+    const modal = this.shadow.querySelector(".modal");
     if (modal) {
-      modal.classList.remove('active');
+      modal.classList.remove("active");
       if (this.isRecording) {
         this.stopRecording();
       }
@@ -256,7 +263,7 @@ export class AudioButton extends HTMLElement {
       };
 
       this.mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(this.audioChunks, { type: "audio/wav" });
         await this.sendAudioToServer(audioBlob);
       };
 
@@ -264,12 +271,12 @@ export class AudioButton extends HTMLElement {
       this.isRecording = true;
       this.updateButtonState();
     } catch (error) {
-      console.error('Error starting recording:', error);
+      console.error("Error starting recording:", error);
     }
   }
 
   private stopRecording() {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+    if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
       this.mediaRecorder.stop();
       this.isRecording = false;
       this.updateButtonState();
@@ -278,42 +285,44 @@ export class AudioButton extends HTMLElement {
 
   private async sendAudioToServer(audioBlob: Blob) {
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.wav');
-    formData.append('sttUrl', this.config.sttUrl || '');
-    formData.append('sttKey', this.config.sttKey || '');
-    formData.append('sttModel', this.config.sttModel || '');
+    formData.append("audio", audioBlob, "recording.wav");
+    formData.append("sttUrl", this.config.sttUrl || "");
+    formData.append("sttKey", this.config.sttKey || "");
+    formData.append("sttModel", this.config.sttModel || "");
 
     try {
-      const response = await fetch('/api/stt', {
-        method: 'POST',
+      const response = await fetch("/api/stt", {
+        method: "POST",
         body: formData,
       });
 
       if (response.ok) {
         const text = await response.text();
-        this.dispatchEvent(new CustomEvent('transcription', { detail: text }));
+        this.dispatchEvent(new CustomEvent("transcription", { detail: text }));
       } else {
-        console.error('Failed to upload audio');
+        console.error("Failed to upload audio");
       }
     } catch (error) {
-      console.error('Error uploading audio:', error);
+      console.error("Error uploading audio:", error);
     }
   }
 
   private updateButtonState() {
-    const button = this.shadow.querySelector('.audio-button');
-    const recordingAnimation = this.shadow.querySelector('.recording-animation');
-    
+    const button = this.shadow.querySelector(".audio-button");
+    const recordingAnimation = this.shadow.querySelector(
+      ".recording-animation",
+    );
+
     if (button) {
       if (this.isRecording) {
-        button.classList.add('recording');
+        button.classList.add("recording");
         if (recordingAnimation) {
-          recordingAnimation.style.display = 'block';
+          recordingAnimation.style.display = "block";
         }
       } else {
-        button.classList.remove('recording');
+        button.classList.remove("recording");
         if (recordingAnimation) {
-          recordingAnimation.style.display = 'none';
+          recordingAnimation.style.display = "none";
         }
         this.closeModal();
       }
@@ -322,7 +331,7 @@ export class AudioButton extends HTMLElement {
 }
 
 // Register the custom element
-customElements.define('audio-button', AudioButton);
+customElements.define("audio-button", AudioButton);
 
 // Initialize the button
 const audioButton = new AudioButton();

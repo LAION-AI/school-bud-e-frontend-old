@@ -2,7 +2,9 @@ export default function EditIcon({ isActive = false }: { isActive?: boolean }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      style={`margin-left: 0.5rem; width: 24px; height: 24px; ${isActive ? "fill: red;" : "fill: grey;"}`}
+      style={`margin-left: 0.5rem; width: 24px; height: 24px; ${
+        isActive ? "fill: red;" : "fill: grey;"
+      }`}
       viewBox="0 -960 960 960"
       fill="grey"
     >

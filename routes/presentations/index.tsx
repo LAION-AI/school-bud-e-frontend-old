@@ -1,4 +1,3 @@
-import { Head } from "$fresh/runtime.ts";
 import { Button } from "../../components/Button.tsx";
 // @ts-ignore: Preact JSX
 import PresentationsListIsland from "../../islands/PresentationsListIsland.tsx";
@@ -6,13 +5,13 @@ import PresentationsListIsland from "../../islands/PresentationsListIsland.tsx";
 export default function PresentationsPage() {
   return (
     <>
-      <Head>
+      <head>
         <title>Presentations | School Bud-E</title>
         <meta
           name="description"
           content="Create and manage AI-generated presentations"
         />
-      </Head>
+      </head>
 
       <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

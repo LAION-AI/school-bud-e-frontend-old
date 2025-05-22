@@ -1,8 +1,10 @@
-import { Handlers } from "$fresh/server.ts";
 import { transcribePdf } from "./(_utils)/pdfToMarkdown.ts";
+import { Handlers } from "fresh/compat";
 
 export const handler: Handlers = {
-  async POST(req) {
+  async POST(ctx) {
+    const req = ctx.req;
+
     try {
       const formData = await req.formData();
       const pdfFile = formData.get("file") as File;
@@ -14,43 +16,52 @@ export const handler: Handlers = {
         apiUrl,
         apiKey,
         apiModel,
-        shopApiKey
+        shopApiKey,
       });
 
       if (!pdfFile || !pdfFile.type.includes("pdf")) {
-        return new Response(JSON.stringify({ 
-          error: "Invalid or missing PDF file" 
-        }), { 
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        });
+        return new Response(
+          JSON.stringify({
+            error: "Invalid or missing PDF file",
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
 
-      console.log("[Transcribe] Processing PDF file:", pdfFile.name, "Size:", pdfFile.size);
-      
+      console.log(
+        "[Transcribe] Processing PDF file:",
+        pdfFile.name,
+        "Size:",
+        pdfFile.size,
+      );
+
       // Read the file content
       const fileArrayBuffer = await pdfFile.arrayBuffer();
-      
+
       // Convert to markdown and return the result
       const markdown = await transcribePdf(
         new Uint8Array(fileArrayBuffer),
         apiUrl,
         apiKey,
         apiModel,
-        shopApiKey
+        shopApiKey,
       );
-      
+
       return new Response(JSON.stringify({ markdown }), {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
-      
     } catch (error) {
       console.error("[Transcribe] Error:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to transcribe PDF";
-      return new Response(JSON.stringify({ error: errorMessage }), { 
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Failed to transcribe PDF";
+      return new Response(JSON.stringify({ error: errorMessage }), {
         status: 500,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
-  }
-}; 
+  },
+};

@@ -1,14 +1,13 @@
-import { type PageProps } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
+import { type PageProps } from "fresh";
 import TestComposerIsland from "../(_islands)/TestComposerIsland.tsx";
 
 export default function EditTest({ params }: PageProps) {
   return (
     <>
-      <Head>
+      <head>
         <title>Edit Test | School Bud-E</title>
-      </Head>
+      </head>
       <TestComposerIsland testId={params.id} />
     </>
   );
-} 
+}

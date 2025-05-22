@@ -9,7 +9,9 @@ interface KeyInputProps {
   lang?: string;
 }
 
-export function KeyInput({ universalKey, showPassword, hasValidKey, lang = "en" }: KeyInputProps) {
+export function KeyInput(
+  { universalKey, showPassword, hasValidKey, lang = "en" }: KeyInputProps,
+) {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateKey = (value: string) => {
     universalKey.value = value;
@@ -50,8 +52,8 @@ export function KeyInput({ universalKey, showPassword, hasValidKey, lang = "en" 
         onClick={togglePasswordVisibility}
         class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
       >
-        {showPassword.value ? <IconEyeCancel /> : <IconEye/>}
+        {showPassword.value ? <IconEyeCancel /> : <IconEye />}
       </button>
     </div>
   );
-} 
+}

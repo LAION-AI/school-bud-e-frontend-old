@@ -1,6 +1,8 @@
 import ChatList from "./(_islands)/ChatList.tsx";
 import { IconMessagePlus } from "@tabler/icons-preact";
-import translations from "../../islands/sidebar/sidebar.translations.json" with { type: "json" };
+import translations from "../../islands/sidebar/sidebar.translations.json" with {
+  type: "json",
+};
 
 interface ChatListPageProps {
   lang?: string;
@@ -24,4 +26,4 @@ export default function ChatListPage({ lang = "en" }: ChatListPageProps) {
       <ChatList lang={lang} />
     </div>
   );
-} 
+}

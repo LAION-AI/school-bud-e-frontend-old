@@ -4,21 +4,23 @@ import { IconCheck, IconLoader } from "@tabler/icons-preact";
 interface GraphLoadingStateProps {
   isLoading: boolean;
   isComplete: boolean;
-  type: 'graph' | 'webresult' | 'game';
+  type: "graph" | "webresult" | "game";
 }
 
-export function GraphLoadingState({ isLoading, isComplete, type }: GraphLoadingStateProps): JSX.Element {
-  let subject = '';
+export function GraphLoadingState(
+  { isLoading, isComplete, type }: GraphLoadingStateProps,
+): JSX.Element {
+  let subject = "";
 
   switch (type) {
-    case 'graph':
-      subject = 'Graph';
+    case "graph":
+      subject = "Graph";
       break;
-    case 'webresult':
-      subject = 'Web results';
+    case "webresult":
+      subject = "Web results";
       break;
-    case 'game':
-      subject = 'Game';
+    case "game":
+      subject = "Game";
       break;
   }
 

@@ -3,9 +3,7 @@ import { IconChevronDown } from "@tabler/icons-preact";
 import type { ComponentChildren, VNode } from "preact";
 import { useEffect, useState } from "preact/hooks";
 
-const SafeChevronDown = (props: any): VNode => (
-  <IconChevronDown {...props} />
-);
+const SafeChevronDown = (props: any): VNode => <IconChevronDown {...props} />;
 
 interface CollapsibleSectionProps {
   icon: ComponentChildren;
@@ -40,7 +38,7 @@ export default function CollapsibleSection({
     active: boolean,
   ) => {
     if (active) {
-        return "bg-primary-100 text-primary-900 hover:bg-primary-200 border-2 border-primary-500 focus-visible:ring-primary-500";
+      return "bg-primary-100 text-primary-900 hover:bg-primary-200 border-2 border-primary-500 focus-visible:ring-primary-500";
     }
     return "hover:bg-gray-50 text-gray-700 hover:text-gray-900 border-2 border-transparent";
   };
@@ -120,16 +118,20 @@ export default function CollapsibleSection({
         onClick={handleToggle}
         aria-expanded={shouldBeExpanded}
         aria-controls={`${title.toLowerCase()}-content`}
-        class={`${buttonBaseClasses} ${getButtonColorClasses(
-          isActive,
-        )}`}
+        class={`${buttonBaseClasses} ${
+          getButtonColorClasses(
+            isActive,
+          )
+        }`}
       >
         <div class="flex items-center gap-3">
           <div class="flex-shrink-0">
             <div
-              class={`h-5 w-5 transition-colors ${getIconColorClasses(
-                isActive,
-              )}`}
+              class={`h-5 w-5 transition-colors ${
+                getIconColorClasses(
+                  isActive,
+                )
+              }`}
             >
               {icon}
             </div>
@@ -138,9 +140,11 @@ export default function CollapsibleSection({
         </div>
         {!isCollapsed && (
           <SafeChevronDown
-            class={`h-4 w-4 transition-transform duration-200 ${getChevronColorClasses(
-              isActive,
-            )} ${shouldBeExpanded ? "rotate-180" : ""}`}
+            class={`h-4 w-4 transition-transform duration-200 ${
+              getChevronColorClasses(
+                isActive,
+              )
+            } ${shouldBeExpanded ? "rotate-180" : ""}`}
           />
         )}
       </button>

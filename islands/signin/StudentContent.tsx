@@ -9,7 +9,10 @@ interface StudentContentProps {
   lang?: string;
 }
 
-export function StudentContent({ selectedOption, universalKey, showPassword, hasValidKey, lang = "en" }: StudentContentProps) {
+export function StudentContent(
+  { selectedOption, universalKey, showPassword, hasValidKey, lang = "en" }:
+    StudentContentProps,
+) {
   const handleStoreSelect = () => {
     selectedOption.value = "store";
   };
@@ -31,7 +34,9 @@ export function StudentContent({ selectedOption, universalKey, showPassword, has
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "1. Von Ihrem Lehrer erhalten" : "1. Get from Teacher"}
+            {lang === "de"
+              ? "1. Von Ihrem Lehrer erhalten"
+              : "1. Get from Teacher"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"
@@ -49,7 +54,9 @@ export function StudentContent({ selectedOption, universalKey, showPassword, has
           }`}
         >
           <h3 class="font-medium text-gray-900">
-            {lang === "de" ? "2. Kostenlos (5 Minuten, nicht Datenschutzkonform)" : "2. Free (5 minutes, not GDPR compliant)"}
+            {lang === "de"
+              ? "2. Kostenlos (5 Minuten, nicht Datenschutzkonform)"
+              : "2. Free (5 minutes, not GDPR compliant)"}
           </h3>
           <p class="mt-1 text-sm text-gray-600">
             {lang === "de"
@@ -69,7 +76,12 @@ export function StudentContent({ selectedOption, universalKey, showPassword, has
             </p>
           </div>
 
-          <KeyInput universalKey={universalKey} showPassword={showPassword} hasValidKey={hasValidKey} lang={lang} />
+          <KeyInput
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
         </div>
       )}
 
@@ -83,7 +95,12 @@ export function StudentContent({ selectedOption, universalKey, showPassword, has
             </p>
           </div>
 
-          <KeyInput universalKey={universalKey} showPassword={showPassword} hasValidKey={hasValidKey} lang={lang} />
+          <KeyInput
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
 
           <div class="text-sm text-gray-600">
             <p class="mb-2">
@@ -97,13 +114,11 @@ export function StudentContent({ selectedOption, universalKey, showPassword, has
               rel="noopener noreferrer"
               class="text-primary-600 hover:text-primary-700 underline"
             >
-              {lang === "de"
-                ? "API-Schlüssel erstellen"
-                : "Create API Key"}
+              {lang === "de" ? "API-Schlüssel erstellen" : "Create API Key"}
             </a>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}

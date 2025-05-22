@@ -113,7 +113,7 @@ import * as $video_novel_islands_components_StoryLibrary from "./routes/video-no
 import * as $video_novel_islands_components_VideoControls from "./routes/video-novel/(_islands)/components/VideoControls.tsx";
 import * as $video_novel_islands_components_VideoPlayer from "./routes/video-novel/(_islands)/components/VideoPlayer.tsx";
 import * as $video_novel_islands_components_types from "./routes/video-novel/(_islands)/components/types.ts";
-import type { Manifest } from "$fresh/server.ts";
+import type { Manifest } from "fresh";
 
 const manifest = {
   routes: {

@@ -1,6 +1,8 @@
-import { Handlers } from "$fresh/server.ts";
+import { FreshContext } from "fresh";
+import { Handlers } from "fresh/compat";
 
-const BILDUNGSPLAN_API_URL = Deno.env.get("BILDUNGSPLAN_API_URL") || "http://213.173.96.19:8020/query";
+const BILDUNGSPLAN_API_URL = Deno.env.get("BILDUNGSPLAN_API_URL") ||
+  "http://213.173.96.19:8020/query";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -8,7 +10,9 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const handler: Handlers = {
-  async GET(req: Request) {
+  async GET(ctx: FreshContext) {
+    const req = ctx.req;
+
     try {
       const url = new URL(req.url);
       const query = url.searchParams.get("query");
@@ -46,7 +50,9 @@ export const handler: Handlers = {
     }
   },
 
-  async POST(req: Request) {
+  async POST(ctx: FreshContext) {
+    const req = ctx.req;
+
     try {
       const payload = await req.json();
       const { query } = payload;

@@ -1,6 +1,6 @@
 // @ts-ignore: JSX namespace is used in type definitions
 import { JSX } from "preact";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 import { forwardRef } from "preact/compat";
 
 export interface InputProps {
@@ -48,10 +48,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   helpText,
   ...props
 }, ref) => {
-  const baseInputClass = "block w-full px-3 py-2 sm:text-sm border-2 border-gray-200 rounded-md focus:ring-primary-500 focus:border-primary-500";
-  const errorInputClass = "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
+  const baseInputClass =
+    "block w-full px-3 py-2 sm:text-sm border-2 border-gray-200 rounded-md focus:ring-primary-500 focus:border-primary-500";
+  const errorInputClass =
+    "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
   const disabledInputClass = "bg-gray-100 cursor-not-allowed";
-  
+
   const inputClasses = [
     baseInputClass,
     error ? errorInputClass : "",
@@ -84,7 +86,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           type={type}
           value={value}
           placeholder={placeholder}
-          disabled={!IS_BROWSER || disabled}
+          disabled={disabled}
           readOnly={readOnly}
           required={required}
           onChange={onChange}
@@ -114,4 +116,4 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   );
 });
 
-export default Input; 
+export default Input;

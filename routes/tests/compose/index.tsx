@@ -1,5 +1,4 @@
-import { type PageProps } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
+import { type PageProps } from "fresh";
 import TestComposerIsland from "../(_islands)/TestComposerIsland.tsx";
 
 export default function CreateTest({ url }: PageProps) {
@@ -8,10 +7,10 @@ export default function CreateTest({ url }: PageProps) {
   const language = url.searchParams.get("language") || undefined;
   return (
     <>
-      <Head>
+      <head>
         <title>Create Test | School Bud-E</title>
-      </Head>
+      </head>
       <TestComposerIsland nodeId={nodeId} />
     </>
   );
-} 
+}

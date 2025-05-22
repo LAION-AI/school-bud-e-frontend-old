@@ -1,4 +1,4 @@
-import type { Handlers } from "$fresh/server.ts";
+import { Handlers } from "fresh/compat";
 
 interface GenerateVideoRequest {
   prompt: string;
@@ -9,54 +9,70 @@ interface GenerateVideoRequest {
   apiUrl?: string;
 }
 
-const VIDEO_SERVICE_URL = Deno.env.get("VIDEO_SERVICE_URL") || "http://localhost:8083";
+const VIDEO_SERVICE_URL = Deno.env.get("VIDEO_SERVICE_URL") ||
+  "http://localhost:8083";
 
 export const handler: Handlers = {
-  async POST(req) {
+  async POST(ctx) {
+    const req = ctx.req;
+
     try {
       const body: GenerateVideoRequest = await req.json();
-      
+
       if (!body.prompt) {
         return new Response(JSON.stringify({ error: "Prompt is required" }), {
           status: 400,
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
         });
       }
-      
+
       console.log("Sending request to AI tasks server:", {
         prompt: body.prompt,
         style: body.style || "realistic",
-        customInstructions: body.customInstructions || ""
+        customInstructions: body.customInstructions || "",
       });
-      
+
       // Forward the request to the AI tasks server
-      const response = await fetch(`${body.apiUrl || VIDEO_SERVICE_URL}/generate_video/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${body.apiUrl || VIDEO_SERVICE_URL}/generate_video/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: body.prompt,
+            style: body.style || "realistic",
+            custom_instructions: body.customInstructions || "",
+            api_key: body.apiKey,
+            api_model: body.apiModel,
+            api_url: body.apiUrl,
+          }),
         },
-        body: JSON.stringify({
-          prompt: body.prompt,
-          style: body.style || "realistic",
-          custom_instructions: body.customInstructions || "",
-          api_key: body.apiKey,
-          api_model: body.apiModel,
-          api_url: body.apiUrl,
-        }),
-      });
-      
+      );
+
       if (!response.ok) {
-        console.error("AI tasks server returned error:", response.status, response.statusText);
-        return new Response(JSON.stringify({ error: `AI tasks server error: ${response.status} ${response.statusText}` }), {
-          status: response.status,
-          headers: { "Content-Type": "application/json" }
-        });
+        console.error(
+          "AI tasks server returned error:",
+          response.status,
+          response.statusText,
+        );
+        return new Response(
+          JSON.stringify({
+            error:
+              `AI tasks server error: ${response.status} ${response.statusText}`,
+          }),
+          {
+            status: response.status,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
-      
+
       // Create a streaming response
       const { readable, writable } = new TransformStream();
       const writer = writable.getWriter();
-      
+
       // Process the streaming response from the AI tasks server
       const responseBody = response.body;
       if (responseBody) {
@@ -64,30 +80,32 @@ export const handler: Handlers = {
           try {
             const reader = responseBody.getReader();
             let videoId = null;
-            
+
             while (true) {
               const { done, value } = await reader.read();
               if (done) break;
-              
+
               // Process the chunk to ensure videoId is included in all file messages
               const chunk = new TextDecoder().decode(value);
-              const lines = chunk.split("\n").filter(line => line.trim());
-              
+              const lines = chunk.split("\n").filter((line) => line.trim());
+
               for (const line of lines) {
                 try {
                   const data = JSON.parse(line);
-                  
+
                   // Store videoId when it's received
                   if (data.type === "videoId") {
                     videoId = data.data;
                     console.log("Received videoId:", videoId);
                   }
-                  
+
                   // Add videoId to file messages if missing
                   if (data.type === "file" && !data.videoId && videoId) {
                     data.videoId = videoId;
                     console.log("Added videoId to file message:", data);
-                    await writer.write(new TextEncoder().encode(`${JSON.stringify(data)}\n`));
+                    await writer.write(
+                      new TextEncoder().encode(`${JSON.stringify(data)}\n`),
+                    );
                   } else {
                     // Forward the original message
                     await writer.write(new TextEncoder().encode(`${line}\n`));
@@ -108,19 +126,22 @@ export const handler: Handlers = {
         // If there's no response body, close the writer immediately
         writer.close();
       }
-      
+
       return new Response(readable, {
         headers: {
           "Content-Type": "application/json",
-          "Transfer-Encoding": "chunked"
-        }
+          "Transfer-Encoding": "chunked",
+        },
       });
     } catch (error) {
       console.error("Error generating video:", error);
-      return new Response(JSON.stringify({ error: "Failed to generate video" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      });
+      return new Response(
+        JSON.stringify({ error: "Failed to generate video" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-  }
-}; 
+  },
+};

@@ -10,7 +10,7 @@ const renderLatex = (text: string) => {
     try {
       return katex.renderToString(math, { displayMode: false });
     } catch (e) {
-      console.error('KaTeX error:', e);
+      console.error("KaTeX error:", e);
       return math;
     }
   });
@@ -20,7 +20,7 @@ const renderLatex = (text: string) => {
     try {
       return katex.renderToString(math, { displayMode: true });
     } catch (e) {
-      console.error('KaTeX error:', e);
+      console.error("KaTeX error:", e);
       return math;
     }
   });
@@ -48,7 +48,7 @@ interface TextSegment extends BaseSegment {
 interface JsonBlockSegment extends BaseSegment {
   type: JsonBlockType;
   status: BlockStatus;
-  code?: string; // Optional code field for game 
+  code?: string; // Optional code field for game
 }
 
 // Combined type for all possible segments
@@ -83,14 +83,14 @@ interface Segment {
  */
 function processGraphSegments(
   types: ("graph" | "webresult" | "game" | "json")[],
-  text: string
+  text: string,
 ): Segment[] {
   const segments: Segment[] = [];
   let currentPosition = 0;
 
   while (currentPosition < text.length) {
     let earliestIndex = -1;
-    let matchedType: ('graph' | 'webresult' | ' game') | null = null;
+    let matchedType: ("graph" | "webresult" | " game") | null = null;
 
     // Find the earliest occurrence of any type's opening marker
     for (const type of types) {
@@ -112,22 +112,28 @@ function processGraphSegments(
     if (earliestIndex > currentPosition) {
       segments.push({
         type: "text",
-        content: text.substring(currentPosition, earliestIndex)
+        content: text.substring(currentPosition, earliestIndex),
       });
     }
 
     const openMarker = `\`\`\`${matchedType}`;
     const closeMarker = "```";
-    const closeIndex = text.indexOf(closeMarker, earliestIndex + openMarker.length);
+    const closeIndex = text.indexOf(
+      closeMarker,
+      earliestIndex + openMarker.length,
+    );
 
     if (closeIndex === -1) {
       // Incomplete block: mark as loading
       segments.push({ type: matchedType || "text", status: "loading" });
       break; // Stop processing as we hide everything after
-    } 
+    }
 
     if (matchedType === " game") {
-      const code = text.substring(earliestIndex + openMarker.length, closeIndex);
+      const code = text.substring(
+        earliestIndex + openMarker.length,
+        closeIndex,
+      );
 
       segments.push({ type: "game", status: "completed", code });
       currentPosition = closeIndex + closeMarker.length;
@@ -153,7 +159,10 @@ export function MessageContent({ content }: MessageContentProps) {
   // 1. A string or an array of strings (which we join together)
   // 2. An array of objects (with type "text" or "image_url")
 
-  if (typeof content === "string" || (Array.isArray(content) && typeof content[0] === "string")) {
+  if (
+    typeof content === "string" ||
+    (Array.isArray(content) && typeof content[0] === "string")
+  ) {
     // If content is a single string or an array of strings, join them.
     const fullText = typeof content === "string" ? content : content.join("");
     const segments = processGraphSegments(["json"], fullText);
@@ -163,10 +172,19 @@ export function MessageContent({ content }: MessageContentProps) {
         {segments.map((seg, idx) => {
           if (seg.type === "text") {
             return (
-              <span className="flex flex-col gap-4 leading-7" key={idx} dangerouslySetInnerHTML={{ __html: renderLatex(seg.content || '') }} />
+              <span
+                className="flex flex-col gap-4 leading-7"
+                key={idx}
+                dangerouslySetInnerHTML={{
+                  __html: renderLatex(seg.content || ""),
+                }}
+              />
             );
-          } 
-          if (seg.type === "json" || seg.type === "webresult" || seg.type === "game") {
+          }
+          if (
+            seg.type === "json" || seg.type === "webresult" ||
+            seg.type === "game"
+          ) {
             return (
               <GraphLoadingState
                 key={idx}
@@ -190,7 +208,7 @@ export function MessageContent({ content }: MessageContentProps) {
           type: string;
           text: string;
           image_url: { url: string; transcription?: string };
-          pdf_url?: { 
+          pdf_url?: {
             url: string;
             size?: number;
             transcription?: string;
@@ -198,15 +216,25 @@ export function MessageContent({ content }: MessageContentProps) {
           };
         }[]).map((item, contentIndex) => {
           if (item.type === "text") {
-            const segments = processGraphSegments(['graph', 'webresult', 'game'], item.text);
+            const segments = processGraphSegments([
+              "graph",
+              "webresult",
+              "game",
+            ], item.text);
             return (
               <span key={contentIndex}>
                 {segments.map((seg, idx) => {
                   if (seg.type === "text") {
                     return (
-                      <span className="flex" key={idx} dangerouslySetInnerHTML={{ __html: renderLatex(seg.content || '') }} />
+                      <span
+                        className="flex"
+                        key={idx}
+                        dangerouslySetInnerHTML={{
+                          __html: renderLatex(seg.content || ""),
+                        }}
+                      />
                     );
-                  } 
+                  }
                   if (["json", "webresult", "game"].includes(seg.type)) {
                     return (
                       <GraphLoadingState
@@ -216,11 +244,12 @@ export function MessageContent({ content }: MessageContentProps) {
                         type={"game"}
                       />
                     );
-                  } return null;
+                  }
+                  return null;
                 })}
               </span>
             );
-          } 
+          }
           if (item.type === "image_url") {
             return (
               <img
@@ -230,16 +259,20 @@ export function MessageContent({ content }: MessageContentProps) {
                 className="max-w-full h-auto rounded-lg shadow-sm"
               />
             );
-          } 
+          }
           if (item.type === "pdf_url" && item.pdf_url) {
             // Use a more reliable approach for rendering PDFs
             const pdfUrl = item.pdf_url.url;
             // Safely check for size property
-            const isLarge = item.pdf_url.size !== undefined && item.pdf_url.size > 1000000;
-            
-            console.log("[MessageContent] Rendering PDF with URL type:", 
-              pdfUrl?.substring(0, 30) + "...", 
-              "Size:", item.pdf_url.size || "unknown");
+            const isLarge = item.pdf_url.size !== undefined &&
+              item.pdf_url.size > 1000000;
+
+            console.log(
+              "[MessageContent] Rendering PDF with URL type:",
+              pdfUrl?.substring(0, 30) + "...",
+              "Size:",
+              item.pdf_url.size || "unknown",
+            );
 
             // Check if the PDF is being transcribed
             if (item.pdf_url.isTranscribing) {
@@ -254,7 +287,10 @@ export function MessageContent({ content }: MessageContentProps) {
                     type="application/pdf"
                     className="w-full h-[600px] rounded-lg shadow-sm opacity-50"
                   >
-                    <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
+                    <p>
+                      Your browser does not support PDFs. Please download the
+                      PDF to view it.
+                    </p>
                   </object>
                 </div>
               );
@@ -263,17 +299,36 @@ export function MessageContent({ content }: MessageContentProps) {
             // Check if we have a transcription
             if (item.pdf_url.transcription) {
               // Check if the transcription is an error message
-              const isError = item.pdf_url.transcription.startsWith("Error:") || 
-                              item.pdf_url.transcription.startsWith("Transcription failed:") ||
-                              item.pdf_url.transcription.startsWith("Transcription error:");
-              
+              const isError = item.pdf_url.transcription.startsWith("Error:") ||
+                item.pdf_url.transcription.startsWith(
+                  "Transcription failed:",
+                ) ||
+                item.pdf_url.transcription.startsWith("Transcription error:");
+
               return (
                 <div key={contentIndex} className="pdf-container w-full">
-                  <div className={`pdf-info text-sm ${isError ? 'text-red-500' : 'text-gray-500'} mb-2`}>
-                    {isError ? 'PDF Transcription Error' : 'PDF Document (Transcribed)'}
+                  <div
+                    className={`pdf-info text-sm ${
+                      isError ? "text-red-500" : "text-gray-500"
+                    } mb-2`}
+                  >
+                    {isError
+                      ? "PDF Transcription Error"
+                      : "PDF Document (Transcribed)"}
                   </div>
-                  <div className={`pdf-transcription border ${isError ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}>
-                    <span className="flex" dangerouslySetInnerHTML={{ __html: renderLatex(item.pdf_url.transcription) }} />
+                  <div
+                    className={`pdf-transcription border ${
+                      isError
+                        ? "border-red-200 bg-red-50"
+                        : "border-gray-200 bg-gray-50"
+                    } rounded-lg p-4 mb-3 max-h-[500px] overflow-y-auto`}
+                  >
+                    <span
+                      className="flex"
+                      dangerouslySetInnerHTML={{
+                        __html: renderLatex(item.pdf_url.transcription),
+                      }}
+                    />
                   </div>
                   {/* PDF viewer toggle button */}
                   <details className="pdf-viewer-toggle">
@@ -284,13 +339,18 @@ export function MessageContent({ content }: MessageContentProps) {
                       <object
                         data={pdfUrl}
                         type="application/pdf"
-                        className={`w-full h-[600px] rounded-lg shadow-sm ${isLarge ? 'large-pdf' : ''}`}
+                        className={`w-full h-[600px] rounded-lg shadow-sm ${
+                          isLarge ? "large-pdf" : ""
+                        }`}
                       >
-                        <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
+                        <p>
+                          Your browser does not support PDFs. Please download
+                          the PDF to view it.
+                        </p>
                       </object>
-                      
+
                       {/* Download link */}
-                      <a 
+                      <a
                         href={pdfUrl}
                         download="document.pdf"
                         target="_blank"

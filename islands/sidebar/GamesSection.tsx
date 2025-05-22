@@ -28,7 +28,7 @@ export default function GamesSection({
     return savedGames.value
       .sort(
         (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       )
       .slice(0, 5);
   });
@@ -55,11 +55,9 @@ export default function GamesSection({
         >
           <SafeListIcon
             size={16}
-            class={
-              currentPath === "/games/list"
-                ? "text-purple-800"
-                : "text-gray-600"
-            }
+            class={currentPath === "/games/list"
+              ? "text-purple-800"
+              : "text-gray-600"}
           />
           <span>All Games</span>
         </a>
@@ -89,7 +87,8 @@ export default function GamesSection({
                   </a>
                   <button
                     type="button"
-                    onClick={() => deleteGame(game.id)}
+                    onClick={() =>
+                      deleteGame(game.id)}
                     class="opacity-0 group-hover:opacity-100 p-2 text-gray-500 hover:text-red-600 transition-all duration-200 outline-none rounded focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:opacity-100"
                     aria-label={`Delete game ${game.name}`}
                   >

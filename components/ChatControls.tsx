@@ -1,4 +1,9 @@
-import { IconMouse, IconMouseOff, IconVolume, IconVolumeOff } from "@tabler/icons-preact";
+import {
+  IconMouse,
+  IconMouseOff,
+  IconVolume,
+  IconVolumeOff,
+} from "@tabler/icons-preact";
 import { chatTemplateContent } from "../internalization/content.ts";
 
 interface ChatControlsProps {
@@ -21,7 +26,9 @@ export function ChatControls({
       <button
         class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-700/50 transition-all backdrop-blur-sm bg-gray-800/30"
         onClick={onToggleReadAlwaysAction}
-        title={readAlways ? chatTemplateContent[lang].readOutText : chatTemplateContent[lang].silent}
+        title={readAlways
+          ? chatTemplateContent[lang].readOutText
+          : chatTemplateContent[lang].silent}
         type="button"
       >
         {readAlways ? <IconVolume /> : <IconVolumeOff />}
@@ -29,10 +36,12 @@ export function ChatControls({
       <button
         class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-700/50 transition-all backdrop-blur-sm bg-gray-800/30"
         onClick={onToggleAutoScrollAction}
-        title={autoScroll ? chatTemplateContent[lang].autoScrollOn : chatTemplateContent[lang].autoScrollOff}
+        title={autoScroll
+          ? chatTemplateContent[lang].autoScrollOn
+          : chatTemplateContent[lang].autoScrollOff}
         type="button"
       >
-        {autoScroll ? <IconMouse />: <IconMouseOff />}
+        {autoScroll ? <IconMouse /> : <IconMouseOff />}
       </button>
     </div>
   );

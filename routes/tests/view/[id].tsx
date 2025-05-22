@@ -1,14 +1,13 @@
-import { type PageProps } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
+import { type PageProps } from "fresh";
 import TestViewIsland from "../(_islands)/TestViewIsland.tsx";
 
 export default function TestView({ params }: PageProps) {
   return (
     <>
-      <Head>
+      <head>
         <title>Test View | School Bud-E</title>
-      </Head>
+      </head>
       <TestViewIsland testId={params.id} />
     </>
   );
-} 
+}

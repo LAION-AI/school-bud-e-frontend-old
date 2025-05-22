@@ -3,11 +3,17 @@ import ChatTemplate from "./ChatTemplate.tsx";
 import ChatWarning from "../components/Warning.tsx";
 
 // Necessary for streaming service
-import { useEffect, useState, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 // // Import necessary types from Preact
 import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
-import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
+import {
+  chats,
+  chatSuffix,
+  currentEditIndex,
+  handleRefreshAction,
+  messages,
+} from "../components/chat/store.ts";
 import { initTourGuide } from "../utils/tourGuide.ts";
 import { Partial } from "fresh/runtime";
 
@@ -20,7 +26,7 @@ interface AudioItem {
 // Define the AudioFileDict type if not already defined
 type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
-export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
+export default function ChatIsland({ lang, id }: { lang: string; id: string }) {
   // Necessary to load the chat messages from localStorage only once
   useEffect(() => {
     const chatKey = `bude-chat-${id}`;
@@ -41,7 +47,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     if (isStreamComplete && lastMessage) {
       if ("content" in messages.value[messages.value.length - 1]) {
         let lastMessageFromBuddy: string;
-        const lastMessageContent = messages.value[messages.value.length - 1].content;
+        const lastMessageContent =
+          messages.value[messages.value.length - 1].content;
 
         if (typeof lastMessageContent === "string") {
           lastMessageFromBuddy = lastMessageContent;
@@ -50,7 +57,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         }
 
         if (lastMessageFromBuddy !== "") {
-          messages.value[messages.value.length - 1]["content"] = lastMessageFromBuddy;
+          messages.value[messages.value.length - 1]["content"] =
+            lastMessageFromBuddy;
         }
       }
     }
@@ -66,7 +74,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
 
       const isLatestGroup =
         Math.max(...Object.keys(audioFileDict).map(Number)) <=
-        Number(groupIndex);
+          Number(groupIndex);
 
       if (
         isLatestGroup &&
@@ -94,7 +102,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
           }
         }
       }
-    };
+    }
   }, [JSON.stringify(audioFileDict), readAlways, stopList.value]);
 
   // Initialize tour guide on client-side only once
@@ -139,7 +147,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     audioFileDict[groupIndex][audioIndex].played = true;
     setAudioFileDict({ ...audioFileDict });
   };
-  
+
   // MAIN CONTENT THAT IS RENDERED
   return (
     <div class="flex w-full h-[calc(100dvh-4rem)] md:h-screen">
@@ -148,7 +156,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         currentEditIndex={currentEditIndex.value}
         audioFileDict={audioFileDict}
         onRefreshAction={handleRefreshAction}
-        onEditAction={() => { }}
+        onEditAction={() => {}}
         onSpeakAtGroupIndexAction={(groupIndex: number) => {
           const audioFile = audioFileDict[groupIndex][0];
           if (audioFile) {

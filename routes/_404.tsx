@@ -1,12 +1,11 @@
-import { Head } from "$fresh/runtime.ts";
 import { Button } from "../components/Button.tsx";
 
 export default function Error404() {
   return (
     <>
-      <Head>
+      <head>
         <title>404 - Page not found</title>
-      </Head>
+      </head>
       <div class="min-h-screen flex items-center justify-center bg-gray-50">
         <div class="max-w-md w-full px-6 py-8 bg-white rounded-lg shadow-md">
           <div class="text-center">

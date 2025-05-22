@@ -11,8 +11,9 @@ export function TourProgressSidebarSection() {
   const totalTours = tours.value?.length || 0;
   const completedTours =
     tours.value?.filter((tour) => tour.completed)?.length || 0;
-  const progressPercentage =
-    totalTours > 0 ? (completedTours / totalTours) * 100 : 0;
+  const progressPercentage = totalTours > 0
+    ? (completedTours / totalTours) * 100
+    : 0;
 
   // Filter tours based on completion status
   const visibleTours = showCompleted
@@ -84,31 +85,31 @@ export function TourProgressSidebarSection() {
             {/* Show message if no incomplete tours but there are completed tours */}
             {tours.value?.filter((tour) => !tour.completed).length === 0 &&
               completedTours > 0 && (
-                <div class="w-full text-center text-sm text-slate-500 py-1">
-                  <Button
-                    variant="secondary"
-                    onClick={toggleShowCompleted}
-                    class="text-sm px-3 py-1 rounded-md h-auto flex items-center gap-1 mx-auto"
+              <div class="w-full text-center text-sm text-slate-500 py-1">
+                <Button
+                  variant="secondary"
+                  onClick={toggleShowCompleted}
+                  class="text-sm px-3 py-1 rounded-md h-auto flex items-center gap-1 mx-auto"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-4 h-4"
+                    aria-hidden="true"
+                    title="Eye icon"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      class="w-4 h-4"
-                      aria-hidden="true"
-                      title="Eye icon"
-                    >
-                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    {showCompleted ? "Hide completed" : "Show completed"}
-                  </Button>
-                </div>
-              )}
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  {showCompleted ? "Hide completed" : "Show completed"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

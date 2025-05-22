@@ -29,9 +29,11 @@ function formatTestForDocExport(test: Test, nodeName: string): string {
   // Add metadata
   docContent += `**Topic:** ${nodeName || test.nodeId || "N/A"}\n`;
   docContent += `**Created:** ${formatDate(test.createdAt)}\n`;
-  docContent += `**Last Updated:** ${formatDate(
-    test.lastUpdatedAt || test.createdAt
-  )}\n\n`;
+  docContent += `**Last Updated:** ${
+    formatDate(
+      test.lastUpdatedAt || test.createdAt,
+    )
+  }\n\n`;
 
   // Add description if available
   if (test.content) {
@@ -92,9 +94,11 @@ function exportTestToDocument(test: Test, nodeName: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${test.name
-    .replace(/[^a-z0-9]/gi, "_")
-    .toLowerCase()}_test.txt`;
+  a.download = `${
+    test.name
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase()
+  }_test.txt`;
 
   // Trigger the download without affecting browser history
   a.style.display = "none";
@@ -115,9 +119,11 @@ function formatTestForGoogleDocs(test: Test, nodeName: string): string {
   // Add metadata
   docContent += `**Topic:** ${nodeName || test.nodeId || "N/A"}\n`;
   docContent += `**Created:** ${formatDate(test.createdAt)}\n`;
-  docContent += `**Last Updated:** ${formatDate(
-    test.lastUpdatedAt || test.createdAt
-  )}\n\n`;
+  docContent += `**Last Updated:** ${
+    formatDate(
+      test.lastUpdatedAt || test.createdAt,
+    )
+  }\n\n`;
 
   // Add test description
   if (test.content) {
@@ -128,8 +134,8 @@ function formatTestForGoogleDocs(test: Test, nodeName: string): string {
   docContent += "## Questions\n\n";
 
   test.questions.forEach((question, index) => {
-    docContent +=
-      "### Question " + (index + 1) + "\n" + question.question + "\n\n";
+    docContent += "### Question " + (index + 1) + "\n" + question.question +
+      "\n\n";
 
     // Add image reference if available
     if (question.imageUrl) {
@@ -145,8 +151,7 @@ function formatTestForGoogleDocs(test: Test, nodeName: string): string {
 
       if (typeof question.correctAnswer === "number" && question.options) {
         const answerLetter = String.fromCharCode(65 + question.correctAnswer);
-        docContent +=
-          answerLetter +
+        docContent += answerLetter +
           ". " +
           question.options[question.correctAnswer] +
           "\n\n";
@@ -193,7 +198,7 @@ function exportToGoogleDocs(test: Test, nodeName: string) {
 
   // Show a notification to the user
   alert(
-    "Test content copied to clipboard. Please paste (Ctrl+V or Cmd+V) into the new Google Doc that opened."
+    "Test content copied to clipboard. Please paste (Ctrl+V or Cmd+V) into the new Google Doc that opened.",
   );
 }
 
@@ -396,9 +401,11 @@ function formatTestForHTMLExport(test: Test, nodeName: string): string {
       <div class="metadata">
         <p><strong>Topic:</strong> ${nodeName || test.nodeId || "N/A"}</p>
         <p><strong>Created:</strong> ${formatDate(test.createdAt)}</p>
-        <p><strong>Last Updated:</strong> ${formatDate(
-          test.lastUpdatedAt || test.createdAt
-        )}</p>
+        <p><strong>Last Updated:</strong> ${
+    formatDate(
+      test.lastUpdatedAt || test.createdAt,
+    )
+  }</p>
       </div>
   `;
 
@@ -572,7 +579,7 @@ export default function TestsListIsland() {
     } catch (error) {
       console.error("Error during export:", error);
       alert(
-        "An error occurred while opening the test document. Please try again."
+        "An error occurred while opening the test document. Please try again.",
       );
     }
   };
@@ -597,95 +604,97 @@ export default function TestsListIsland() {
       </div>
 
       <div class="">
-        {loading ? (
-          <div class="text-gray-600">Loading tests...</div>
-        ) : tests.length === 0 ? (
-          <div class="text-center py-12">
-            <h3 class="text-lg font-medium text-gray-900 mb-2">
-              No tests yet
-            </h3>
-            <p class="text-gray-600 mb-4">
-              Get started by creating your first test
-            </p>
-            <Button variant="primary" onClick={handleCreateTest}>
-              Create Test
-            </Button>
-          </div>
-        ) : (
-          <div class="space-y-3">
-            {tests.map((test) => (
-              <div
-                key={test.id}
-                class="group border border-gray-200 hover:border-primary-200 hover:bg-primary-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
-                onClick={() => handleStartTest(test.id)}
-                role="button"
-                aria-label={`Take test: ${test.name}`}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleStartTest(test.id);
-                  }
-                }}
-              >
-                <div class="flex-1 min-w-0 mr-4">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <h2 class="text-lg font-bold text-gray-800">
-                      {test.name}
-                    </h2>
-                    <span class="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded-full">
-                      {test.questions.length} q
-                    </span>
-                  </div>
-                  <div class="mt-1 flex items-center gap-4 text-sm text-gray-500">
-                    <span class="flex items-center gap-1">
-                      <IconCalendar class="w-4 h-4" />
-                      {formatDate(test.createdAt)}
-                    </span>
-                    {test.nodeId && (
-                      <span class="flex items-center gap-1">
-                        <IconTag class="w-4 h-4" />
-                        {nodesMap[test.nodeId] || test.nodeId}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div class="flex-shrink-0 flex items-center gap-2">
-                  <button
-                    type="button"
-                    class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
-                    title="View Test Document"
-                    onClick={(e) => handleExportToDocument(e, test)}
-                    aria-label="View Test Document"
-                  >
-                    <IconFileExport class="w-5 h-5" />
-                  </button>
-
-                  <a
-                    class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
-                    title="Edit Test"
-                    href={`/tests/compose/${test.id}`}
-                    aria-label="Edit Test"
-                  >
-                    <IconEdit class="w-5 h-5" />
-                  </a>
-
-                  <button
-                    type="button"
-                    class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-primary-100 group-hover:bg-primary-600 p-2 rounded-full text-primary-600 group-hover:text-white transition-colors"
-                    title="Take Test"
-                    onClick={(e) => {
-                      e.stopPropagation();
+        {loading
+          ? <div class="text-gray-600">Loading tests...</div>
+          : tests.length === 0
+          ? (
+            <div class="text-center py-12">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">
+                No tests yet
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Get started by creating your first test
+              </p>
+              <Button variant="primary" onClick={handleCreateTest}>
+                Create Test
+              </Button>
+            </div>
+          )
+          : (
+            <div class="space-y-3">
+              {tests.map((test) => (
+                <div
+                  key={test.id}
+                  class="group border border-gray-200 hover:border-primary-200 hover:bg-primary-50 transition-all px-4 py-3 rounded-md flex items-center cursor-pointer"
+                  onClick={() => handleStartTest(test.id)}
+                  role="button"
+                  aria-label={`Take test: ${test.name}`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
                       handleStartTest(test.id);
-                    }}
-                  >
-                    <IconPlayerPlay class="w-5 h-5" />
-                  </button>
+                    }
+                  }}
+                >
+                  <div class="flex-1 min-w-0 mr-4">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <h2 class="text-lg font-bold text-gray-800">
+                        {test.name}
+                      </h2>
+                      <span class="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded-full">
+                        {test.questions.length} q
+                      </span>
+                    </div>
+                    <div class="mt-1 flex items-center gap-4 text-sm text-gray-500">
+                      <span class="flex items-center gap-1">
+                        <IconCalendar class="w-4 h-4" />
+                        {formatDate(test.createdAt)}
+                      </span>
+                      {test.nodeId && (
+                        <span class="flex items-center gap-1">
+                          <IconTag class="w-4 h-4" />
+                          {nodesMap[test.nodeId] || test.nodeId}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div class="flex-shrink-0 flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
+                      title="View Test Document"
+                      onClick={(e) => handleExportToDocument(e, test)}
+                      aria-label="View Test Document"
+                    >
+                      <IconFileExport class="w-5 h-5" />
+                    </button>
+
+                    <a
+                      class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
+                      title="Edit Test"
+                      href={`/tests/compose/${test.id}`}
+                      aria-label="Edit Test"
+                    >
+                      <IconEdit class="w-5 h-5" />
+                    </a>
+
+                    <button
+                      type="button"
+                      class="flex items-center justify-center opacity-80 group-hover:opacity-100 bg-primary-100 group-hover:bg-primary-600 p-2 rounded-full text-primary-600 group-hover:text-white transition-colors"
+                      title="Take Test"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartTest(test.id);
+                      }}
+                    >
+                      <IconPlayerPlay class="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );

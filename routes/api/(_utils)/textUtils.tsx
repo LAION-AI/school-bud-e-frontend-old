@@ -4,8 +4,8 @@
  * @returns The URL for the DOI
  */
 export function convertDoiToUrl(doi: string): string {
-  const cleanDoi = doi.replace(/^DOI:\s*/, '');
-  return cleanDoi === 'null' ? '#' : `https://doi.org/${cleanDoi}`;
+  const cleanDoi = doi.replace(/^DOI:\s*/, "");
+  return cleanDoi === "null" ? "#" : `https://doi.org/${cleanDoi}`;
 }
 
 /**
@@ -14,12 +14,14 @@ export function convertDoiToUrl(doi: string): string {
  * @returns Array of processed text parts
  */
 export function renderTextWithLinksAndBold(text: string) {
-  const parts = text.split(/((?:\*\*.*?\*\*)|(?:https?:\/\/[^\s]+)|(?:www\.[^\s]+)|(?:DOI:\s*(?:null|[\d.]+\/[^\s]+))|(?:(?<![\w/])\b10\.\d+\/[^\s]+))/g);
+  const parts = text.split(
+    /((?:\*\*.*?\*\*)|(?:https?:\/\/[^\s]+)|(?:www\.[^\s]+)|(?:DOI:\s*(?:null|[\d.]+\/[^\s]+))|(?:(?<![\w/])\b10\.\d+\/[^\s]+))/g,
+  );
 
   return parts.map((part, index) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
+    if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={index}>{part.slice(2, -2)}</strong>;
-    } else if (part.startsWith('DOI:') || part.match(/^10\.\d+\//)) {
+    } else if (part.startsWith("DOI:") || part.match(/^10\.\d+\//)) {
       return (
         <a
           key={index}
@@ -31,8 +33,11 @@ export function renderTextWithLinksAndBold(text: string) {
           {part}
         </a>
       );
-    } else if (part.startsWith('http://') || part.startsWith('https://') || part.startsWith('www.')) {
-      const url = part.startsWith('www.') ? `https://${part}` : part;
+    } else if (
+      part.startsWith("http://") || part.startsWith("https://") ||
+      part.startsWith("www.")
+    ) {
+      const url = part.startsWith("www.") ? `https://${part}` : part;
       return (
         <a
           key={index}

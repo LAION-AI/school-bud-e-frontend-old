@@ -1,4 +1,4 @@
-import { asset } from "$fresh/runtime.ts";
+import { asset } from "fresh/runtime";
 import { Button } from "../../components/Button.tsx";
 
 interface NavbarProps {
@@ -43,4 +43,4 @@ export default function Navbar({ lang }: NavbarProps) {
       </div>
     </nav>
   );
-} 
+}

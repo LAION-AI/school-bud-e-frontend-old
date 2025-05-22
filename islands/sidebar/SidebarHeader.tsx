@@ -1,4 +1,3 @@
-import { IconLayoutSidebarLeftCollapse } from "@tabler/icons-preact";
 import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarHeaderProps {
@@ -7,15 +6,7 @@ interface SidebarHeaderProps {
   translations: typeof translations[keyof typeof translations];
 }
 
-export default function SidebarHeader({
-  isCollapsed,
-  setIsCollapsed,
-  translations,
-}: SidebarHeaderProps) {
-  const handleCollapse = () => {
-    setIsCollapsed((prev: boolean) => !prev);
-  };
-
+export default function SidebarHeader({ translations }: SidebarHeaderProps) {
   return (
     <div class="flex justify-between px-3 py-4 relative">
       <img

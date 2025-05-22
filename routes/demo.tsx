@@ -1,10 +1,9 @@
-import { Head } from "$fresh/runtime.ts";
 import { Button } from "../components/Button.tsx";
 
 export default function Demo() {
   return (
     <>
-      <Head>
+      <head>
         <title>Audio Button Demo</title>
         <style>
           {`
@@ -98,7 +97,7 @@ export default function Demo() {
             });
           `}
         </script>
-      </Head>
+      </head>
       <div>
         <h1>Audio Button Demo</h1>
 

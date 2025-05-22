@@ -1,7 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { chatIslandContent } from "../../internalization/content.ts";
-import { stopList } from "./speech.ts";
-import { stopAndResetAudio } from "./speech.ts";
+import { stopList, stopAndResetAudio } from "./speech.ts";
 import { startStream } from "./stream.ts";
 import * as chatDB from "./chatDB.ts";
 
@@ -16,7 +15,8 @@ if (typeof window !== "undefined") {
     initialSuffix = pathMatch[1];
   } else {
     // Fall back to search params for backward compatibility
-    initialSuffix = new URL(window.location.href).searchParams.get("chat") || "0";
+    initialSuffix = new URL(window.location.href).searchParams.get("chat") ||
+      "0";
   }
 }
 
@@ -57,13 +57,13 @@ if (typeof window !== "undefined") {
     try {
       await chatDB.initDB();
       const storedChats = await chatDB.getAllChats();
-      
+
       // If no chats in IndexedDB, check localStorage for migration
       if (Object.keys(storedChats).length === 0) {
         const localChatKeys = Object.keys(localStorage).filter((key) =>
           key.startsWith("bude-chat-")
         );
-        
+
         // Migrate from localStorage if needed
         if (localChatKeys.length > 0) {
           const migratedChats: { [key: string]: Message[] } = {};
@@ -75,7 +75,7 @@ if (typeof window !== "undefined") {
               await chatDB.saveChat(key, JSON.parse(json));
             }
           }
-          
+
           // Update chats signal with migrated data
           chats.value = migratedChats;
         } else {
@@ -90,25 +90,25 @@ if (typeof window !== "undefined") {
       }
     } catch (error) {
       console.error("Error initializing IndexedDB:", error);
-      
+
       // Fallback to localStorage if IndexedDB fails
       const storedChats: { [key: string]: Message[] } = {};
       const localChatKeys = Object.keys(localStorage).filter((key) =>
         key.startsWith("bude-chat-")
       );
-      
+
       for (const key of localChatKeys) {
         const json = localStorage.getItem(key);
         if (json) {
           storedChats[key] = JSON.parse(json);
         }
       }
-      
+
       // If no chats found, initialize with default
       if (Object.keys(storedChats).length === 0) {
         storedChats["bude-chat-0"] = [];
       }
-      
+
       chats.value = storedChats;
     } finally {
       isLoadingChats.value = false;
@@ -138,11 +138,11 @@ export const messages = computed<Message[]>(() => {
 export const currentChatLang = computed<"de" | "en">(() => {
   const msgs = messages.value;
   const lastMessage = msgs[msgs.length - 1];
-  
+
   if (lastMessage.role === "assistant") {
     return "de";
   }
-  
+
   return "en";
 });
 
@@ -169,21 +169,23 @@ effect(() => {
       }
       history.pushState(null, "", newUrl);
       // Dispatch navigation event for Fresh's client-side routing
-      globalThis.dispatchEvent(new CustomEvent('navigation', { detail: { url: newUrl } }));
+      globalThis.dispatchEvent(
+        new CustomEvent("navigation", { detail: { url: newUrl } }),
+      );
     }
   }
-  stopAndResetAudio?.();
+  //stopAndResetAudio?.();
 });
 
 // Sync all chats to IndexedDB whenever the chats signal changes.
 effect(() => {
   if (isLoadingChats.value) return;
-  
+
   // Save each chat to IndexedDB
   for (const [key, messages] of Object.entries(chats.value)) {
-    chatDB.saveChat(key, messages).catch(error => {
+    chatDB.saveChat(key, messages).catch((error) => {
       console.error(`Error saving chat ${key} to IndexedDB:`, error);
-      
+
       // Fallback to localStorage if IndexedDB fails
       localStorage.setItem(key, JSON.stringify(messages));
     });
@@ -226,27 +228,31 @@ export const disposeSettingsEffect = () => {
 export const startNewChat = () => {
   // Get valid numeric suffixes only
   const currentChatNumbers = Object.keys(chats.value)
-    .filter(key => key.startsWith("bude-chat-"))
-    .map(key => {
+    .filter((key) => key.startsWith("bude-chat-"))
+    .map((key) => {
       const num = Number.parseInt(key.replace("bude-chat-", ""));
       return Number.isNaN(num) ? 0 : num;
     });
-  
+
   // Find max value, defaulting to 0 if no valid numbers exist
-  const maxValue = currentChatNumbers.length > 0 ? Math.max(...currentChatNumbers) : 0;
+  const maxValue = currentChatNumbers.length > 0
+    ? Math.max(...currentChatNumbers)
+    : 0;
   const newChatSuffix = String(maxValue + 1);
   const newKey = `bude-chat-${newChatSuffix}`;
-  
+
   // Create the new chat first
   chats.value = { ...chats.value, [newKey]: [] };
-  
+
   // Update URL and trigger client-side routing
   if (typeof window !== "undefined") {
     const newUrl = `/chat/${newChatSuffix}`;
     history.pushState(null, "", newUrl);
-    globalThis.dispatchEvent(new CustomEvent('navigation', { detail: { url: newUrl } }));
+    globalThis.dispatchEvent(
+      new CustomEvent("navigation", { detail: { url: newUrl } }),
+    );
   }
-  
+
   // Update the suffix last to prevent double-triggering the effect
   chatSuffix.value = newChatSuffix;
 };
@@ -255,23 +261,23 @@ export const startNewChat = () => {
 // If more than one chat exists, delete the current chat and switch to another.
 // Otherwise, clear the current chat.
 export const deleteChat = (suffix: string) => {
-  console.log('Trying to delete', {suffix})
+  console.log("Trying to delete", { suffix });
   const currentKey = `bude-chat-${suffix}`;
   const chatKeys = Object.keys(chats.value);
-  
+
   if (chatKeys.length > 1) {
     // Create a new object without the current chat
     const { [currentKey]: _removed, ...remainingChats } = chats.value;
     chats.value = remainingChats;
-    
+
     // Choose a new chat (for example, the first one in sorted order)
     const newKey = Object.keys(remainingChats).sort()[0];
     chatSuffix.value = newKey.slice("bude-chat-".length);
-    
+
     // Delete from IndexedDB
-    chatDB.deleteChat(currentKey).catch(error => {
+    chatDB.deleteChat(currentKey).catch((error) => {
       console.error(`Error deleting chat ${currentKey} from IndexedDB:`, error);
-      
+
       // Fallback: remove from localStorage
       localStorage.removeItem(currentKey);
     });
@@ -279,11 +285,11 @@ export const deleteChat = (suffix: string) => {
     // Clear the current chat but keep the key
     chats.value = { "bude-chat-0": [] };
     chatSuffix.value = "0";
-    
+
     // Save empty chat to IndexedDB
-    chatDB.saveChat("bude-chat-0", []).catch(error => {
+    chatDB.saveChat("bude-chat-0", []).catch((error) => {
       console.error("Error saving empty chat to IndexedDB:", error);
-      
+
       // Fallback: save to localStorage
       localStorage.setItem("bude-chat-0", JSON.stringify([]));
     });
@@ -292,15 +298,19 @@ export const deleteChat = (suffix: string) => {
 
 // Delete all chats.
 export const deleteAllChats = () => {
-  chatDB.deleteAllChats().catch(error => {
+  chatDB.deleteAllChats().catch((error) => {
     console.error("Error deleting all chats from IndexedDB:", error);
-    
+
     // Fallback: clear localStorage
-    for (const key of Object.keys(localStorage).filter(key => key.startsWith("bude-chat-"))) {
+    for (
+      const key of Object.keys(localStorage).filter((key) =>
+        key.startsWith("bude-chat-")
+      )
+    ) {
       localStorage.removeItem(key);
     }
   });
-  
+
   chats.value = { "bude-chat-0": [] };
   chatSuffix.value = "0";
 };
@@ -324,16 +334,16 @@ export const restoreChatsFromLocalFile = (e: InputEvent) => {
     console.error("No file selected");
     return;
   }
-  
+
   const reader = new FileReader();
   reader.onload = async (event) => {
     try {
       const jsonData = event.target?.result as string;
       const importedChats = await chatDB.importChats(jsonData);
-      
+
       // Replace the entire chats object with the imported chats
       chats.value = importedChats;
-      
+
       // Set the current chat suffix to the first chat (sorted by key)
       const chatKeys = Object.keys(importedChats);
       const newChatSuffix = chatKeys.length > 0
@@ -344,11 +354,11 @@ export const restoreChatsFromLocalFile = (e: InputEvent) => {
       console.error("Error parsing JSON file:", error);
     }
   };
-  
+
   reader.onerror = (error) => {
     console.error("Error reading file:", error);
   };
-  
+
   reader.readAsText(file);
 };
 
@@ -382,8 +392,8 @@ export const handleEditAction = (groupIndex: number) => {
     } else {
       // Handle content arrays of objects (e.g., with text and image_url)
       contentToEdit = message.content
-        .filter((item) => 'type' in item && item.type === "text")
-        .map((item) => 'text' in item ? item.text : '')
+        .filter((item) => "type" in item && item.type === "text")
+        .map((item) => "text" in item ? item.text : "")
         .join("");
     }
   }
@@ -420,7 +430,7 @@ export const editMessage = (messageIndex: number, updatedMessage: Message) => {
 export const addMessage = (newMessage: Message) => {
   // Make a deep copy to ensure objects (like PDFs) are properly preserved
   const messageCopy = JSON.parse(JSON.stringify(newMessage));
-  
+
   const key = `bude-chat-${chatSuffix.value}`;
   const msgs = chats.value[key] || [];
   const newMsgs = [...msgs, messageCopy];

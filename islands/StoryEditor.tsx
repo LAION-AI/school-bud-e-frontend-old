@@ -11,7 +11,9 @@ interface StoryEditorProps {
   onEditComplete?: (editHash: string) => void;
 }
 
-export default function StoryEditor({ originalHash, segmentId, initialContent, onEditComplete }: StoryEditorProps) {
+export default function StoryEditor(
+  { originalHash, segmentId, initialContent, onEditComplete }: StoryEditorProps,
+) {
   const [content, setContent] = useState(initialContent);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,12 +24,14 @@ export default function StoryEditor({ originalHash, segmentId, initialContent, o
     const loadContent = async () => {
       if (!initialContent) {
         try {
-          const response = await fetch(`http://localhost:8083/segments/${originalHash}/segment-${segmentId}`);
-          if (!response.ok) throw new Error('Failed to load segment content');
+          const response = await fetch(
+            `http://localhost:8083/segments/${originalHash}/segment-${segmentId}`,
+          );
+          if (!response.ok) throw new Error("Failed to load segment content");
           const data = await response.json();
           setContent(data.content);
         } catch (error) {
-          console.error('Error loading segment content:', error);
+          console.error("Error loading segment content:", error);
         }
       }
       setIsLoading(false);
@@ -40,8 +44,11 @@ export default function StoryEditor({ originalHash, segmentId, initialContent, o
   useEffect(() => {
     let interval: number | undefined;
     const session = editSession.value;
-    
-    if (session?.editHash && session.status !== 'completed' && session.status !== 'error') {
+
+    if (
+      session?.editHash && session.status !== "completed" &&
+      session.status !== "error"
+    ) {
       interval = setInterval(() => {
         if (session.editHash) {
           editStore.checkEditStatus(session.editHash);
@@ -57,19 +64,19 @@ export default function StoryEditor({ originalHash, segmentId, initialContent, o
   // Notify parent when edit is complete
   useEffect(() => {
     const session = editSession.value;
-    if (session?.status === 'completed' && onEditComplete && session.editHash) {
+    if (session?.status === "completed" && onEditComplete && session.editHash) {
       onEditComplete(session.editHash);
     }
   }, [editSession.value, onEditComplete]);
 
   const handleEdit = async () => {
     if (!content.trim()) return;
-    
+
     setIsEditing(true);
     try {
       await editStore.editStorySegment(originalHash, segmentId, content);
     } catch (error) {
-      console.error('Failed to edit story:', error);
+      console.error("Failed to edit story:", error);
     }
     setIsEditing(false);
   };
@@ -77,7 +84,8 @@ export default function StoryEditor({ originalHash, segmentId, initialContent, o
   if (isLoading) {
     return (
       <div class="flex items-center justify-center p-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500">
+        </div>
       </div>
     );
   }
@@ -91,29 +99,29 @@ export default function StoryEditor({ originalHash, segmentId, initialContent, o
         placeholder="Edit your story segment here..."
         disabled={isEditing}
       />
-      
+
       <div class="flex items-center justify-between">
         <Button
           type="button"
           onClick={handleEdit}
           disabled={isEditing || content === initialContent || !content.trim()}
           class={`px-4 py-2 ${
-            isEditing || !content.trim() ? 'bg-gray-300' : 'bg-amber-500 hover:bg-amber-600'
+            isEditing || !content.trim()
+              ? "bg-gray-300"
+              : "bg-amber-500 hover:bg-amber-600"
           } text-white rounded-lg transition-colors`}
         >
-          {isEditing ? 'Editing...' : 'Save Changes'}
+          {isEditing ? "Editing..." : "Save Changes"}
         </Button>
 
         {editSession.value && (
           <div class="text-sm">
-            {editSession.value.status === 'error' ? (
-              <p class="text-red-600">{editSession.value.error}</p>
-            ) : (
-              <p class="text-gray-600">Status: {editSession.value.status}</p>
-            )}
+            {editSession.value.status === "error"
+              ? <p class="text-red-600">{editSession.value.error}</p>
+              : <p class="text-gray-600">Status: {editSession.value.status}</p>}
           </div>
         )}
       </div>
     </div>
   );
-} 
+}

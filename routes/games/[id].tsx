@@ -1,14 +1,15 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { PageProps } from "fresh";
 import type { Game, SavedGame } from "../../types/formats.ts";
 import GamePageIsland from "../../islands/GamePage.tsx";
 import KvStorage from "../api/(_utils)/kv_storage.ts";
+import { Handlers } from "fresh/compat";
 
 interface Data {
   game: Game | null;
 }
 
 export const handler: Handlers<Data> = {
-  async GET(_req, ctx) {
+  async GET(ctx) {
     const id = ctx.params.id;
     try {
       const game = await fetchGame(id);
@@ -37,7 +38,7 @@ async function fetchGame(id: string): Promise<Game> {
 
 export default function GameRoute(props: PageProps<Data>) {
   const { game } = props.data;
-  
+
   if (!game) {
     return <div>Game not found</div>;
   }

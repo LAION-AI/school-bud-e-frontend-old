@@ -56,9 +56,11 @@ export function Button({
       }`}
     >
       <span class="relative z-20 -translate-y-[4px] transition-transform duration-150 group-hover:-translate-y-[6px] group-active:translate-y-0 flex items-center gap-2 justify-between">
-        {isLoading ? (
-          <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        ) : null}
+        {isLoading
+          ? (
+            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          )
+          : null}
         {children}
       </span>
     </button>
