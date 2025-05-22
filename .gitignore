@@ -11,3 +11,14 @@ _fresh/
 node_modules/
 vendor/
 
+ai-tasks-server/**/__pycache__
+ai-tasks-server/emottsvoices
+ai-tasks-server/segments
+ai-tasks-server/tts_segments
+ai-tasks-server/emottsvoices.tar
+ai-tasks-server/final_audiobook_input.xml
+ai-tasks-server/input_audiobook.xml
+
+docker-compose/caddy/config
+docker-compose/caddy/data
+docker-compose/caddy/Caddyfile
