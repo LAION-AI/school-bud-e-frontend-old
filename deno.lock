@@ -12,6 +12,7 @@
     "jsr:@std/fs@1": "1.0.17",
     "jsr:@std/html@1": "1.0.4",
     "jsr:@std/http@^1.0.15": "1.0.16",
+    "jsr:@std/json@^1.0.2": "1.0.2",
     "jsr:@std/jsonc@1": "1.0.2",
     "jsr:@std/media-types@1": "1.1.0",
     "jsr:@std/path@1": "1.0.9",
@@ -92,8 +93,14 @@
     "@std/http@1.0.16": {
       "integrity": "80c8d08c4bfcf615b89978dcefb84f7e880087cf3b6b901703936f3592a06933"
     },
+    "@std/json@1.0.2": {
+      "integrity": "d9e5497801c15fb679f55a2c01c7794ad7a5dfda4dd1bebab5e409cb5e0d34d4"
+    },
     "@std/jsonc@1.0.2": {
-      "integrity": "909605dae3af22bd75b1cbda8d64a32cf1fd2cf6efa3f9e224aba6d22c0f44c7"
+      "integrity": "909605dae3af22bd75b1cbda8d64a32cf1fd2cf6efa3f9e224aba6d22c0f44c7",
+      "dependencies": [
+        "jsr:@std/json"
+      ]
     },
     "@std/media-types@1.1.0": {
       "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
@@ -856,7 +863,7 @@
   },
   "remote": {
     "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.mjs": "a435a52a5956e424a2e2f9cb269ed0ef188009eb4c90bc14b87a2b9bc8cd6907",
-    "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js": "d13d8a415fe47946d4e9b88e4bcf8bd4fda617dba2755b6300862d938c49973f",
+    "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js": "29e25cdf1a06075c90e9885af06ddd23fb22a5424ed23a61dda986c73a8af641",
     "https://deno.land/std@0.210.0/http/server_sent_event_stream.ts": "91a62d6c8fde557217f21e9cd759e2d439be8c20c9b699cf73feb5a0e76df338",
     "https://deno.land/x/zod@v3.22.4/ZodError.ts": "4de18ff525e75a0315f2c12066b77b5c2ae18c7c15ef7df7e165d63536fdf2ea",
     "https://deno.land/x/zod@v3.22.4/errors.ts": "5285922d2be9700cc0c70c95e4858952b07ae193aa0224be3cbd5cd5567eabef",
