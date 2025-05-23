@@ -347,6 +347,7 @@ export default function ChatInput() {
                 }}
                 data-tour="voice-record"
               />
+
               {/* Mode selector component */}
               <ChatModeSelector
                 selectedMode={selectedMode.value}

@@ -648,11 +648,11 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
     <div class="container mx-auto px-6 py-10 max-w-4xl">
       <div class="mb-8">
         <a
-          href="/graph"
+          href="/tests"
           class="inline-flex items-center text-primary-600 hover:text-primary-800"
         >
           <IconArrowLeft class="w-5 h-5 mr-2" />
-          Back to Graph
+          Back to all tests
         </a>
       </div>
 

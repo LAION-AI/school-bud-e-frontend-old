@@ -4,12 +4,24 @@ import { lang, messages, settings } from "./store.ts";
 export const audioFileDict = signal<
   Record<number, Record<number, { audio: HTMLAudioElement; played: boolean }>>
 >({});
-export const readAlways = signal(true);
+
+// Get initial value from session storage or default to false
+const getInitialReadAlways = (): boolean => {
+  if (typeof window === "undefined") return false;
+  const stored = sessionStorage.getItem("ai-speech-enabled");
+  return stored === "true";
+};
+
+export const readAlways = signal(getInitialReadAlways());
 export const stopList = signal<number[]>([]);
 export const resetTranscript = signal(0);
 
 export const toggleReadAlways = (value: boolean) => {
   readAlways.value = value;
+  // Save to session storage
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("ai-speech-enabled", value.toString());
+  }
   if (!value) {
     stopAndResetAudio();
     stopList.value = Object.keys(audioFileDict.value).map(Number);
@@ -88,7 +100,9 @@ export const getTTS = async (
     audioFileDict.value = { ...audioFileDict.value };
     console.log("Created new audio for message");
 
-    if (readAlways.value) {
+    // Play audio if readAlways is true OR if this was manually triggered
+    const isManuallyTriggered = sourceFunction === "handleOnSpeakAtGroupIndexAction";
+    if (readAlways.value || isManuallyTriggered) {
       audio.play().catch(console.error);
     }
   } catch (error) {
@@ -97,6 +111,7 @@ export const getTTS = async (
 };
 
 export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
+  debugger;
   // Don't process if it's a user message
   if (messages.value[groupIndex]?.role === "user") return;
 

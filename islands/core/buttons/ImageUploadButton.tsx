@@ -286,7 +286,7 @@ export function ImageUploadButton({
       <button
         onClick={onButtonClick}
         disabled={!IS_BROWSER}
-        class="border disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 mr-1 text-gray-500 hover:text-gray-900 relative"
+        class="border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 mr-1 text-gray-500 relative"
         type="button"
         aria-label="Upload image or PDF"
       >

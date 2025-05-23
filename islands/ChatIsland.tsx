@@ -5,7 +5,7 @@ import ChatWarning from "../components/Warning.tsx";
 // Necessary for streaming service
 import { useEffect, useRef, useState } from "preact/hooks";
 
-import { readAlways, stopList } from "../components/chat/speech.ts";
+import { readAlways, stopList, handleOnSpeakAtGroupIndexAction } from "../components/chat/speech.ts";
 import {
   chats,
   chatSuffix,
@@ -155,12 +155,7 @@ export default function ChatIsland({ lang, id }: { lang: string; id: string }) {
         audioFileDict={audioFileDict}
         onRefreshAction={handleRefreshAction}
         onEditAction={() => {}}
-        onSpeakAtGroupIndexAction={(groupIndex: number) => {
-          const audioFile = audioFileDict[groupIndex][0];
-          if (audioFile) {
-            audioFile.audio.play();
-          }
-        }}
+        onSpeakAtGroupIndexAction={handleOnSpeakAtGroupIndexAction}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>
