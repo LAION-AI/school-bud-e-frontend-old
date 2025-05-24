@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine
+FROM denoland/deno:alpine-2.3.3
 
 # Add build argument for branch
 ARG BRANCH=main
