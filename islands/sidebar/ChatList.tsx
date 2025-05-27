@@ -1,6 +1,5 @@
-import { useSignal } from "@preact/signals";
 import { IconDownload, IconMessageCircle, IconX } from "@tabler/icons-preact";
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import { chats } from "../../components/chat/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
@@ -24,6 +23,12 @@ export default function ChatList({
   const [isExpanded, setIsExpanded] = useState(true);
   const [activeSuffix, setActiveSuffix] = useState(currentChatSuffix);
 
+  const nextChatSuffix = useMemo(() => {
+    const keys = Object.keys(chats.peek());
+    const numbers = keys.map(key => Number.parseInt(key.slice(10)));
+    return Math.max(...numbers) + 1;
+  }, [Object.keys(chats.peek()).length]);
+
   return (
     <CollapsibleSection
       icon={<IconMessageCircle size={20} />}
@@ -44,6 +49,7 @@ export default function ChatList({
           })
           .map((key) => {
             const suffix = key.slice(10);
+            console.log({ suffix, nextChatSuffix, activeSuffix });
             return (
               <SidebarLink
                 href={`/chat/${suffix}`}
@@ -77,8 +83,7 @@ export default function ChatList({
           }),
         <SidebarLink
           key="new"
-          href="/chat/new"
-          isActive={"new" === activeSuffix}
+          href={`/chat/${nextChatSuffix}`}
           className="flex items-center group flex-1 py-2"
         >
           {isCollapsed ? "+" : t.actions.newChat}

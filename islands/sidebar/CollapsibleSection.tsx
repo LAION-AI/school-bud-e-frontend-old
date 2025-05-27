@@ -1,7 +1,7 @@
 import { IconChevronDown } from "@tabler/icons-preact";
 
 import type { ComponentChildren, VNode } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 
 const SafeChevronDown = (props: any): VNode => <IconChevronDown {...props} />;
 
@@ -30,80 +30,123 @@ export default function CollapsibleSection({
   onRouteMatch,
 }: CollapsibleSectionProps) {
   const [isActive, setIsActive] = useState(false);
-  const [shouldBeExpanded, setShouldBeExpanded] = useState(propIsExpanded);
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(propIsExpanded);
+  const [hasAutoExpanded, setHasAutoExpanded] = useState(false);
 
-  const getButtonColorClasses = (
-    active: boolean,
-  ) => {
+  // Stable function to check route match
+  const checkRouteMatch = useCallback(() => {
+    const path = globalThis.location?.pathname;
+    if (!path) return { isActive: false, match: null };
+
+    let match: RegExpMatchArray | null = null;
+    let isCurrentlyActive = false;
+
+    if (routePattern) {
+      match = path.match(routePattern) || null;
+      isCurrentlyActive = Boolean(match);
+    } else if (baseRoute) {
+      isCurrentlyActive = path.startsWith(baseRoute);
+    }
+
+    return { isActive: isCurrentlyActive, match };
+  }, [baseRoute, routePattern]);
+
+  // Handle route-based active state
+  useEffect(() => {
+    const { isActive: currentlyActive, match } = checkRouteMatch();
+    setIsActive(currentlyActive);
+    
+    // Auto-expand if this section becomes active and hasn't been auto-expanded before
+    if (currentlyActive && !isExpanded && !hasAutoExpanded) {
+      setIsExpanded(true);
+      setHasAutoExpanded(true);
+      onToggle();
+    }
+
+    // Call route match callback
+    if (onRouteMatch) {
+      onRouteMatch(match);
+    }
+  }, [checkRouteMatch, isExpanded, hasAutoExpanded, onToggle, onRouteMatch]);
+
+  // Sync with prop changes
+  useEffect(() => {
+    setIsExpanded(propIsExpanded);
+  }, [propIsExpanded]);
+
+  // Listen for navigation events to re-check routes
+  useEffect(() => {
+    const handleNavigation = () => {
+      const { isActive: currentlyActive, match } = checkRouteMatch();
+      setIsActive(currentlyActive);
+      
+      if (onRouteMatch) {
+        onRouteMatch(match);
+      }
+    };
+
+    // Listen for popstate (back/forward navigation)
+    globalThis.addEventListener?.('popstate', handleNavigation);
+    
+    // Listen for pushstate/replacestate (programmatic navigation)
+    const originalPushState = globalThis.history?.pushState;
+    const originalReplaceState = globalThis.history?.replaceState;
+    
+    if (originalPushState) {
+      globalThis.history.pushState = function(...args) {
+        originalPushState.apply(this, args);
+        handleNavigation();
+      };
+    }
+    
+    if (originalReplaceState) {
+      globalThis.history.replaceState = function(...args) {
+        originalReplaceState.apply(this, args);
+        handleNavigation();
+      };
+    }
+
+    return () => {
+      globalThis.removeEventListener?.('popstate', handleNavigation);
+      if (originalPushState) {
+        globalThis.history.pushState = originalPushState;
+      }
+      if (originalReplaceState) {
+        globalThis.history.replaceState = originalReplaceState;
+      }
+    };
+  }, [checkRouteMatch, onRouteMatch]);
+
+  const getButtonColorClasses = (active: boolean) => {
     if (active) {
       return "bg-primary-100 text-primary-900 hover:bg-primary-200 border-2 border-primary-500 focus-visible:ring-primary-500";
     }
     return "hover:bg-gray-50 text-gray-700 hover:text-gray-900 border-2 border-transparent";
   };
 
-  const getIconColorClasses = (
-    active: boolean,
-  ) => {
+  const getIconColorClasses = (active: boolean) => {
     if (active) {
       return "text-primary-800";
     }
     return "text-gray-600 group-hover:text-gray-800";
   };
 
-  const getChevronColorClasses = (
-    active: boolean,
-  ) => {
+  const getChevronColorClasses = (active: boolean) => {
     if (active) {
       return "text-primary-800";
     }
     return "text-gray-500 group-hover:text-gray-700";
   };
 
-  // Run once on mount to check if this section should be active
-  useEffect(() => {
-    const checkActive = () => {
-      const path = globalThis.location?.pathname;
-
-      let isCurrentlyActive = false;
-      let match: RegExpMatchArray | null = null;
-
-      if (routePattern) {
-        match = path?.match(routePattern) || null;
-        isCurrentlyActive = Boolean(match);
-      } else if (baseRoute) {
-        isCurrentlyActive = Boolean(path?.startsWith(baseRoute));
-      }
-
-      setIsActive(isCurrentlyActive);
-
-      if (!hasInitialized && isCurrentlyActive && !shouldBeExpanded) {
-        setShouldBeExpanded(true);
-        onToggle();
-      }
-      setHasInitialized(true);
-
-      if (onRouteMatch) {
-        onRouteMatch(match);
-      }
-    };
-
-    checkActive();
-  }, [
-    baseRoute,
-    routePattern,
-    onRouteMatch,
-    onToggle,
-    shouldBeExpanded,
-    hasInitialized,
-  ]);
-
-  useEffect(() => {
-    setShouldBeExpanded(propIsExpanded);
-  }, [propIsExpanded]);
-
   const handleToggle = () => {
-    setShouldBeExpanded(!shouldBeExpanded);
+    const newExpanded = !isExpanded;
+    setIsExpanded(newExpanded);
+    
+    // Mark as manually toggled so we don't auto-expand again
+    if (newExpanded) {
+      setHasAutoExpanded(true);
+    }
+    
     onToggle();
   };
 
@@ -115,22 +158,14 @@ export default function CollapsibleSection({
       <button
         type="button"
         onClick={handleToggle}
-        aria-expanded={shouldBeExpanded}
+        aria-expanded={isExpanded}
         aria-controls={`${title.toLowerCase()}-content`}
-        class={`${buttonBaseClasses} ${
-          getButtonColorClasses(
-            isActive,
-          )
-        }`}
+        class={`${buttonBaseClasses} ${getButtonColorClasses(isActive)}`}
       >
         <div class="flex items-center gap-3">
           <div class="flex-shrink-0">
             <div
-              class={`h-5 w-5 transition-colors ${
-                getIconColorClasses(
-                  isActive,
-                )
-              }`}
+              class={`h-5 w-5 transition-colors ${getIconColorClasses(isActive)}`}
             >
               {icon}
             </div>
@@ -139,15 +174,13 @@ export default function CollapsibleSection({
         </div>
         {!isCollapsed && (
           <SafeChevronDown
-            class={`h-4 w-4 transition-transform duration-200 ${
-              getChevronColorClasses(
-                isActive,
-              )
-            } ${shouldBeExpanded ? "rotate-180" : ""}`}
+            class={`h-4 w-4 transition-transform duration-200 ${getChevronColorClasses(isActive)} ${
+              isExpanded ? "rotate-180" : ""
+            }`}
           />
         )}
       </button>
-      {shouldBeExpanded && !isCollapsed && (
+      {isExpanded && !isCollapsed && (
         <div
           id={`${title.toLowerCase()}-content`}
           class="mt-1 ml-4 space-y-1 border-l-2 border-gray-200 pl-4"
