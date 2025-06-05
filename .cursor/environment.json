@@ -1,0 +1,4 @@
+{
+  "install": "deno install",
+  "start": "deno task start"
+}
