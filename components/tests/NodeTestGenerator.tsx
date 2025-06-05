@@ -9,8 +9,8 @@ import {
   TestQuestion,
   updateTest,
 } from "./store.ts";
-import { addMessage, messages } from "../../components/chat/store.ts";
-import { startStream } from "../../components/chat/stream.ts";
+import { addMessage, messages } from "../chat/store.ts";
+import { startStream } from "../chat/stream.ts";
 import { extractTestData } from "../../utils/formatParser.ts";
 import { formatTemplates } from "../../types/formats.ts";
 

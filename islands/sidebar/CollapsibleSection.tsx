@@ -8,10 +8,9 @@ const SafeChevronDown = (props: any): VNode => <IconChevronDown {...props} />;
 interface CollapsibleSectionProps {
   icon: ComponentChildren;
   title: string;
-  isCollapsed: boolean;
   isExpanded: boolean;
   onToggle: () => void;
-  children: ComponentChildren;
+  children: ComponentChildren | ((activeRoute: string) => ComponentChildren);
   baseRoute?: string;
   routePattern?: RegExp;
   onRouteMatch?: (match: RegExpMatchArray | null) => void;
@@ -21,7 +20,6 @@ interface CollapsibleSectionProps {
 export default function CollapsibleSection({
   icon,
   title,
-  isCollapsed,
   isExpanded: propIsExpanded,
   onToggle,
   children,
@@ -32,6 +30,9 @@ export default function CollapsibleSection({
   const [isActive, setIsActive] = useState(false);
   const [isExpanded, setIsExpanded] = useState(propIsExpanded);
   const [hasAutoExpanded, setHasAutoExpanded] = useState(false);
+  const [activeRoute, setActiveRoute] = useState(() => {
+    return globalThis.location?.pathname || "";
+  });
 
   // Stable function to check route match
   const checkRouteMatch = useCallback(() => {
@@ -56,6 +57,10 @@ export default function CollapsibleSection({
     const { isActive: currentlyActive, match } = checkRouteMatch();
     setIsActive(currentlyActive);
     
+    // Update active route
+    const newActiveRoute = match?.[0] || globalThis.location?.pathname || "";
+    setActiveRoute(newActiveRoute);
+    
     // Auto-expand if this section becomes active and hasn't been auto-expanded before
     if (currentlyActive && !isExpanded && !hasAutoExpanded) {
       setIsExpanded(true);
@@ -63,7 +68,7 @@ export default function CollapsibleSection({
       onToggle();
     }
 
-    // Call route match callback
+    // Call external route match callback if provided
     if (onRouteMatch) {
       onRouteMatch(match);
     }
@@ -79,6 +84,10 @@ export default function CollapsibleSection({
     const handleNavigation = () => {
       const { isActive: currentlyActive, match } = checkRouteMatch();
       setIsActive(currentlyActive);
+      
+      // Update active route
+      const newActiveRoute = match?.[0] || globalThis.location?.pathname || "";
+      setActiveRoute(newActiveRoute);
       
       if (onRouteMatch) {
         onRouteMatch(match);
@@ -153,6 +162,14 @@ export default function CollapsibleSection({
   const buttonBaseClasses =
     "w-full px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2";
 
+  // Support both regular children and render prop pattern
+  const renderChildren = () => {
+    if (typeof children === 'function') {
+      return children(activeRoute);
+    }
+    return children;
+  };
+
   return (
     <div class="relative group">
       <button
@@ -170,22 +187,20 @@ export default function CollapsibleSection({
               {icon}
             </div>
           </div>
-          {!isCollapsed && <span class="font-medium text-sm">{title}</span>}
+          <span class="font-medium text-sm">{title}</span>
         </div>
-        {!isCollapsed && (
-          <SafeChevronDown
-            class={`h-4 w-4 transition-transform duration-200 ${getChevronColorClasses(isActive)} ${
-              isExpanded ? "rotate-180" : ""
-            }`}
-          />
-        )}
+        <SafeChevronDown
+          class={`h-4 w-4 transition-transform duration-200 ${getChevronColorClasses(isActive)} ${
+            isExpanded ? "rotate-180" : ""
+          }`}
+        />
       </button>
-      {isExpanded && !isCollapsed && (
+      {isExpanded && (
         <div
           id={`${title.toLowerCase()}-content`}
           class="mt-1 ml-4 space-y-1 border-l-2 border-gray-200 pl-4"
         >
-          {children}
+          {renderChildren()}
         </div>
       )}
     </div>
