@@ -3,7 +3,6 @@ import { MessageContent } from "./MessageContent.tsx";
 import EditIcon from "./icons/EditIcon.tsx";
 import RefreshIcon from "./icons/RefreshIcon.tsx";
 import SpeakIcon from "./icons/SpeakIcon.tsx";
-import DownloadIcon from "./icons/DownloadIcon.tsx";
 
 interface AudioItem {
   audio: HTMLAudioElement;
@@ -14,8 +13,9 @@ type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
 interface MessageProps {
   item: {
+    id?: string;
     role: string;
-    content: string | string[];
+    content: string | (string | import("../types.d.ts").Image)[];
   };
   groupIndex: number;
   currentEditIndex: number;
@@ -23,9 +23,6 @@ interface MessageProps {
   onEditAction: (groupIndex: number) => void;
   onRefreshAction: (groupIndex: number) => void;
   onSpeakAtGroupIndexAction: (groupIndex: number) => void;
-  onDownloadAudio: (
-    audioDict: Record<string, { audio: HTMLAudioElement }>,
-  ) => void;
 }
 
 export function Message({
@@ -36,7 +33,6 @@ export function Message({
   onEditAction,
   onRefreshAction,
   onSpeakAtGroupIndexAction,
-  onDownloadAudio,
 }: MessageProps): JSX.Element {
   return (
     <div
@@ -68,16 +64,6 @@ export function Message({
                   (audioFile) => !audioFile.audio.paused,
                 )}
             />
-          </button>
-        )}
-        {item.role !== "user" &&
-          audioFileDict[groupIndex] &&
-          Object.keys(audioFileDict[groupIndex]).length > 0 && (
-          <button
-            onClick={() => onDownloadAudio(audioFileDict[groupIndex])}
-            type="button"
-          >
-            <DownloadIcon />
           </button>
         )}
       </span>

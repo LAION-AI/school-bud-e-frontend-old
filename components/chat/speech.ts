@@ -1,8 +1,9 @@
-import { signal } from "@preact/signals";
-import { lang, messages, settings } from "./store.ts";
+import { signal, effect } from "@preact/signals";
+import { lang, messages, settings, chatSuffix } from "./store.ts";
 
+// Chat-aware audio cache: chatId -> messageIndex -> audioIndex -> AudioItem
 export const audioFileDict = signal<
-  Record<number, Record<number, { audio: HTMLAudioElement; played: boolean }>>
+  Record<string, Record<number, Record<number, { audio: HTMLAudioElement; played: boolean }>>>
 >({});
 
 // Get initial value from session storage or default to false
@@ -24,8 +25,93 @@ export const toggleReadAlways = (value: boolean) => {
   }
   if (!value) {
     stopAndResetAudio();
-    stopList.value = Object.keys(audioFileDict.value).map(Number);
+    stopList.value = Object.keys(getCurrentChatAudioDict()).map(Number);
   }
+};
+
+// Helper function to get current chat's audio dictionary
+const getCurrentChatAudioDict = () => {
+  const currentChatId = `bude-chat-${chatSuffix.value}`;
+  return audioFileDict.value[currentChatId] || {};
+};
+
+// Helper function to ensure current chat audio dict exists
+const ensureCurrentChatAudioDict = () => {
+  const currentChatId = `bude-chat-${chatSuffix.value}`;
+  if (!audioFileDict.value[currentChatId]) {
+    audioFileDict.value = {
+      ...audioFileDict.value,
+      [currentChatId]: {}
+    };
+  }
+  return currentChatId;
+};
+
+// Invalidate audio cache for specific messages in current chat
+export const invalidateAudioCache = (messageIndices: number[]) => {
+  const currentChatId = ensureCurrentChatAudioDict();
+  const currentChatAudio = audioFileDict.value[currentChatId];
+  
+  messageIndices.forEach(index => {
+    if (currentChatAudio[index]) {
+      // Clean up audio objects and blob URLs
+      Object.values(currentChatAudio[index]).forEach(audioItem => {
+        audioItem.audio.pause();
+        audioItem.audio.currentTime = 0;
+        // Clean up blob URL to prevent memory leaks
+        if (audioItem.audio.src && audioItem.audio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(audioItem.audio.src);
+        }
+      });
+      delete currentChatAudio[index];
+    }
+  });
+  
+  audioFileDict.value = { ...audioFileDict.value };
+  console.log(`Invalidated audio cache for messages: ${messageIndices.join(', ')}`);
+};
+
+// Clear all audio cache for current chat
+export const clearCurrentChatAudioCache = () => {
+  const currentChatId = `bude-chat-${chatSuffix.value}`;
+  const currentChatAudio = audioFileDict.value[currentChatId];
+  
+  if (currentChatAudio) {
+    // Clean up all audio objects and blob URLs
+    Object.values(currentChatAudio).forEach(messageAudio => {
+      Object.values(messageAudio).forEach(audioItem => {
+        audioItem.audio.pause();
+        audioItem.audio.currentTime = 0;
+        if (audioItem.audio.src && audioItem.audio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(audioItem.audio.src);
+        }
+      });
+    });
+    
+    audioFileDict.value = {
+      ...audioFileDict.value,
+      [currentChatId]: {}
+    };
+    console.log(`Cleared all audio cache for chat: ${currentChatId}`);
+  }
+};
+
+// Clear audio cache for all chats (useful for cleanup)
+export const clearAllAudioCache = () => {
+  Object.values(audioFileDict.value).forEach(chatAudio => {
+    Object.values(chatAudio).forEach(messageAudio => {
+      Object.values(messageAudio).forEach(audioItem => {
+        audioItem.audio.pause();
+        audioItem.audio.currentTime = 0;
+        if (audioItem.audio.src && audioItem.audio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(audioItem.audio.src);
+        }
+      });
+    });
+  });
+  
+  audioFileDict.value = {};
+  console.log('Cleared all audio cache');
 };
 
 export const getTTS = async (
@@ -53,11 +139,14 @@ export const getTTS = async (
   const cleanedText = text;
   if (!cleanedText) return;
 
+  const currentChatId = ensureCurrentChatAudioDict();
+  const currentChatAudio = audioFileDict.value[currentChatId];
+
   // Don't process if we already have audio for this message
-  if (audioFileDict.value[groupIndex]?.[0]?.audio) {
+  if (currentChatAudio[groupIndex]?.[0]?.audio) {
     console.log("Audio already exists for this message");
     if (readAlways.value) {
-      audioFileDict.value[groupIndex][0].audio.play().catch(console.error);
+      currentChatAudio[groupIndex][0].audio.play().catch(console.error);
     }
     return;
   }
@@ -88,11 +177,18 @@ export const getTTS = async (
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
 
-    if (!audioFileDict.value[groupIndex]) {
-      audioFileDict.value[groupIndex] = {};
+    // Add event listener to update UI when audio ends
+    audio.addEventListener('ended', () => {
+      console.log(`Audio ended for message ${groupIndex}`);
+      // Trigger a re-render by updating the audioFileDict signal
+      audioFileDict.value = { ...audioFileDict.value };
+    });
+
+    if (!currentChatAudio[groupIndex]) {
+      currentChatAudio[groupIndex] = {};
     }
 
-    audioFileDict.value[groupIndex][0] = {
+    currentChatAudio[groupIndex][0] = {
       audio,
       played: false,
     };
@@ -111,11 +207,12 @@ export const getTTS = async (
 };
 
 export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
-  debugger;
   // Don't process if it's a user message
   if (messages.value[groupIndex]?.role === "user") return;
 
-  if (!audioFileDict.value[groupIndex]) {
+  const currentChatAudio = getCurrentChatAudioDict();
+
+  if (!currentChatAudio[groupIndex]) {
     const message = messages.value[groupIndex];
     if (!message || !message.content) return;
 
@@ -127,7 +224,7 @@ export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
     return;
   }
 
-  const audio = audioFileDict.value[groupIndex][0]?.audio;
+  const audio = currentChatAudio[groupIndex][0]?.audio;
   if (!audio) return;
 
   if (!audio.paused) {
@@ -143,7 +240,8 @@ export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
 };
 
 export const stopAndResetAudio = () => {
-  Object.values(audioFileDict.value).forEach((group) => {
+  const currentChatAudio = getCurrentChatAudioDict();
+  Object.values(currentChatAudio).forEach((group) => {
     Object.values(group).forEach((item) => {
       if (!item.audio.paused) {
         item.audio.pause();
@@ -152,3 +250,34 @@ export const stopAndResetAudio = () => {
     });
   });
 };
+
+// Effect to handle chat switching - stop audio when switching chats
+if (typeof window !== "undefined") {
+  let previousChatSuffix = chatSuffix.value;
+  
+  effect(() => {
+    const currentSuffix = chatSuffix.value;
+    
+    if (previousChatSuffix !== currentSuffix) {
+      console.log(`Chat switched from ${previousChatSuffix} to ${currentSuffix}`);
+      
+      // Stop all audio in the previous chat
+      if (previousChatSuffix && audioFileDict.value[`bude-chat-${previousChatSuffix}`]) {
+        const previousChatAudio = audioFileDict.value[`bude-chat-${previousChatSuffix}`];
+        Object.values(previousChatAudio).forEach((group) => {
+          Object.values(group).forEach((item) => {
+            if (!item.audio.paused) {
+              item.audio.pause();
+              item.audio.currentTime = 0;
+            }
+          });
+        });
+      }
+      
+      // Clear stop list for the new chat
+      stopList.value = [];
+      
+      previousChatSuffix = currentSuffix;
+    }
+  });
+}

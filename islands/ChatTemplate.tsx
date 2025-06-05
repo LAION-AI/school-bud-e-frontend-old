@@ -16,7 +16,11 @@ interface AudioItem {
 type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
 interface ChatTemplateProps {
-  messages: Message[];
+  messages: Array<{
+    id?: string;
+    role: string;
+    content: string | (string | import("../types.d.ts").Image)[];
+  }>;
   currentEditIndex: number;
   audioFileDict: AudioFileDict;
   onRefreshAction: (groupIndex: number) => void;
@@ -24,50 +28,6 @@ interface ChatTemplateProps {
   children: JSX.Element | JSX.Element[];
   onStartTour?: () => void;
   onSpeakAtGroupIndexAction: (groupIndex: number) => void;
-}
-
-function downloadAudioFiles(items: {
-  [key: string]: { audio: HTMLAudioElement };
-}) {
-  const timestamp = new Date().getTime();
-  const nicelyFormattedTimestamp = new Date(timestamp)
-    .toISOString()
-    .slice(0, 19)
-    .replace(/[-:]/g, "-");
-
-  // If there's only one item, download it directly
-  if (Object.keys(items).length === 1) {
-    const singleAudio = Object.values(items)[0].audio;
-    fetch(singleAudio.src)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `audio-${nicelyFormattedTimestamp}.mp3`;
-        a.click();
-        URL.revokeObjectURL(url);
-      });
-    return;
-  }
-
-  // For multiple items, download all MP3s first
-  const mp3Promises = Object.values(items).map((item) =>
-    fetch(item.audio.src).then((response) => response.blob())
-  );
-
-  Promise.all(mp3Promises).then((blobs) => {
-    // Combine all MP3 blobs into a single blob
-    const combinedBlob = new Blob(blobs, { type: "audio/mp3" });
-
-    // Create download link for combined file
-    const url = URL.createObjectURL(combinedBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `audio-${nicelyFormattedTimestamp}.mp3`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
 }
 
 function ChatTemplate({
@@ -159,7 +119,7 @@ function ChatTemplate({
           <div class="h-full px-4 max-w-4xl mx-auto w-full">
             {messages.value?.map((item, groupIndex) => (
               <Message
-                key={item.id}
+                key={`message-${groupIndex}`}
                 item={item}
                 groupIndex={groupIndex}
                 currentEditIndex={currentEditIndex}
@@ -167,7 +127,6 @@ function ChatTemplate({
                 onEditAction={onEditAction}
                 onRefreshAction={onRefreshAction}
                 onSpeakAtGroupIndexAction={onSpeakAtGroupIndexAction}
-                onDownloadAudio={downloadAudioFiles}
               />
             ))}
             {children}

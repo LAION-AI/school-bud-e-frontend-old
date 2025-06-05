@@ -1,6 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { chatIslandContent } from "../../internalization/content.ts";
-import { stopList } from "./speech.ts";
+import { stopList, invalidateAudioCache, clearCurrentChatAudioCache, clearAllAudioCache } from "./speech.ts";
 import { startStream } from "./stream.ts";
 import * as chatDB from "./chatDB.ts";
 
@@ -263,6 +263,12 @@ export const deleteChat = (suffix: string) => {
   const currentKey = `bude-chat-${suffix}`;
   const chatKeys = Object.keys(chats.value);
 
+  // Clear audio cache for the chat being deleted
+  const previousChatSuffix = chatSuffix.value;
+  chatSuffix.value = suffix;
+  clearCurrentChatAudioCache();
+  chatSuffix.value = previousChatSuffix;
+
   if (chatKeys.length > 1) {
     // Create a new object without the current chat
     const { [currentKey]: _removed, ...remainingChats } = chats.value;
@@ -296,6 +302,9 @@ export const deleteChat = (suffix: string) => {
 
 // Delete all chats.
 export const deleteAllChats = () => {
+  // Clear all audio cache
+  clearAllAudioCache();
+
   chatDB.deleteAllChats().catch((error) => {
     console.error("Error deleting all chats from IndexedDB:", error);
 
@@ -367,6 +376,13 @@ export const handleRefreshAction = (groupIndex: number) => {
   const currentMessages = messages.value;
   if (!groupIndex || groupIndex > currentMessages.length) return;
 
+  // Invalidate audio cache for messages that will be removed (from groupIndex onwards)
+  const messagesToInvalidate = Array.from(
+    { length: currentMessages.length - groupIndex + 1 }, 
+    (_, i) => groupIndex - 1 + i
+  );
+  invalidateAudioCache(messagesToInvalidate);
+
   const slicedMessages = currentMessages.slice(0, groupIndex - 1);
   const key = `bude-chat-${chatSuffix.value}`;
   chats.value = { ...chats.value, [key]: slicedMessages };
@@ -390,11 +406,17 @@ export const handleEditAction = (groupIndex: number) => {
     } else {
       // Handle content arrays of objects (e.g., with text and image_url)
       contentToEdit = message.content
-        .filter((item) => "type" in item && item.type === "text")
-        .map((item) => "text" in item ? item.text : "")
+        .filter((item) => typeof item === "string")
         .join("");
     }
   }
+
+  // Invalidate audio cache for the message being edited and all subsequent messages
+  const messagesToInvalidate = Array.from(
+    { length: currentMessages.length - groupIndex }, 
+    (_, i) => groupIndex + i
+  );
+  invalidateAudioCache(messagesToInvalidate);
 
   query.value = contentToEdit;
   stopList.value = [];
