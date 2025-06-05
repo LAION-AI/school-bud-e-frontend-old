@@ -54,150 +54,83 @@ Based on our research, we recommend:
 4. **Cross-platform support** including React Native
 5. **Automatic conflict resolution** using YATA algorithm
 
-## � Handling Gigabytes of Data
+## 🔄 P2P Sync Implementation
 
-### Storage Strategy
-- **Metadata**: Sync automatically via Y.js (KB-sized)
-- **Large Files**: Store locally, sync on-demand with chunking
-- **Browser**: Use OPFS (Origin Private File System) for GB+ files
-- **Mobile**: SQLite for metadata + File System for blobs
+This repository now includes a comprehensive peer-to-peer (P2P) synchronization system that enables real-time data sync between browsers and React Native applications.
 
-### Android Background Sync Without Notifications
-- **WorkManager**: Periodic sync every 15 minutes (no notification)
-- **JobScheduler**: More control over scheduling
-- **Firebase Cloud Messaging**: Silent push for wake-ups
+### 📚 Key Features
 
-### Example Architecture
-```javascript
-// Hybrid approach: metadata always synced, large files on-demand
-class HybridStorage {
-  constructor() {
-    this.metadataSync = new Y.Doc(); // Auto-synced
-    this.fileStorage = new LargeFileStorage(); // Manual sync
-  }
-  
-  async addFile(file) {
-    // Store metadata in Y.js
-    const metadata = { id, name, size, chunks };
-    this.metadataSync.getMap('files').set(id, metadata);
-    
-    // Store actual file locally
-    await this.fileStorage.store(id, file);
-  }
-}
-```
+- **Real-time P2P Sync**: Direct browser-to-browser communication using WebRTC
+- **Large File Support**: Handle gigabyte-scale files with chunking and OPFS storage
+- **Offline Support**: Works offline with local persistence via IndexedDB
+- **Background Sync**: Service workers for continuous sync without notifications
+- **Hybrid Storage**: Automatic metadata sync with on-demand file downloads
+- **React Native Ready**: Complete roadmap for mobile implementation
 
-## �🚀 Quick Start
+### 🚀 Quick Start
 
-```bash
-npm install yjs y-webrtc y-indexeddb
-```
+1. **Basic P2P Sync Demo** (Simple message sync):
+   ```bash
+   npm run dev
+   # Navigate to http://localhost:8000/sync-basic
+   ```
 
-```javascript
-import * as Y from 'yjs';
-import { WebrtcProvider } from 'y-webrtc';
+2. **Full File Sync Demo** (Large file support):
+   ```bash
+   npm run dev
+   # Navigate to http://localhost:8000/sync
+   ```
 
-const doc = new Y.Doc();
-const provider = new WebrtcProvider('room-name', doc);
-const sharedData = doc.getMap('data');
-
-// Now you have P2P sync!
-sharedData.set('message', 'Hello peers!');
-```
-
-## 📱 React Native Roadmap
-
-### Phase 1: Active App Sync
-- WebRTC sync while app is open
-- Immediate sync on app launch
-- Local caching with AsyncStorage/SQLite
-
-### Phase 2: Background Capabilities
-- Android: WorkManager (no notification) or Foreground Service (with notification)
-- iOS: Background Fetch + Silent Push Notifications
-- Periodic sync intervals (15-30 minutes)
-
-### Phase 3: Persistent Sync Node
-- Dedicated device as sync hub
-- Always-on sync center (tablet/old phone)
-- Acts as personal P2P server
-
-## 🏗️ Architecture Overview
+### � Sync System Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   Browser 1     │────│   Browser 2     │
-│  (Web Worker)   │ P2P │  (Web Worker)   │
-└─────────────────┘     └─────────────────┘
-         │                       │
-         └───────────┬───────────┘
-                     │
-            ┌────────▼────────┐
-            │ Signaling Server│
-            └────────┬────────┘
-                     │
-            ┌────────▼────────┐
-            │ React Native App│
-            │  (Sync Center)  │
-            └─────────────────┘
+lib/
+├── sync/
+│   ├── SyncManager.ts        # Core Y.js sync with WebRTC
+│   ├── HybridStorage.ts      # Combines sync + large file storage
+│   └── useSyncStorage.ts     # React hook for easy integration
+├── storage/
+│   └── LargeFileStorage.ts   # OPFS/Cache API for GB+ files
+components/
+└── sync/
+    └── SyncManager.tsx       # UI component for sync management
+static/
+├── workers/
+│   └── sync-worker.js        # Web Worker for background sync
+└── service-worker.js         # Offline support & background sync
 ```
 
-## 💡 Use Cases
+### � Documentation
 
-Perfect for:
-- 📝 Collaborative editing apps
-- 💬 Real-time chat applications
-- 📊 Shared dashboards
-- 🎮 Multiplayer games
-- 📱 Cross-device personal apps
-- 🗄️ Large file sharing (with selective sync)
+- **[p2p-sync-research.md](./p2p-sync-research.md)** - Complete research on P2P frameworks
+- **[large-data-storage.md](./large-data-storage.md)** - Handling gigabytes of data
+- **[sync-comparison.md](./sync-comparison.md)** - Framework comparison guide
+- **[react-native-roadmap.md](./react-native-roadmap.md)** - Mobile implementation guide
+- **[example-implementation.md](./example-implementation.md)** - Code examples
 
-## ⚠️ Limitations
+### 🧪 Testing the Sync System
 
-- React Native background execution is limited by OS
-- iOS has stricter background policies than Android
-- WebRTC requires a signaling server for initial connection
-- IndexedDB performance degrades with GB+ data (use OPFS instead)
-- Not suitable for apps requiring centralized access control
+1. Open the sync demo in multiple browser tabs
+2. Use the same room name to connect them
+3. Upload files in one tab - metadata syncs instantly
+4. Large files show as "pending" until manually downloaded
+5. Try going offline - local files remain accessible
 
-## 🔒 Security Considerations
+### � Key Technologies Used
 
-- WebRTC provides transport encryption by default
-- Consider adding E2E encryption for sensitive data
-- Implement peer authentication
-- Use room-based access control
-- Keep signaling server minimal (no data storage)
+- **Y.js**: CRDT framework for conflict-free sync
+- **WebRTC**: Peer-to-peer connections
+- **Origin Private File System (OPFS)**: Large file storage
+- **IndexedDB**: Metadata persistence
+- **Service Workers**: Offline support
 
-## 📈 Performance Metrics
+### 🎯 Use Cases
 
-| Framework | Bundle Size | Sync Latency | Memory (1MB doc) |
-|-----------|-------------|--------------|------------------|
-| Y.js | 25KB | <100ms | ~2MB |
-| Automerge | 1.7MB | <200ms | ~5MB |
-| RxDB | 200KB | <150ms | ~3MB |
-
-## 🛠️ Implementation Timeline
-
-- **Week 1-2**: Basic browser P2P sync
-- **Week 3**: Service Worker integration
-- **Week 4-6**: React Native integration
-- **Week 7-8**: Large file handling + optimization
-
-## 🎯 Local-First Solid Pods
-
-You can implement Solid-like data sovereignty locally:
-- Store RDF data in local storage (OPFS/SQLite)
-- Implement Solid Protocol endpoints locally
-- Use P2P sync for pod-to-pod communication
-- No external server needed!
-
-## 📞 Support & Resources
-
-- [Y.js Documentation](https://docs.yjs.dev/)
-- [WebRTC Guide](https://webrtc.org/getting-started/overview)
-- [React Native Background Tasks](https://reactnative.dev/docs/headless-js-android)
-- [CRDT Primer](https://crdt.tech/)
-- [OPFS Guide](https://web.dev/file-system-access/)
+- Collaborative document editing
+- File sharing without servers
+- Offline-first applications
+- Distributed data storage
+- Real-time collaboration tools
 
 ## 🎉 Conclusion
 
