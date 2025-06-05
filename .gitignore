@@ -24,3 +24,4 @@ docker-compose/caddy/data
 docker-compose/caddy/Caddyfile/.cursor/Dockerfile
 /.cursor/environment.json
 /school-bud-e-mobile/
+/.cursor/Dockerfile
