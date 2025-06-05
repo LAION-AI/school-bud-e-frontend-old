@@ -21,4 +21,6 @@ ai-tasks-server/input_audiobook.xml
 
 docker-compose/caddy/config
 docker-compose/caddy/data
-docker-compose/caddy/Caddyfile
+docker-compose/caddy/Caddyfile/.cursor/Dockerfile
+/.cursor/environment.json
+/school-bud-e-mobile/
