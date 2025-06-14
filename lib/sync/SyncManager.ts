@@ -76,6 +76,7 @@ export class SyncManager {
   private setupProvider(config: SyncConfig) {
     try {
       const signalingServers = config.signaling || [
+        'wss://192.168.178.40:1234',
         'wss://signaling.yjs.dev',
         'wss://y-webrtc-signaling-eu.herokuapp.com',
         'wss://y-webrtc-signaling-us.herokuapp.com'

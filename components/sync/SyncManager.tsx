@@ -1,6 +1,7 @@
 import { useSyncStorage } from '../../lib/sync/useSyncStorage.ts';
 import { useState, useRef } from 'preact/hooks';
-import { formatBytes, formatRelativeTime } from '../../utils/format.ts';
+// import { formatBytes, formatRelativeTime } from '../../utils/format.ts';
+import { Button } from "../Button.tsx";
 
 interface SyncManagerProps {
   roomName: string;
@@ -13,7 +14,8 @@ export function SyncManager({ roomName, userName, password }: SyncManagerProps) 
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [downloadProgress, setDownloadProgress] = useState<Record<string, number>>({});
   
-  const { state, addFile, downloadFile, requestPersistentStorage } = useSyncStorage({
+  console.log('SyncManager', roomName, userName, password);
+  const { state, addFile, downloadFile, openFile, requestPersistentStorage, isFileViewable } = useSyncStorage({
     roomName,
     userName,
     password,
@@ -47,6 +49,14 @@ export function SyncManager({ roomName, userName, password }: SyncManagerProps) 
       await downloadFile(fileId);
     } catch (error) {
       console.error('Download error:', error);
+    }
+  };
+
+  const handleOpenFile = async (fileId: string) => {
+    try {
+      await openFile(fileId);
+    } catch (error) {
+      console.error('Open file error:', error);
     }
   };
 
@@ -106,18 +116,18 @@ export function SyncManager({ roomName, userName, password }: SyncManagerProps) 
         </div>
 
         <div class="mt-4 flex gap-2">
-          <button
+          <Button
             onClick={() => fileInputRef.current?.click()}
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Upload File
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleRequestPersistentStorage}
             class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
             Request Persistent Storage
-          </button>
+          </Button>
         </div>
         <input
           ref={fileInputRef}
@@ -154,19 +164,32 @@ export function SyncManager({ roomName, userName, password }: SyncManagerProps) 
                   </div>
                 </div>
                 
-                <div class="flex items-center ml-4">
+                <div class="flex items-center ml-4 space-x-2">
                   {file.syncStatus === 'synced' && (
-                    <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                      Available
-                    </span>
+                    <>
+                      {isFileViewable(file.metadata.type) && (
+                        <Button 
+                          onClick={() => handleOpenFile(file.metadata.id)}
+                          class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                        >
+                          Open
+                        </Button>
+                      )}
+                      <Button 
+                        onClick={() => handleDownload(file.metadata.id)}
+                        class="px-3 py-1 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700"
+                      >
+                        Download
+                      </Button>
+                    </>
                   )}
                   {file.syncStatus === 'pending' && (
-                    <button
+                    <Button 
                       onClick={() => handleDownload(file.metadata.id)}
                       class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
                     >
                       Download
-                    </button>
+                    </Button>
                   )}
                   {file.syncStatus === 'downloading' && (
                     <div class="flex items-center">

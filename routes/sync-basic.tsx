@@ -1,9 +1,14 @@
-import Head from "$fresh/runtime.ts";
-import PageProps from "$fresh/server.ts";
 import { useEffect, useState } from "preact/hooks";
+import { FreshContext } from "fresh";
 
 // Basic demo without web workers to test core sync functionality
-export default function SyncBasicPage(props: typeof PageProps) {
+export default function SyncBasicPage(ctx: FreshContext) {
+  const req = ctx.req;
+  const url = new URL(req.url);
+  const lang = (url.searchParams.get("lang") as string !== undefined &&
+      url.searchParams.get("lang") !== null
+    ? url.searchParams.get("lang")
+    : "de") as string;
   const [syncManager, setSyncManager] = useState(null);
   const [roomName, setRoomName] = useState('test-room');
   const [connected, setConnected] = useState(false);
@@ -105,9 +110,7 @@ export default function SyncBasicPage(props: typeof PageProps) {
 
   return (
     <>
-      <Head>
         <title>Basic P2P Sync Test</title>
-      </Head>
       
       <div class="min-h-screen bg-gray-100 p-4">
         <div class="max-w-4xl mx-auto">

@@ -5,10 +5,10 @@ const urlsToCache = [
   '/sync',
   '/sync-basic',
   '/workers/sync-worker.js',
-  'https://unpkg.com/yjs@13.6.10/dist/yjs.min.js',
-  'https://unpkg.com/y-webrtc@10.3.0/dist/y-webrtc.min.js',
-  'https://unpkg.com/y-indexeddb@9.0.11/dist/y-indexeddb.min.js',
-  'https://unpkg.com/uuid@9.0.1/dist/umd/uuid.min.js'
+  'https://esm.sh/yjs@13.5.41',
+  'https://esm.sh/y-webrtc@10.3.0',
+  'https://esm.sh/y-indexeddb@9.0.12',
+  'https://esm.sh/uuid@11.1.0'
 ];
 
 // Install event - cache resources

@@ -379,12 +379,35 @@ async function textToSpeech(
 export const handler: Handlers = {
   async POST(ctx) {
     const req = ctx.req;
-    const { text, textPosition, ttsUrl, ttsKey, ttsModel, shopApiKey } =
+    const { text, textPosition, ttsUrl, ttsKey, ttsModel, shopApiKey, streaming } =
       await req.json();
     // console.log("Text:", text);
 
     if (!text) {
       return new Response("No text provided", { status: 400 });
+    }
+
+    // If streaming is explicitly requested or text is long, redirect to streaming endpoint
+    if (streaming === true || text.length > 500) {
+      console.log(`Redirecting to streaming TTS (text length: ${text.length})`);
+      
+      // Forward the request to the streaming endpoint
+      const streamingRequest = new Request(`${new URL(req.url).origin}/api/tts-stream`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          textPosition,
+          ttsUrl,
+          ttsKey,
+          ttsModel,
+          shopApiKey,
+        }),
+      });
+      
+      return fetch(streamingRequest);
     }
 
     const audioData = await textToSpeech(

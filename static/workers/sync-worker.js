@@ -1,12 +1,11 @@
-// Sync Worker - Handles background synchronization tasks
+console.log('Web-Worker - Sync Worker - started');
 
-// Import required libraries
-importScripts(
-  'https://unpkg.com/yjs@13.6.10/dist/yjs.min.js',
-  'https://unpkg.com/y-webrtc@10.3.0/dist/y-webrtc.min.js',
-  'https://unpkg.com/y-indexeddb@9.0.11/dist/y-indexeddb.min.js',
-  'https://unpkg.com/uuid@9.0.1/dist/umd/uuid.min.js'
-);
+import * as Y from 'https://esm.sh/yjs@13.5.41';
+import { v4 as uuidv4 } from 'https://esm.sh/uuid@11.1.0';
+import { WebrtcProvider } from 'https://esm.sh/y-webrtc@10.3.0';
+import { IndexeddbPersistence } from 'https://esm.sh/y-indexeddb@9.0.12';
+
+console.log('SYNC WORKER - modules imported successfully');
 
 let hybridStorage = null;
 let syncInterval = null;
@@ -17,7 +16,7 @@ class WorkerSyncManager {
     this.doc = new Y.Doc();
     this.metadata = this.doc.getMap('metadata');
     this.sharedData = this.doc.getMap('sharedData');
-    this.userId = self.uuid.v4();
+    this.userId = uuidv4();
     this.config = config;
     this.events = {};
     
@@ -26,13 +25,15 @@ class WorkerSyncManager {
     
     // Setup WebRTC provider
     this.provider = new WebrtcProvider(config.roomName, this.doc, {
-      signaling: config.signaling || ['wss://signaling.yjs.dev'],
-      password: config.password,
-      awareness: {
-        name: config.userName || 'Anonymous',
-        color: this.getRandomColor(),
-        userId: this.userId
-      }
+      signaling: config.signaling || ['ws://192.168.178.40:1234'],
+      password: config.password
+    });
+    
+    // Set awareness data
+    this.provider.awareness.setLocalState({
+      name: config.userName || 'Anonymous',
+      color: this.getRandomColor(),
+      userId: this.userId
     });
     
     this.setupEventListeners();
@@ -91,7 +92,7 @@ class WorkerSyncManager {
 // Message handler
 self.addEventListener('message', async (event) => {
   const { type, payload } = event.data;
-  
+  console.log('MESSAGE', type, payload);
   switch (type) {
     case 'INIT':
       await initializeWorker(payload);
@@ -130,6 +131,7 @@ self.addEventListener('message', async (event) => {
 async function initializeWorker(config) {
   try {
     hybridStorage = new WorkerSyncManager(config.syncConfig);
+    console.log('INITIALIZED', hybridStorage);
     
     postMessage({ 
       type: 'INITIALIZED', 
@@ -149,7 +151,7 @@ async function handleAddFile({ file, metadata, options }) {
   try {
     // In the worker, we only handle metadata
     const fileMetadata = {
-      id: metadata.id || self.uuid.v4(),
+      id: metadata.id || uuidv4(),
       name: metadata.name || file.name,
       size: file.size,
       type: metadata.type || file.type,

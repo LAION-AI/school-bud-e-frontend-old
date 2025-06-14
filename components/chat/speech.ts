@@ -1,5 +1,6 @@
 import { signal, effect } from "@preact/signals";
 import { lang, messages, settings, chatSuffix } from "./store.ts";
+import { getStreamingTTS, stopStreamingTTS, isStreamingTTSActive } from "./streaming-tts.ts";
 
 // Chat-aware audio cache: chatId -> messageIndex -> audioIndex -> AudioItem
 export const audioFileDict = signal<
@@ -139,6 +140,13 @@ export const getTTS = async (
   const cleanedText = text;
   if (!cleanedText) return;
 
+  // Use streaming TTS for long texts (>500 characters)
+  if (cleanedText.length > 500) {
+    console.log(`Text is long (${cleanedText.length} chars), using streaming TTS`);
+    await getStreamingTTS(cleanedText, groupIndex, sourceFunction);
+    return;
+  }
+
   const currentChatId = ensureCurrentChatAudioDict();
   const currentChatAudio = audioFileDict.value[currentChatId];
 
@@ -240,6 +248,11 @@ export const handleOnSpeakAtGroupIndexAction = (groupIndex: number) => {
 };
 
 export const stopAndResetAudio = () => {
+  // Stop streaming TTS if active
+  if (isStreamingTTSActive()) {
+    stopStreamingTTS();
+  }
+
   const currentChatAudio = getCurrentChatAudioDict();
   Object.values(currentChatAudio).forEach((group) => {
     Object.values(group).forEach((item) => {
@@ -253,10 +266,10 @@ export const stopAndResetAudio = () => {
 
 // Effect to handle chat switching - stop audio when switching chats
 if (typeof window !== "undefined") {
-  let previousChatSuffix = chatSuffix.value;
+  let previousChatSuffix = chatSuffix?.value;
   
   effect(() => {
-    const currentSuffix = chatSuffix.value;
+    const currentSuffix = chatSuffix?.value;
     
     if (previousChatSuffix !== currentSuffix) {
       console.log(`Chat switched from ${previousChatSuffix} to ${currentSuffix}`);
