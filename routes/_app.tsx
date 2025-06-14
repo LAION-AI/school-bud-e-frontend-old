@@ -2,7 +2,7 @@ import { type PageProps } from "fresh";
 import { Partial } from "fresh/runtime";
 
 export default function App({ Component }: PageProps) {
-  const chatSignalingServerUrl = Deno.env.get("CHAT_SIGNALING_SERVER_URL") || "ws://192.168.178.40:1234";
+  const chatSignalingServerUrl = Deno.env.get("CHAT_SIGNALING_SERVER_URL") || "wss://next.bud-e.ai:4444";
   
   return (
     <html lang="en">
