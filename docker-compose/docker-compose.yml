@@ -13,6 +13,17 @@ services:
     networks:
       - caddy_network
 
+  # Used for synchronization between school-bud-e-frontend clients
+  p2p-signaling-server:
+    image: liquidibrium/signaling-server
+    container_name: next_p2p-signaling-server
+    command:
+      - deno run --allow-net --allow-env ./p2p-signaling-server/main.ts
+    ports:
+      - "4444:4444"
+    networks:
+      - caddy_network
+
   task-server:
     build:
       context: ../ai-tasks-server

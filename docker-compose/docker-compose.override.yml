@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: Dockerfile
       args:
-        BRANCH: perf/developmentReloadSpeed
+        BRANCH: next
     image: michael55555/school-bud-e-frontend:next 
             
   task-server:

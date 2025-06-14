@@ -166,10 +166,14 @@ async function initializeGlobalSync(settings: SyncSettings): Promise<CryptoManag
   if (!globalDoc) {
     globalDoc = new Y.Doc();
     
+    // Get signaling server URL from meta tag
+    const metaTag = document.querySelector('meta[name="chat-signaling-server-url"]') as HTMLMetaElement;
+    const signalingServerUrl = metaTag?.content || 'wss://next.bud-e.ai:4444';
+    
     // Use a global sync space for all School Bud-E users
     const connectionId = 'school-bud-e-encrypted-sync';
     globalProvider = new WebrtcProvider(connectionId, globalDoc, {
-      signaling: ['ws://192.168.178.40:1234']
+      signaling: [signalingServerUrl]
     });
     
     globalPersistence = new IndexeddbPersistence(`chat-sync-${connectionId}`, globalDoc);
