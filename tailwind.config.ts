@@ -22,16 +22,16 @@ export default {
         },
         "surface": {
           DEFAULT: "#fff",
-          dark: "#1a1a1a"
+          dark: "#1a1a1a",
         },
         "content": {
           DEFAULT: "#000",
-          dark: "#fff"
-        }
+          dark: "#fff",
+        },
       },
       borderColor: {
         DEFAULT: "#e6e7e7",
-        dark: "#333333"
+        dark: "#333333",
       },
       keyframes: {
         fadeIn: {

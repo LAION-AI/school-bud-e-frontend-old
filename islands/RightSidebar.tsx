@@ -1,7 +1,11 @@
 import { useEffect, useState } from "preact/hooks";
 import { Game } from "../islands/Game.tsx";
 import { Graph } from "../components/Graph.tsx";
-import { createGraph, saveCurrentGraph, saveGraph } from "../components/graph/store.ts";
+import {
+  createGraph,
+  saveCurrentGraph,
+  saveGraph,
+} from "../components/graph/store.ts";
 
 interface WebResult {
   title: string;
@@ -26,7 +30,7 @@ type SidebarData =
   | { type: "webResults"; results?: WebResult[] }
   | { type: "graph"; items?: GraphNode[] }
   | { type: "game"; gameUrl: string }
-  | { type: string; };
+  | { type: string };
 
 interface RightSidebarProps {
   data?: SidebarData[];
@@ -53,7 +57,9 @@ function convertGraphData(items: GraphNode[]): cytoscape.ElementDefinition[] {
     });
     node.connections?.forEach((connection) => {
       if (!nodeSet.has(connection.from)) {
-        elements.push({ data: { id: connection.from, label: connection.from } });
+        elements.push({
+          data: { id: connection.from, label: connection.from },
+        });
         nodeSet.add(connection.from);
       }
       if (!nodeSet.has(connection.to)) {
@@ -73,7 +79,7 @@ function convertGraphData(items: GraphNode[]): cytoscape.ElementDefinition[] {
  * The new graph will contain the selected node (marked as "root") and its child items.
  */
 function buildDrilldownGraph(
-  selectedNode: GraphNode
+  selectedNode: GraphNode,
 ): cytoscape.ElementDefinition[] {
   const elements: cytoscape.ElementDefinition[] = [];
   // Add the selected node and mark it with an extra data attribute.
@@ -88,7 +94,6 @@ function buildDrilldownGraph(
 }
 
 export default function RightSidebar({ data }: RightSidebarProps) {
-
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
@@ -101,8 +106,9 @@ export default function RightSidebar({ data }: RightSidebarProps) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(location.search);
-      urlParams.set("rcollapsed", "" + isCollapsed)
-      const newUrl = `${location.origin}${location.pathname}?${urlParams.toString()}`;
+      urlParams.set("rcollapsed", "" + isCollapsed);
+      const newUrl =
+        `${location.origin}${location.pathname}?${urlParams.toString()}`;
       history.replaceState(null, "", newUrl);
     }
   }, [isCollapsed]);
@@ -129,8 +135,6 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     }
   }, [data]);
 
-
-
   // Placeholder: simulate an AI call to generate more detailed items.
   const generateMoreDetails = async (nodeId: string) => {
     // Replace with your actual API call.
@@ -143,7 +147,10 @@ export default function RightSidebar({ data }: RightSidebarProps) {
   // Option 1: Open Detailed – drill down into the selected node.
   const openDetailed = async () => {
     const lastItem = data?.[data.length - 1];
-    if (!selectedNodeId || !lastItem || lastItem.type !== "graph" || !lastItem.items) return;
+    if (
+      !selectedNodeId || !lastItem || lastItem.type !== "graph" ||
+      !lastItem.items
+    ) return;
 
     // Find the selected node in the original data.
     const nodeData = lastItem.items.find((n) => n.item === selectedNodeId);
@@ -154,7 +161,9 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     // Combine existing child items (if any) with AI-generated ones.
     const combinedChildItems = [
       ...(nodeData.childItems || []),
-      ...aiChildItems.filter((item) => !(nodeData.childItems || []).includes(item)),
+      ...aiChildItems.filter((item) =>
+        !(nodeData.childItems || []).includes(item)
+      ),
     ];
     const detailedNodeData: GraphNode = {
       ...nodeData,
@@ -187,7 +196,9 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     // For example, use the selected node's label as a summary.
     const summary = selectedNodeId;
     try {
-      const response = await fetch(`/tasks?summary=${encodeURIComponent(summary)}`);
+      const response = await fetch(
+        `/tasks?summary=${encodeURIComponent(summary)}`,
+      );
       const tasks = await response.json();
       console.log("Tasks:", tasks);
       alert(`Tasks: ${JSON.stringify(tasks)}`);
@@ -221,12 +232,14 @@ export default function RightSidebar({ data }: RightSidebarProps) {
     <>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        class="absolute right-4 top-16 z-10 p-2 rounded-full transition-colors"
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        class={"absolute right-4 top-3 z-10 p-2 rounded-full transition-colors bg-white border-gray-200 " + (isCollapsed ? "border" : "")}
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class={`h-5 w-5 transition-transform duration-300 ${isCollapsed ? '' : 'rotate-180'}`}
+          class={`h-5 w-5 transition-transform duration-300 ${
+            isCollapsed ? "" : "rotate-180"
+          }`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -237,15 +250,25 @@ export default function RightSidebar({ data }: RightSidebarProps) {
           />
         </svg>
       </button>
-      <div class={`bg-surface border-l h-full flex flex-col  transition-all ${isCollapsed  ? 'w-0 overflow-hidden': 'w-[40vw]'}`}>
-        <h3 class={"p-4 font-semibold border-b"}>Ergebnisse</h3>
+      <div
+        class={`bg-surface border-l border-gray-200 h-full flex flex-col  transition-all ${
+          isCollapsed ? "w-0 overflow-hidden" : "w-[40vw]"
+        }`}
+      >
+        <h3 class="p-4 font-semibold border-b border-gray-200">Ergebnisse</h3>
         {/* Display all data elements */}
         {data?.map((item, dataIndex) => {
           // Skip rendering if the item has no results/items
-          if (item.type === "webResults" && (!(item as { results?: WebResult[] }).results?.length)) {
+          if (
+            item.type === "webResults" &&
+            (!(item as { results?: WebResult[] }).results?.length)
+          ) {
             return null;
           }
-          if (item.type === "graph" && (!(item as { items?: GraphNode[] }).items?.length)) {
+          if (
+            item.type === "graph" &&
+            (!(item as { items?: GraphNode[] }).items?.length)
+          ) {
             return null;
           }
 
@@ -256,14 +279,17 @@ export default function RightSidebar({ data }: RightSidebarProps) {
             }
           }
 
-
           return (
             <div key={dataIndex} class={"p-4"}>
               {/* Display web results if applicable */}
-              {item.type === "webResults" && (item as { results?: WebResult[] }).results?.length > 0 && (
+              {item.type === "webResults" &&
+                (item as { results?: WebResult[] }).results?.length > 0 && (
                 <div class="p-4 overflow-y-auto">
                   <div class="space-y-4">
-                    {(item as { results?: WebResult[] }).results?.map((result, index) => (
+                    {(item as { results?: WebResult[] }).results?.map((
+                      result,
+                      index,
+                    ) => (
                       <div
                         key={index}
                         class="sidebar-item bg-white/50 p-4 rounded-lg border"
@@ -278,7 +304,9 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                           {result.url}
                         </a>
                         {result.description && (
-                          <p class="text-gray-600 text-sm">{result.description}</p>
+                          <p class="text-gray-600 text-sm">
+                            {result.description}
+                          </p>
                         )}
                       </div>
                     ))}
@@ -287,14 +315,16 @@ export default function RightSidebar({ data }: RightSidebarProps) {
               )}
 
               {/* Display game */}
-              {item.type === "game" && (item as { gameUrl: string }).gameUrl && (
-                <div class="">
-                  <Game gameUrl={(item as { gameUrl: string }).gameUrl} />
-                </div>
-              )}
+              {item.type === "game" && (item as { gameUrl: string }).gameUrl &&
+                (
+                  <div class="">
+                    <Game gameUrl={(item as { gameUrl: string }).gameUrl} />
+                  </div>
+                )}
 
               {/* Display graph results */}
-              {item.type === "graph" && (item as { items?: GraphNode[] }).items && (
+              {item.type === "graph" &&
+                (item as { items?: GraphNode[] }).items && (
                 <>
                   <Graph
                     graphData={(item as { items?: GraphNode[] }).items ?? []}
@@ -302,50 +332,49 @@ export default function RightSidebar({ data }: RightSidebarProps) {
                     onNodeSelect={setSelectedNodeId}
                     isRoot={!!currentDrilldown}
                   />
-                  <div class="p-2 border-t flex justify-between items-center">
-                    {/* Show Back button if there is drilldown history */}
-                    {graphStack.length > 0 && (
+                  {graphStack.length > 0 && (
+                    <div class="p-2 border-t flex justify-between items-center">
+                      {/* Show Back button if there is drilldown history */}
                       <button
                         onClick={goBack}
                         class="bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded"
                       >
                         Back
                       </button>
-                    )}
-                    {/* If a node is selected (but not drilled down yet), show option buttons */}
-                    {selectedNodeId && (
-                      <div class="space-x-2">
-                        <button
-                          onClick={openDetailed}
-                          class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
-                        >
-                          Open Detailed
-                        </button>
-                        <button
-                          onClick={askQuestion}
-                          class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
-                        >
-                          Ask Question
-                        </button>
-                        <button
-                          onClick={showTasks}
-                          class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
-                        >
-                          Explore Quests
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            saveGraph(mostSignificantNode, lastGraph.items)
-                          }}
-                          class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
-                        >
-                          Save Graph
-                        </button>
-                        
-                      </div>
-                    )}
-                  </div>
+                      {/* If a node is selected (but not drilled down yet), show option buttons */}
+                      {selectedNodeId && (
+                        <div class="space-x-2">
+                          <button
+                            onClick={openDetailed}
+                            class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+                          >
+                            Open Detailed
+                          </button>
+                          <button
+                            onClick={askQuestion}
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
+                          >
+                            Ask Question
+                          </button>
+                          <button
+                            onClick={showTasks}
+                            class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
+                          >
+                            Explore Quests
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              saveGraph(mostSignificantNode, lastGraph.items);
+                            }}
+                            class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded"
+                          >
+                            Save Graph
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

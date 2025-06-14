@@ -1,4 +1,4 @@
-import { signal, computed } from "@preact/signals";
+import { computed, signal } from "@preact/signals";
 
 // Define the test interface
 export interface Test {
@@ -51,8 +51,10 @@ export const testsState = signal<TestsState>(loadStoredTests());
 // Create computed signals for easier access
 export const tests = computed(() => testsState.value.tests);
 export const selectedTestId = computed(() => testsState.value.selectedTestId);
-export const selectedTest = computed(() => 
-  testsState.value.tests.find(test => test.id === testsState.value.selectedTestId) || null
+export const selectedTest = computed(() =>
+  testsState.value.tests.find((test) =>
+    test.id === testsState.value.selectedTestId
+  ) || null
 );
 
 // Helper function to save tests to localStorage
@@ -79,8 +81,10 @@ export const addTest = (test: Test) => {
 export const updateTest = (updatedTest: Test) => {
   const updatedState = {
     ...testsState.value,
-    tests: testsState.value.tests.map(test => 
-      test.id === updatedTest.id ? { ...updatedTest, lastUpdatedAt: Date.now() } : test
+    tests: testsState.value.tests.map((test) =>
+      test.id === updatedTest.id
+        ? { ...updatedTest, lastUpdatedAt: Date.now() }
+        : test
     ),
   };
   testsState.value = updatedState;
@@ -90,8 +94,10 @@ export const updateTest = (updatedTest: Test) => {
 export const deleteTest = (testId: string) => {
   const updatedState = {
     ...testsState.value,
-    tests: testsState.value.tests.filter(test => test.id !== testId),
-    selectedTestId: testsState.value.selectedTestId === testId ? null : testsState.value.selectedTestId,
+    tests: testsState.value.tests.filter((test) => test.id !== testId),
+    selectedTestId: testsState.value.selectedTestId === testId
+      ? null
+      : testsState.value.selectedTestId,
   };
   testsState.value = updatedState;
   saveTestsToStorage(updatedState);
@@ -108,11 +114,11 @@ export const setSelectedTest = (testId: string | null) => {
 
 // Node-specific test functions
 export const getTestForNode = (nodeId: string): Test | null => {
-  return testsState.value.tests.find(test => test.nodeId === nodeId) || null;
+  return testsState.value.tests.find((test) => test.nodeId === nodeId) || null;
 };
 
 export const hasTestForNode = (nodeId: string): boolean => {
-  return testsState.value.tests.some(test => test.nodeId === nodeId);
+  return testsState.value.tests.some((test) => test.nodeId === nodeId);
 };
 
 export const createTestForNode = (nodeId: string, nodeName: string): Test => {
@@ -125,7 +131,7 @@ export const createTestForNode = (nodeId: string, nodeName: string): Test => {
     createdAt: Date.now(),
     lastUpdatedAt: Date.now(),
   };
-  
+
   addTest(newTest);
   return newTest;
-}; 
+};

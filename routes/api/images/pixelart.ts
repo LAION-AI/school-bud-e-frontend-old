@@ -1,4 +1,5 @@
-import { Handlers } from "$fresh/server.ts";
+import { FreshContext } from "fresh";
+import { Handlers } from "fresh/compat";
 
 interface PixelArtRequest {
   prompt: string;
@@ -16,7 +17,8 @@ interface TogetherAPIResponse {
   }>;
 }
 
-const TOGETHER_API_URL = Deno.env.get("TOGETHER_API_URL") || "https://api.together.xyz/v1/images/generations";
+const TOGETHER_API_URL = Deno.env.get("TOGETHER_API_URL") ||
+  "https://api.together.xyz/v1/images/generations";
 const TOGETHER_API_KEY = Deno.env.get("TOGETHER_API_KEY") || "";
 
 function getErrorMessage(error: unknown): string {
@@ -25,20 +27,24 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const handler: Handlers = {
-  async POST(req: Request) {
+  async POST(ctx: FreshContext) {
+    const req = ctx.req;
+
     try {
       const requestData = await req.json() as PixelArtRequest;
-      
+
       if (!requestData.prompt) {
         return new Response("Prompt is required", { status: 400 });
       }
 
       const apiUrl = requestData.apiUrl || TOGETHER_API_URL;
       const apiKey = requestData.apiKey || TOGETHER_API_KEY;
-      
+
       if (!apiKey) {
-        return new Response("API key is required. Please set TOGETHER_API_KEY in environment or provide in request", 
-          { status: 400 });
+        return new Response(
+          "API key is required. Please set TOGETHER_API_KEY in environment or provide in request",
+          { status: 400 },
+        );
       }
 
       const requestBody = {
@@ -49,7 +55,7 @@ export const handler: Handlers = {
         steps: requestData.steps || 7,
         n: requestData.n || 1,
         response_format: "b64_json",
-        update_at: new Date().toISOString()
+        update_at: new Date().toISOString(),
       };
 
       const response = await fetch(apiUrl, {
@@ -62,17 +68,21 @@ export const handler: Handlers = {
       });
 
       if (!response.ok) {
-        throw new Error(`Together API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Together API error: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data: TogetherAPIResponse = await response.json();
 
-      return new Response(JSON.stringify({
-        images: data.data.map(item => item.b64_json)
-      }), {
-        headers: { "Content-Type": "application/json" },
-      });
-
+      return new Response(
+        JSON.stringify({
+          images: data.data.map((item) => item.b64_json),
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     } catch (error) {
       console.error("Error in pixelart API:", error);
       return new Response(JSON.stringify({ error: getErrorMessage(error) }), {

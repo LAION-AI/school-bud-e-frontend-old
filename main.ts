@@ -1,17 +1,15 @@
-/// <reference no-default-lib="true" />
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-/// <reference lib="dom.asynciterable" />
-/// <reference lib="deno.ns" />
+import { App, fsRoutes, staticFiles } from "fresh";
+import type { State } from "./utils.ts";
 
-import "$std/dotenv/load.ts";
+export const app = new App<State>();
+app.use(staticFiles());
 
-import { start } from "$fresh/server.ts";
-import manifest from "./fresh.gen.ts";
-import config from "./fresh.config.ts";
+await fsRoutes(app, {
+  dir: "./",
+  loadIsland: (path) => import(`./islands/${path}`),
+  loadRoute: (path) => import(`./routes/${path}`),
+});
 
-// Your regular console.logs will now be captured
-console.log("Server started successfully");
-console.error("Database connection failed");
-
-await start(manifest, config);
+if (import.meta.main) {
+  await app.listen();
+}

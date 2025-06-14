@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Docker: Start Debug Services",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "docker-compose-debug",
+            "runtimeExecutable": "docker",
+            "runtimeArgs": [
+                "compose",
+                "-f",
+                "docker-compose/docker-compose.yml",
+                "-f",
+                "docker-compose/docker-compose.debug.yml",
+                "up"
+            ],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Deno: Attach to Docker",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "stopOnEntry": false,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/school-bud-e-frontend"
+        },
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "python": "${command:python.interpreterPath}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Attach to Task Server",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/ai-tasks-server",
+                    "remoteRoot": "/app"
+                }
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Debug Environment",
+            "configurations": [
+                "Docker: Start Debug Services",
+                "Deno: Attach to Docker",
+                "Python: Attach to Task Server"
+            ],
+            "stopAll": true
+        }
+    ]
+}

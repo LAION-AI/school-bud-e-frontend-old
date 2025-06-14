@@ -1,16 +1,16 @@
 import { useSignal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
-import { 
-  createTestForNode, 
-  getTestForNode, 
-  hasTestForNode, 
+import {
+  createTestForNode,
+  getTestForNode,
+  hasTestForNode,
   setSelectedTest,
-  updateTest,
   Test,
-  TestQuestion
+  TestQuestion,
+  updateTest,
 } from "./store.ts";
-import { addMessage, messages } from "../../components/chat/store.ts";
-import { startStream } from "../../components/chat/stream.ts";
+import { addMessage, messages } from "../chat/store.ts";
+import { startStream } from "../chat/stream.ts";
 import { extractTestData } from "../../utils/formatParser.ts";
 import { formatTemplates } from "../../types/formats.ts";
 
@@ -20,12 +20,18 @@ interface NodeTestGeneratorProps {
   onClose: () => void;
 }
 
-export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTestGeneratorProps) {
+export default function NodeTestGenerator(
+  { nodeId, nodeName, onClose }: NodeTestGeneratorProps,
+) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [existingTest, setExistingTest] = useState<Test | null>(null);
   const [showTestPreview, setShowTestPreview] = useState(false);
-  const [generatedQuestions, setGeneratedQuestions] = useState<TestQuestion[]>([]);
-  const difficulty = useSignal<"beginner" | "intermediate" | "advanced">("intermediate");
+  const [generatedQuestions, setGeneratedQuestions] = useState<TestQuestion[]>(
+    [],
+  );
+  const difficulty = useSignal<"beginner" | "intermediate" | "advanced">(
+    "intermediate",
+  );
   const questionCount = useSignal(5);
   const includeMultipleChoice = useSignal(true);
   const includeTrueFalse = useSignal(true);
@@ -51,32 +57,34 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
     const messagesValue = messages.value;
     if (messagesValue.length > 0) {
       const lastMessage = messagesValue[messagesValue.length - 1];
-      if (lastMessage.role === 'assistant' && isGenerating) {
+      if (lastMessage.role === "assistant" && isGenerating) {
         // Try to extract test data from the message
-        const content = typeof lastMessage.content === 'string' 
-          ? lastMessage.content 
-          : Array.isArray(lastMessage.content) 
-            ? lastMessage.content.join('') 
-            : '';
+        const content = typeof lastMessage.content === "string"
+          ? lastMessage.content
+          : Array.isArray(lastMessage.content)
+          ? lastMessage.content.join("")
+          : "";
 
         const extractedData = extractTestData(content);
         if (extractedData.success && extractedData.format) {
           // We have successfully extracted test data
           const testData = extractedData.format;
-          
+
           // Map the questions to our TestQuestion format
-          const questions: TestQuestion[] = testData.questions.map(q => ({
-            id: q.id || `q-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          const questions: TestQuestion[] = testData.questions.map((q) => ({
+            id: q.id ||
+              `q-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             type: q.type as "multiple_choice" | "true_false" | "short_answer",
             question: q.question,
             options: q.options,
-            correctAnswer: Array.isArray(q.correctAnswer) && q.type === "multiple_choice" 
-              ? q.correctAnswer 
-              : q.correctAnswer
+            correctAnswer:
+              Array.isArray(q.correctAnswer) && q.type === "multiple_choice"
+                ? q.correctAnswer
+                : q.correctAnswer,
           }));
-          
+
           setGeneratedQuestions(questions);
-          
+
           // If we have an existing test, update it
           if (existingTest) {
             const updatedTest = {
@@ -84,7 +92,7 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
               content: testData.content || existingTest.content,
               name: testData.name || existingTest.name,
               questions: questions,
-              lastUpdatedAt: Date.now()
+              lastUpdatedAt: Date.now(),
             };
             updateTest(updatedTest);
             setExistingTest(updatedTest);
@@ -96,12 +104,12 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
               content: testData.content || `Test for ${nodeName}`,
               name: testData.name || newTest.name,
               questions: questions,
-              lastUpdatedAt: Date.now()
+              lastUpdatedAt: Date.now(),
             };
             updateTest(updatedTest);
             setExistingTest(updatedTest);
           }
-          
+
           setIsGenerating(false);
           setShowTestPreview(true);
         }
@@ -114,13 +122,13 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
     if (nodeId) {
       // Check if there is a custom prompt in sessionStorage
       const customPrompt = sessionStorage.getItem(`test_prompt_${nodeId}`);
-      
+
       // If there's a custom prompt, use it to generate the test
       if (customPrompt) {
         setIsGenerating(true);
         handleGenerateTestWithPrompt(customPrompt);
       }
-      
+
       // Clean up when component unmounts
       return () => {
         // Remove the custom prompt from sessionStorage when done
@@ -141,7 +149,7 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
    */
   const handleGenerateTestWithPrompt = async (customPrompt: string) => {
     setIsGenerating(true);
-    
+
     try {
       // Create a new test for the node if it doesn't exist
       let testToUse = existingTest;
@@ -149,18 +157,21 @@ export default function NodeTestGenerator({ nodeId, nodeName, onClose }: NodeTes
         testToUse = createTestForNode(nodeId, nodeName);
         setExistingTest(testToUse);
       }
-      
+
       // Prepare base prompt
       const questionTypes = [];
       if (includeMultipleChoice.value) questionTypes.push("multiple_choice");
       if (includeTrueFalse.value) questionTypes.push("true_false");
       if (includeShortAnswer.value) questionTypes.push("short_answer");
-      
+
       // Get the test template for JSON structure guidance
       const testTemplate = formatTemplates.test.template;
-      
-      let prompt = `Generate a ${difficulty.value} level test about "${nodeName}".
-Include ${questionCount.value} questions with a mix of ${questionTypes.join(", ")} questions.
+
+      let prompt =
+        `Generate a ${difficulty.value} level test about "${nodeName}".
+Include ${questionCount.value} questions with a mix of ${
+          questionTypes.join(", ")
+        } questions.
 For each question, provide the correct answer.`;
 
       // Add the custom prompt as focus areas
@@ -183,10 +194,9 @@ The output should be ONLY the JSON object in the specified format.`;
 
       // Use the chat stream functionality to generate the test
       addMessage({ role: "user", content: prompt });
-      
+
       // Wait for the response and handle it (in the useEffect hook above)
       await startStream(prompt);
-      
     } catch (error) {
       console.error("Error generating test:", error);
       setIsGenerating(false);
@@ -195,7 +205,7 @@ The output should be ONLY the JSON object in the specified format.`;
 
   const handleGenerateTest = async () => {
     setIsGenerating(true);
-    
+
     try {
       // Create a new test for the node if it doesn't exist
       let testToUse = existingTest;
@@ -203,18 +213,21 @@ The output should be ONLY the JSON object in the specified format.`;
         testToUse = createTestForNode(nodeId, nodeName);
         setExistingTest(testToUse);
       }
-      
+
       // Prepare prompt for test generation
       const questionTypes = [];
       if (includeMultipleChoice.value) questionTypes.push("multiple_choice");
       if (includeTrueFalse.value) questionTypes.push("true_false");
       if (includeShortAnswer.value) questionTypes.push("short_answer");
-      
+
       // Get the test template for JSON structure guidance
       const testTemplate = formatTemplates.test.template;
-      
-      const prompt = `Generate a ${difficulty.value} level test about "${nodeName}".
-Include ${questionCount.value} questions with a mix of ${questionTypes.join(", ")} questions.
+
+      const prompt =
+        `Generate a ${difficulty.value} level test about "${nodeName}".
+Include ${questionCount.value} questions with a mix of ${
+          questionTypes.join(", ")
+        } questions.
 For each question, provide the correct answer.
 
 The output MUST be a JSON object following this structure:
@@ -234,10 +247,9 @@ The output should be ONLY the JSON object in the specified format.`;
 
       // Use the chat stream functionality to generate the test
       addMessage({ role: "user", content: prompt });
-      
+
       // Wait for the response and handle it (in the useEffect hook above)
       await startStream(prompt);
-      
     } catch (error) {
       console.error("Error generating test:", error);
       setIsGenerating(false);
@@ -248,14 +260,27 @@ The output should be ONLY the JSON object in the specified format.`;
     <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
         <div class="flex justify-between items-start mb-4">
-          <h2 class="text-2xl font-bold text-gray-800">{existingTest ? "Update Test" : "Create Test"} for '{nodeName}'</h2>
-          <button 
-            onClick={onClose} 
+          <h2 class="text-2xl font-bold text-gray-800">
+            {existingTest ? "Update Test" : "Create Test"} for '{nodeName}'
+          </h2>
+          <button
+            onClick={onClose}
             class="text-gray-500 hover:text-gray-700 transition-colors"
             aria-label="Close"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -294,16 +319,27 @@ The output should be ONLY the JSON object in the specified format.`;
         {showTestPreview && generatedQuestions.length > 0 && (
           <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
             <div class="flex items-center mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-green-500 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"
+                />
               </svg>
-              <span class="font-medium text-green-800">Test Generated Successfully!</span>
+              <span class="font-medium text-green-800">
+                Test Generated Successfully!
+              </span>
             </div>
             <p class="text-green-700 text-sm mb-3">
               Generated {generatedQuestions.length} questions for this test.
             </p>
             <div class="flex justify-end">
-              <button 
+              <button
                 onClick={handleViewExistingTest}
                 class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
@@ -317,22 +353,46 @@ The output should be ONLY the JSON object in the specified format.`;
           {isGenerating && (
             <div class="bg-primary-50 border border-primary-200 rounded-md p-4 mb-4 animate-pulse">
               <div class="flex items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  >
+                  </circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  >
+                  </path>
                 </svg>
-                <span class="font-medium text-primary-800">Generating your test...</span>
+                <span class="font-medium text-primary-800">
+                  Generating your test...
+                </span>
               </div>
               <p class="text-primary-700 text-sm mt-2">
-                This may take a few moments as we're crafting {questionCount.value} questions at {difficulty.value} level.
+                This may take a few moments as we're crafting{" "}
+                {questionCount.value} questions at {difficulty.value} level.
               </p>
             </div>
           )}
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Difficulty Level
+            </label>
             <select
               value={difficulty.value}
-              onChange={(e) => difficulty.value = (e.target as HTMLSelectElement).value as any}
+              onChange={(e) =>
+                difficulty.value = (e.target as HTMLSelectElement).value as any}
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="beginner">Beginner</option>
@@ -342,25 +402,32 @@ The output should be ONLY the JSON object in the specified format.`;
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Number of Questions
+            </label>
             <input
               type="number"
               min="1"
               max="20"
               value={questionCount.value}
-              onInput={(e) => questionCount.value = parseInt((e.target as HTMLInputElement).value) || 5}
+              onInput={(e) =>
+                questionCount.value =
+                  parseInt((e.target as HTMLInputElement).value) || 5}
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Question Types</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Question Types
+            </label>
             <div class="space-y-2">
               <label class="inline-flex items-center">
                 <input
                   type="checkbox"
                   checked={includeMultipleChoice.value}
-                  onChange={() => includeMultipleChoice.value = !includeMultipleChoice.value}
+                  onChange={() =>
+                    includeMultipleChoice.value = !includeMultipleChoice.value}
                   class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">Multiple Choice</span>
@@ -370,7 +437,8 @@ The output should be ONLY the JSON object in the specified format.`;
                 <input
                   type="checkbox"
                   checked={includeTrueFalse.value}
-                  onChange={() => includeTrueFalse.value = !includeTrueFalse.value}
+                  onChange={() =>
+                    includeTrueFalse.value = !includeTrueFalse.value}
                   class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">True/False</span>
@@ -380,7 +448,8 @@ The output should be ONLY the JSON object in the specified format.`;
                 <input
                   type="checkbox"
                   checked={includeShortAnswer.value}
-                  onChange={() => includeShortAnswer.value = !includeShortAnswer.value}
+                  onChange={() =>
+                    includeShortAnswer.value = !includeShortAnswer.value}
                   class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                 />
                 <span class="ml-2">Short Answer</span>
@@ -393,14 +462,16 @@ The output should be ONLY the JSON object in the specified format.`;
               onClick={handleGenerateTest}
               disabled={isGenerating}
               class={`w-full px-4 py-2 text-white rounded-md transition-colors ${
-                isGenerating ? 'bg-primary-400 cursor-not-allowed' : 'bg-primary-600 hover:bg-primary-700'
+                isGenerating
+                  ? "bg-primary-400 cursor-not-allowed"
+                  : "bg-primary-600 hover:bg-primary-700"
               }`}
             >
-              {isGenerating ? 'Generating Test...' : 'Generate New Test'}
+              {isGenerating ? "Generating Test..." : "Generate New Test"}
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

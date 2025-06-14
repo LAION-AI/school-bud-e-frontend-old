@@ -3,11 +3,16 @@ import ChatTemplate from "./ChatTemplate.tsx";
 import ChatWarning from "../components/Warning.tsx";
 
 // Necessary for streaming service
-import { useEffect, useState, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
-// // Import necessary types from Preact
-import { getTTS, readAlways, stopList } from "../components/chat/speech.ts";
-import { chats, chatSuffix, currentEditIndex, handleRefreshAction, messages } from "../components/chat/store.ts";
+import { readAlways, stopList, handleOnSpeakAtGroupIndexAction, audioFileDict, clearCurrentChatAudioCache } from "../components/chat/speech.ts";
+import {
+  chats,
+  chatSuffix,
+  currentEditIndex,
+  handleRefreshAction,
+  messages,
+} from "../components/chat/store.ts";
 import { initTourGuide } from "../utils/tourGuide.ts";
 
 // Define the AudioItem interface if not already defined
@@ -16,21 +21,36 @@ interface AudioItem {
   played: boolean;
 }
 
-// Define the AudioFileDict type if not already defined
+// Define the AudioFileDict type - now chat-aware
 type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
-export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
+export default function ChatIsland({ lang, id }: { lang: string; id: string }) {
+  const previousChatId = useRef<string | null>(null);
+  
   // Necessary to load the chat messages from localStorage only once
   useEffect(() => {
     const chatKey = `bude-chat-${id}`;
     if (!(chatKey in chats.value)) {
       chats.value = { ...chats.value, [chatKey]: [] };
     }
+    
+    // If we're switching chats, clear the previous chat's audio cache from memory
+    // (but keep it in the global signal for potential return)
+    if (previousChatId.current && previousChatId.current !== chatKey) {
+      console.log(`Switching from chat ${previousChatId.current} to ${chatKey}`);
+      // Stop any currently playing audio
+      stopList.value = [];
+    }
+    
     chatSuffix.value = id;
+    previousChatId.current = chatKey;
   }, [id]);
 
-  // dictionary containg audio files for each groupIndex for the current chat
-  const [audioFileDict, setAudioFileDict] = useState<AudioFileDict>({});
+  // Get current chat audio dictionary from the global signal
+  const getCurrentChatAudio = (): AudioFileDict => {
+    const currentChatId = `bude-chat-${chatSuffix.value}`;
+    return audioFileDict.value[currentChatId] || {};
+  };
 
   const [isStreamComplete] = useState(true);
   const tourInitialized = useRef(false);
@@ -40,7 +60,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     if (isStreamComplete && lastMessage) {
       if ("content" in messages.value[messages.value.length - 1]) {
         let lastMessageFromBuddy: string;
-        const lastMessageContent = messages.value[messages.value.length - 1].content;
+        const lastMessageContent =
+          messages.value[messages.value.length - 1].content;
 
         if (typeof lastMessageContent === "string") {
           lastMessageFromBuddy = lastMessageContent;
@@ -49,7 +70,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
         }
 
         if (lastMessageFromBuddy !== "") {
-          messages.value[messages.value.length - 1]["content"] = lastMessageFromBuddy;
+          messages.value[messages.value.length - 1]["content"] =
+            lastMessageFromBuddy;
         }
       }
     }
@@ -58,14 +80,16 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
   useEffect(() => {
     if (!readAlways.value) return;
 
-    for (const [groupIndex, groupAudios] of Object.entries(audioFileDict)) {
+    const currentChatAudio = getCurrentChatAudio();
+    
+    for (const [groupIndex, groupAudios] of Object.entries(currentChatAudio)) {
       const nextUnplayedIndex = findNextUnplayedAudio(groupAudios);
 
       if (nextUnplayedIndex === null) return;
 
       const isLatestGroup =
-        Math.max(...Object.keys(audioFileDict).map(Number)) <=
-        Number(groupIndex);
+        Math.max(...Object.keys(currentChatAudio).map(Number)) <=
+          Number(groupIndex);
 
       if (
         isLatestGroup &&
@@ -80,8 +104,7 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
           groupAudios[nextUnplayedIndex].audio,
           Number(groupIndex),
           nextUnplayedIndex,
-          audioFileDict,
-          setAudioFileDict,
+          currentChatAudio,
         );
       }
 
@@ -93,8 +116,8 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
           }
         }
       }
-    };
-  }, [JSON.stringify(audioFileDict), readAlways, stopList.value]);
+    }
+  }, [audioFileDict.value, readAlways.value, stopList.value, chatSuffix.value]);
 
   // Initialize tour guide on client-side only once
   useEffect(() => {
@@ -102,6 +125,22 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
       initTourGuide();
       tourInitialized.current = true;
     }
+  }, []);
+
+  // Cleanup effect for when component unmounts
+  useEffect(() => {
+    return () => {
+      // Stop any playing audio when component unmounts
+      const currentChatAudio = getCurrentChatAudio();
+      Object.values(currentChatAudio).forEach((groupAudios) => {
+        Object.values(groupAudios).forEach((audioItem) => {
+          if (!audioItem.audio.paused) {
+            audioItem.audio.pause();
+            audioItem.audio.currentTime = 0;
+          }
+        });
+      });
+    };
   }, []);
 
   // Helper functions for audio playback
@@ -131,29 +170,28 @@ export default function ChatIsland({ lang, id }: { lang: string, id: string }) {
     audio: HTMLAudioElement,
     groupIndex: number,
     audioIndex: number,
-    audioFileDict: AudioFileDict,
-    setAudioFileDict: (dict: AudioFileDict) => void,
+    currentChatAudio: AudioFileDict,
   ) => {
     audio.play();
-    audioFileDict[groupIndex][audioIndex].played = true;
-    setAudioFileDict({ ...audioFileDict });
+    currentChatAudio[groupIndex][audioIndex].played = true;
+    // Update the global signal
+    const currentChatId = `bude-chat-${chatSuffix.value}`;
+    audioFileDict.value = {
+      ...audioFileDict.value,
+      [currentChatId]: currentChatAudio
+    };
   };
-  
+
   // MAIN CONTENT THAT IS RENDERED
   return (
     <div class="flex w-full h-[calc(100dvh-4rem)] md:h-screen">
       <ChatTemplate
         messages={messages.value}
         currentEditIndex={currentEditIndex.value}
-        audioFileDict={audioFileDict}
+        audioFileDict={getCurrentChatAudio()}
         onRefreshAction={handleRefreshAction}
-        onEditAction={() => { }}
-        onSpeakAtGroupIndexAction={(groupIndex: number) => {
-          const audioFile = audioFileDict[groupIndex][0];
-          if (audioFile) {
-            audioFile.audio.play();
-          }
-        }}
+        onEditAction={() => {}}
+        onSpeakAtGroupIndexAction={handleOnSpeakAtGroupIndexAction}
       >
         <ChatWarning lang={lang} />
       </ChatTemplate>

@@ -1,5 +1,10 @@
 import { useSignal } from "@preact/signals";
-import { IconBrain, IconChevronDown, IconKey, IconLink } from "@tabler/icons-preact";
+import {
+  IconBrain,
+  IconChevronDown,
+  IconKey,
+  IconLink,
+} from "@tabler/icons-preact";
 import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
 
@@ -35,7 +40,7 @@ export default function Capabilities({
       id,
       ...capability,
       icon: getCapabilityIcon(id),
-    })
+    }),
   );
 
   const radius = 160;
@@ -63,9 +68,9 @@ export default function Capabilities({
             <div
               className="absolute bg-white shadow-lg flex items-center justify-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               style={{
-                height: '25%',
-                aspectRatio: '1/1',
-                borderRadius: '50%',
+                height: "25%",
+                aspectRatio: "1/1",
+                borderRadius: "50%",
               }}
             >
               <span className="text-3xl" role="img" aria-label="Bud-E Logo">
@@ -73,9 +78,9 @@ export default function Capabilities({
               </span>
             </div>
 
-            <svg 
-              className="absolute inset-0 w-full h-full" 
-              aria-label="Capability Segments" 
+            <svg
+              className="absolute inset-0 w-full h-full"
+              aria-label="Capability Segments"
               title="Capability Segments"
               viewBox={`0 0 ${radius * 2} ${radius * 2}`}
               preserveAspectRatio="xMidYMid meet"
@@ -109,7 +114,8 @@ export default function Capabilities({
                   "Z",
                 ].join(" ");
 
-                const iconAngle = (startAngle + segmentAngle / 2) * (Math.PI / 180);
+                const iconAngle = (startAngle + segmentAngle / 2) *
+                  (Math.PI / 180);
                 const iconRadius = innerRadius + (radius - innerRadius) / 2;
                 const iconX = centerX + iconRadius * Math.cos(iconAngle);
                 const iconY = centerY + iconRadius * Math.sin(iconAngle);
@@ -135,10 +141,16 @@ export default function Capabilities({
                       height="40"
                       className="overflow-visible"
                     >
-                      <div className={`flex items-center justify-center w-10 h-10 ${
-                        isEnabled ? "text-green-600" : "text-gray-400"
-                      }`}>
-                        <span className="text-xl" role="img" aria-label={capability.title}>
+                      <div
+                        className={`flex items-center justify-center w-10 h-10 ${
+                          isEnabled ? "text-green-600" : "text-gray-400"
+                        }`}
+                      >
+                        <span
+                          className="text-xl"
+                          role="img"
+                          aria-label={capability.title}
+                        >
                           {capability.icon}
                         </span>
                       </div>
@@ -172,9 +184,11 @@ export default function Capabilities({
               } ${gridPositions[index]}`}
             >
               <div className="flex items-center justify-between mb-2">
-                <h3 className={`font-medium ${
-                  isEnabled ? "text-green-700" : "text-gray-700"
-                }`}>
+                <h3
+                  className={`font-medium ${
+                    isEnabled ? "text-green-700" : "text-gray-700"
+                  }`}
+                >
                   {capability.title}
                 </h3>
                 {!isEnabled && onEnableCapability && (
@@ -184,14 +198,27 @@ export default function Capabilities({
                     className="flex items-center justify-center w-6 h-6 rounded-full text-white bg-primary-600 hover:bg-gray-300 focus-visible:ring focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-primary-600 hover:text-gray-700 transition-colors"
                     aria-label={lang === "de" ? "Aktivieren" : "Enable"}
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" title="Plus Icon">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      title="Plus Icon"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
                     </svg>
                   </button>
                 )}
               </div>
-              <p className="text-sm text-gray-500 mt-1">{capability.description}</p>
-              
+              <p className="text-sm text-gray-500 mt-1">
+                {capability.description}
+              </p>
+
               {isEnabled && (
                 <div className="relative mt-4">
                   <button
@@ -205,9 +232,11 @@ export default function Capabilities({
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors duration-200 w-full"
                   >
                     <span className="text-base">{capability.icon}</span>
-                    <span className="text-sm">{selectedModel
-                      ? models.find((m) => m.id === selectedModel)?.name
-                      : t.selectModel}</span>
+                    <span className="text-sm">
+                      {selectedModel
+                        ? models.find((m) => m.id === selectedModel)?.name
+                        : t.selectModel}
+                    </span>
                     <IconChevronDown className="h-4 w-4 ml-auto" />
                   </button>
 

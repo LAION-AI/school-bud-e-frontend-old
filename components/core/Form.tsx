@@ -2,7 +2,7 @@ import Input from "./Input.tsx";
 import Textarea from "./Textarea.tsx";
 import Select from "./Select.tsx";
 
-export { Input, Textarea, Select };
+export { Input, Select, Textarea };
 
 // Form component that wraps form elements
 interface FormProps {
@@ -11,7 +11,9 @@ interface FormProps {
   className?: string;
 }
 
-export default function Form({ children, onSubmit, className = "" }: FormProps) {
+export default function Form(
+  { children, onSubmit, className = "" }: FormProps,
+) {
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     if (onSubmit) {
@@ -24,4 +26,4 @@ export default function Form({ children, onSubmit, className = "" }: FormProps) 
       {children}
     </form>
   );
-} 
+}

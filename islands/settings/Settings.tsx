@@ -10,461 +10,478 @@ import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
 import Input from "../../components/core/Input.tsx";
 import Textarea from "../../components/core/Textarea.tsx";
+import { EncryptedSyncSettings } from "../../components/chat/EncryptedSyncSettings.tsx";
 
 interface Model {
-	id: string;
-	name: string;
-	key: string;
-	url: string;
-	model: string;
-	capabilities: string[];
+  id: string;
+  name: string;
+  key: string;
+  url: string;
+  model: string;
+  capabilities: string[];
 }
 
 const STORAGE_KEYS = {
-	MODELS: "bud-e-models",
-	SELECTED_MODELS: "bud-e-selected-models",
+  MODELS: "bud-e-models",
+  SELECTED_MODELS: "bud-e-selected-models",
 } as const;
 
 export default function Settings({ lang = "en" }: { lang?: string }) {
-	const t = (translations as Translations)[lang as keyof Translations];
-	const newSettings = useSignal({
-		...settings.value,
-	});
-	const activeTab = useSignal("general");
-	const models = useSignal<Model[]>([]);
-	const selectedModels = useSignal<Record<string, string>>({});
-	const showPassword = useSignal(false);
-	const showNewModelForm = useSignal(false);
-	const editingModel = useSignal<Model | null>(null);
-	const preselectedCapability = useSignal<string | null>(null);
+  const t = (translations as Translations)[lang as keyof Translations];
+  const newSettings = useSignal({
+    ...settings.peek(),
+  });
+  
 
-	useEffect(() => {
-		// Initialize models from localStorage or settings
-		if (models.value.length === 0) {
-			// Try to load from localStorage first
-			const savedModels = localStorage.getItem(STORAGE_KEYS.MODELS);
-			const savedSelectedModels = localStorage.getItem(
-				STORAGE_KEYS.SELECTED_MODELS,
-			);
+  const activeTab = useSignal("general");
+  const models = useSignal<Model[]>([]);
+  const selectedModels = useSignal<Record<string, string>>({});
+  const showPassword = useSignal(false);
+  const showNewModelForm = useSignal(false);
+  const editingModel = useSignal<Model | null>(null);
+  const preselectedCapability = useSignal<string | null>(null);
 
-			if (savedModels && savedSelectedModels) {
-				try {
-					models.value = JSON.parse(savedModels);
-					selectedModels.value = JSON.parse(savedSelectedModels);
-					// Update settings based on saved models
-					updateSettingsFromModels();
-				} catch (error) {
-					console.error("Error loading saved models:", error);
-					initializeModelsFromSettings();
-				}
-			} else {
-				initializeModelsFromSettings();
-			}
-		}
+  useEffect(() => {
+    // Initialize models from localStorage or settings
+    if (models.value.length === 0) {
+      // Try to load from localStorage first
+      const savedModels = localStorage.getItem(STORAGE_KEYS.MODELS);
+      const savedSelectedModels = localStorage.getItem(
+        STORAGE_KEYS.SELECTED_MODELS,
+      );
 
-		// Cleanup function
-		return () => {
-			// Clear signals on unmount to prevent memory leaks
-			models.value = [];
-			selectedModels.value = {};
-			newSettings.value = { ...settings.value };
-			showPassword.value = false;
-			activeTab.value = "general";
-		};
-	}, [models, selectedModels, newSettings, showPassword, activeTab]);
+      if (savedModels && savedSelectedModels) {
+        try {
+          models.value = JSON.parse(savedModels);
+          selectedModels.value = JSON.parse(savedSelectedModels);
+          // Update settings based on saved models
+          updateSettingsFromModels();
+        } catch (error) {
+          console.error("Error loading saved models:", error);
+          initializeModelsFromSettings();
+        }
+      } else {
+        initializeModelsFromSettings();
+      }
+    }
 
-	function initializeModelsFromSettings() {
-		const initialModels: Model[] = [];
-		const initialSelectedModels: Record<string, string> = {};
+    // Cleanup function
+    return () => {
+      // Clear signals on unmount to prevent memory leaks
+      models.value = [];
+      selectedModels.value = {};
+      newSettings.value = { ...settings.peek() };
+      showPassword.value = false;
+      activeTab.value = "general";
+    };
+  }, [models, selectedModels, newSettings, showPassword, activeTab]);
 
-		// Add models from individual settings
-		if (newSettings.value.apiKey) {
-			initialModels.push({
-				id: "default-chat",
-				name: "Default Chat Model",
-				key: newSettings.value.apiKey,
-				url: newSettings.value.apiUrl,
-				model: newSettings.value.apiModel,
-				capabilities: ["chat"],
-			});
-			initialSelectedModels.chat = "default-chat";
-		}
-		if (newSettings.value.vlmKey) {
-			initialModels.push({
-				id: "default-vision",
-				name: "Default Vision Model",
-				key: newSettings.value.vlmKey,
-				url: newSettings.value.vlmUrl,
-				model: newSettings.value.vlmModel,
-				capabilities: ["vision"],
-			});
-			initialSelectedModels.vision = "default-vision";
-		}
-		if (newSettings.value.ttsKey) {
-			initialModels.push({
-				id: "default-tts",
-				name: "Default TTS Model",
-				key: newSettings.value.ttsKey,
-				url: newSettings.value.ttsUrl,
-				model: newSettings.value.ttsModel,
-				capabilities: ["speak"],
-			});
-			initialSelectedModels.speak = "default-tts";
-		}
-		if (newSettings.value.sttKey) {
-			initialModels.push({
-				id: "default-stt",
-				name: "Default STT Model",
-				key: newSettings.value.sttKey,
-				url: newSettings.value.sttUrl,
-				model: newSettings.value.sttModel,
-				capabilities: ["listen"],
-			});
-			initialSelectedModels.listen = "default-stt";
-		}
+  function initializeModelsFromSettings() {
+    const initialModels: Model[] = [];
+    const initialSelectedModels: Record<string, string> = {};
 
-		models.value = initialModels;
-		selectedModels.value = initialSelectedModels;
+    // Add models from individual settings
+    if (newSettings.value.apiKey) {
+      initialModels.push({
+        id: "default-chat",
+        name: "Default Chat Model",
+        key: newSettings.value.apiKey,
+        url: newSettings.value.apiUrl,
+        model: newSettings.value.apiModel,
+        capabilities: ["chat"],
+      });
+      initialSelectedModels.chat = "default-chat";
+    }
+    if (newSettings.value.vlmKey) {
+      initialModels.push({
+        id: "default-vision",
+        name: "Default Vision Model",
+        key: newSettings.value.vlmKey,
+        url: newSettings.value.vlmUrl,
+        model: newSettings.value.vlmModel,
+        capabilities: ["vision"],
+      });
+      initialSelectedModels.vision = "default-vision";
+    }
+    if (newSettings.value.ttsKey) {
+      initialModels.push({
+        id: "default-tts",
+        name: "Default TTS Model",
+        key: newSettings.value.ttsKey,
+        url: newSettings.value.ttsUrl,
+        model: newSettings.value.ttsModel,
+        capabilities: ["speak"],
+      });
+      initialSelectedModels.speak = "default-tts";
+    }
+    if (newSettings.value.sttKey) {
+      initialModels.push({
+        id: "default-stt",
+        name: "Default STT Model",
+        key: newSettings.value.sttKey,
+        url: newSettings.value.sttUrl,
+        model: newSettings.value.sttModel,
+        capabilities: ["listen"],
+      });
+      initialSelectedModels.listen = "default-stt";
+    }
 
-		// Save to localStorage
-		saveModelsToStorage();
-	}
+    models.value = initialModels;
+    selectedModels.value = initialSelectedModels;
 
-	function saveModelsToStorage() {
-		try {
-			localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(models.value));
-			localStorage.setItem(
-				STORAGE_KEYS.SELECTED_MODELS,
-				JSON.stringify(selectedModels.value),
-			);
-		} catch (error) {
-			console.error("Error saving models to localStorage:", error);
-		}
-	}
+    // Save to localStorage
+    saveModelsToStorage();
+  }
 
-	// Compute enabled capabilities based on available models
-	const enabledCapabilities = useComputed(() => {
-		const capabilities = new Set<string>();
+  function saveModelsToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(models.value));
+      localStorage.setItem(
+        STORAGE_KEYS.SELECTED_MODELS,
+        JSON.stringify(selectedModels.value),
+      );
+    } catch (error) {
+      console.error("Error saving models to localStorage:", error);
+    }
+  }
 
-		for (const model of models.value) {
-			for (const capability of model.capabilities) {
-				capabilities.add(capability);
-			}
-		}
+  // Compute enabled capabilities based on available models
+  const enabledCapabilities = useComputed(() => {
+    const capabilities = new Set<string>();
 
-		return Array.from(capabilities);
-	});
+    for (const model of models.value) {
+      for (const capability of model.capabilities) {
+        capabilities.add(capability);
+      }
+    }
 
-	function handleTogglePasswordVisibility() {
-		showPassword.value = !showPassword.value;
-	}
+    return Array.from(capabilities);
+  });
 
-	function handleChange(
-		e: JSX.TargetedEvent<HTMLInputElement | HTMLTextAreaElement>,
-	) {
-		const target = e.target as HTMLInputElement | HTMLTextAreaElement;
-		updateSettings(target.name, target.value);
-	}
+  function handleTogglePasswordVisibility() {
+    showPassword.value = !showPassword.value;
+  }
 
-	const updateSettings = (key: string, value: string) => {
-		const updatedSettings = { ...newSettings.value };
-		updatedSettings[key as keyof typeof settings.value] = value;
-		newSettings.value = updatedSettings;
-		// Immediately save to global settings
-		settings.value = { ...updatedSettings };
-	};
+  function handleChange(
+    e: JSX.TargetedEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) {
+    const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+    updateSettings(target.name, target.value);
+  }
 
-	function handleUpdateModel(model: Model) {
-		const updatedModels = models.value.map((m) =>
-			m.id === model.id ? model : m,
-		);
-		models.value = updatedModels;
-		updateSettingsFromModels();
-		saveModelsToStorage();
-	}
+  const updateSettings = (key: string, value: string) => {
+    const updatedSettings = { ...newSettings.value };
+    updatedSettings[key as keyof typeof settings.value] = value;
+    newSettings.value = updatedSettings;
+    // Immediately save to global settings
+    settings.value = { ...updatedSettings };
+  };
 
-	function handleDeleteModel(modelId: string) {
-		models.value = models.value.filter((m) => m.id !== modelId);
-		// Remove any selected model references
-		const updatedSelectedModels = { ...selectedModels.value };
-		for (const [capability, selectedId] of Object.entries(
-			updatedSelectedModels,
-		)) {
-			if (selectedId === modelId) {
-				delete updatedSelectedModels[capability];
-			}
-		}
-		selectedModels.value = updatedSelectedModels;
-		updateSettingsFromModels();
-		saveModelsToStorage();
-	}
+  function handleUpdateModel(model: Model) {
+    const updatedModels = models.value.map((m) =>
+      m.id === model.id ? model : m
+    );
+    models.value = updatedModels;
+    updateSettingsFromModels();
+    saveModelsToStorage();
+  }
 
-	function handleAddModel(model: Model) {
-		models.value = [...models.value, model];
-		// If this is the first model for any capability, select it automatically
-		for (const capability of model.capabilities) {
-			if (!selectedModels.value[capability]) {
-				selectedModels.value = {
-					...selectedModels.value,
-					[capability]: model.id,
-				};
-			}
-		}
-		updateSettingsFromModels();
-		saveModelsToStorage();
-	}
+  function handleDeleteModel(modelId: string) {
+    models.value = models.value.filter((m) => m.id !== modelId);
+    // Remove any selected model references
+    const updatedSelectedModels = { ...selectedModels.value };
+    for (
+      const [capability, selectedId] of Object.entries(
+        updatedSelectedModels,
+      )
+    ) {
+      if (selectedId === modelId) {
+        delete updatedSelectedModels[capability];
+      }
+    }
+    selectedModels.value = updatedSelectedModels;
+    updateSettingsFromModels();
+    saveModelsToStorage();
+  }
 
-	function handleSelectModel(capabilityId: string, modelId: string) {
-		selectedModels.value = {
-			...selectedModels.value,
-			[capabilityId]: modelId,
-		};
-		updateSettingsFromModels();
-		saveModelsToStorage();
-	}
+  function handleAddModel(model: Model) {
+    models.value = [...models.value, model];
+    // If this is the first model for any capability, select it automatically
+    for (const capability of model.capabilities) {
+      if (!selectedModels.value[capability]) {
+        selectedModels.value = {
+          ...selectedModels.value,
+          [capability]: model.id,
+        };
+      }
+    }
+    updateSettingsFromModels();
+    saveModelsToStorage();
+  }
 
-	function updateSettingsFromModels() {
-		const updatedSettings = { ...newSettings.value };
+  function handleSelectModel(capabilityId: string, modelId: string) {
+    selectedModels.value = {
+      ...selectedModels.value,
+      [capabilityId]: modelId,
+    };
+    updateSettingsFromModels();
+    saveModelsToStorage();
+  }
 
-		// Reset all model-related settings
-		updatedSettings.apiKey = "";
-		updatedSettings.apiUrl = "";
-		updatedSettings.apiModel = "";
-		updatedSettings.vlmKey = "";
-		updatedSettings.vlmUrl = "";
-		updatedSettings.vlmModel = "";
-		updatedSettings.ttsKey = "";
-		updatedSettings.ttsUrl = "";
-		updatedSettings.ttsModel = "";
-		updatedSettings.sttKey = "";
-		updatedSettings.sttUrl = "";
-		updatedSettings.sttModel = "";
+  function updateSettingsFromModels() {
+    const updatedSettings = { ...newSettings.value };
 
-		// Update settings based on selected models
-		for (const [capability, modelId] of Object.entries(selectedModels.value)) {
-			const model = models.value.find((m) => m.id === modelId);
-			if (!model) continue;
+    // Reset all model-related settings
+    updatedSettings.apiKey = "";
+    updatedSettings.apiUrl = "";
+    updatedSettings.apiModel = "";
+    updatedSettings.vlmKey = "";
+    updatedSettings.vlmUrl = "";
+    updatedSettings.vlmModel = "";
+    updatedSettings.ttsKey = "";
+    updatedSettings.ttsUrl = "";
+    updatedSettings.ttsModel = "";
+    updatedSettings.sttKey = "";
+    updatedSettings.sttUrl = "";
+    updatedSettings.sttModel = "";
 
-			switch (capability) {
-				case "chat":
-					updatedSettings.apiKey = model.key;
-					updatedSettings.apiUrl = model.url;
-					updatedSettings.apiModel = model.model;
-					break;
-				case "vision":
-					updatedSettings.vlmKey = model.key;
-					updatedSettings.vlmUrl = model.url;
-					updatedSettings.vlmModel = model.model;
-					break;
-				case "speak":
-					updatedSettings.ttsKey = model.key;
-					updatedSettings.ttsUrl = model.url;
-					updatedSettings.ttsModel = model.model;
-					break;
-				case "listen":
-					updatedSettings.sttKey = model.key;
-					updatedSettings.sttUrl = model.url;
-					updatedSettings.sttModel = model.model;
-					break;
-			}
-		}
+    // Update settings based on selected models
+    for (const [capability, modelId] of Object.entries(selectedModels.value)) {
+      const model = models.value.find((m) => m.id === modelId);
+      if (!model) continue;
 
-		newSettings.value = updatedSettings;
-		settings.value = { ...updatedSettings };
-	}
+      switch (capability) {
+        case "chat":
+          updatedSettings.apiKey = model.key;
+          updatedSettings.apiUrl = model.url;
+          updatedSettings.apiModel = model.model;
+          break;
+        case "vision":
+          updatedSettings.vlmKey = model.key;
+          updatedSettings.vlmUrl = model.url;
+          updatedSettings.vlmModel = model.model;
+          break;
+        case "speak":
+          updatedSettings.ttsKey = model.key;
+          updatedSettings.ttsUrl = model.url;
+          updatedSettings.ttsModel = model.model;
+          break;
+        case "listen":
+          updatedSettings.sttKey = model.key;
+          updatedSettings.sttUrl = model.url;
+          updatedSettings.sttModel = model.model;
+          break;
+      }
+    }
 
-	function handleSystemPromptChange(e: JSX.TargetedEvent<HTMLTextAreaElement>) {
-		const target = e.target as HTMLTextAreaElement;
-		newSettings.value = {
-			...newSettings.value,
-			systemPrompt: target.value,
-		};
-		settings.value = {
-			...settings.value,
-			systemPrompt: target.value,
-		};
-	}
+    newSettings.value = updatedSettings;
+    settings.value = { ...updatedSettings };
+  }
 
-	// Get capability explanation
-	function getCapabilityExplanation(capability: string) {
-		const explanations = {
-			chat: {
-				title: lang === "de" ? "Text-Chat" : "Text Chat",
-				description:
-					lang === "de"
-						? "Bud-E kann mit dir über Text kommunizieren."
-						: "Bud-E can communicate with you through text.",
-				icon: "💬",
-			},
-			vision: {
-				title: lang === "de" ? "Bild-Verständnis" : "Image Understanding",
-				description:
-					lang === "de"
-						? "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
-						: "Bud-E can see and understand images you upload.",
-				icon: "👁️",
-			},
-			speak: {
-				title: lang === "de" ? "Sprachausgabe" : "Voice Output",
-				description:
-					lang === "de"
-						? "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
-						: "Bud-E can speak to you and convert text to speech.",
-				icon: "🔊",
-			},
-			listen: {
-				title: lang === "de" ? "Spracherkennung" : "Voice Recognition",
-				description:
-					lang === "de"
-						? "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
-						: "Bud-E can listen and understand your spoken words.",
-				icon: "🎤",
-			},
-		};
+  function handleSystemPromptChange(e: JSX.TargetedEvent<HTMLTextAreaElement>) {
+    const target = e.target as HTMLTextAreaElement;
+    newSettings.value = {
+      ...newSettings.value,
+      systemPrompt: target.value,
+    };
+    settings.value = {
+      ...settings.value,
+      systemPrompt: target.value,
+    };
+  }
 
-		return (
-			explanations[capability as keyof typeof explanations] || {
-				title: capability,
-				description: "",
-				icon: "✨",
-			}
-		);
-	}
+  // Get capability explanation
+  function getCapabilityExplanation(capability: string) {
+    const explanations = {
+      chat: {
+        title: lang === "de" ? "Text-Chat" : "Text Chat",
+        description: lang === "de"
+          ? "Bud-E kann mit dir über Text kommunizieren."
+          : "Bud-E can communicate with you through text.",
+        icon: "💬",
+      },
+      vision: {
+        title: lang === "de" ? "Bild-Verständnis" : "Image Understanding",
+        description: lang === "de"
+          ? "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
+          : "Bud-E can see and understand images you upload.",
+        icon: "👁️",
+      },
+      speak: {
+        title: lang === "de" ? "Sprachausgabe" : "Voice Output",
+        description: lang === "de"
+          ? "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
+          : "Bud-E can speak to you and convert text to speech.",
+        icon: "🔊",
+      },
+      listen: {
+        title: lang === "de" ? "Spracherkennung" : "Voice Recognition",
+        description: lang === "de"
+          ? "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
+          : "Bud-E can listen and understand your spoken words.",
+        icon: "🎤",
+      },
+    };
 
-	const handleEnableCapability = (capabilityId: string) => {
-		preselectedCapability.value = capabilityId;
-		showNewModelForm.value = true;
-		editingModel.value = null;
-	};
+    return (
+      explanations[capability as keyof typeof explanations] || {
+        title: capability,
+        description: "",
+        icon: "✨",
+      }
+    );
+  }
 
-	return (
-		<div className="space-y-6">
-			{/* Tab Navigation */}
-			<div className="border-b border-gray-200">
-				<nav className="-mb-px flex space-x-8" aria-label="Tabs">
-					<button
-						type="button"
-						onClick={() => {
-							activeTab.value = "general";
-						}}
-						className={`${
-							activeTab.value === "general"
-								? "border-primary-500 text-primary-600"
-								: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-					>
-						{t.general}
-					</button>
-					<button
-						type="button"
-						onClick={() => {
-							activeTab.value = "token-usage";
-						}}
-						className={`${
-							activeTab.value === "token-usage"
-								? "border-primary-500 text-primary-600"
-								: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-					>
-						{t.tokenUsage}
-					</button>
-				</nav>
-			</div>
+  const handleEnableCapability = (capabilityId: string) => {
+    preselectedCapability.value = capabilityId;
+    showNewModelForm.value = true;
+    editingModel.value = null;
+  };
 
-			<div className="bg-white rounded-lg shadow-lg p-6">
-				{/* General Settings Tab */}
-				{activeTab.value === "general" && (
-					<>
-						{/* Add a highlight box for model configuration */}
-						<div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
-							<div className="flex">
-								<div className="flex-shrink-0">
-									<IconInfoCircleFilled class="h-5 w-5 text-primary-500" />
-								</div>
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-primary-800">
-										{t.configureAiModels}
-									</h3>
-									<div className="mt-2 text-sm text-primary-700">
-										<p>{t.configureAiModelsDescription}</p>
-									</div>
-								</div>
-							</div>
-						</div>
+  return (
+    <div className="space-y-6">
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <button
+            type="button"
+            onClick={() => {
+              activeTab.value = "general";
+            }}
+            className={`${
+              activeTab.value === "general"
+                ? "border-primary-500 text-primary-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+          >
+            {t.general}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              activeTab.value = "token-usage";
+            }}
+            className={`${
+              activeTab.value === "token-usage"
+                ? "border-primary-500 text-primary-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+          >
+            {t.tokenUsage}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              activeTab.value = "sync";
+            }}
+            className={`${
+              activeTab.value === "sync"
+                ? "border-primary-500 text-primary-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+          >
+            Chat Sync
+          </button>
+        </nav>
+      </div>
 
-						{/* Capabilities Visualization */}
-						<div className="py-6">
-							<h3 className="text-lg font-medium text-gray-800 mb-4">
-								{t.availableCapabilities}
-							</h3>
-							<Capabilities
-								enabledCapabilities={enabledCapabilities.value}
-								models={models.value}
-								selectedModels={selectedModels.value}
-								onSelectModel={handleSelectModel}
-								onEnableCapability={handleEnableCapability}
-								lang={lang}
-							/>
-						</div>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        {/* General Settings Tab */}
+        {activeTab.value === "general" && (
+          <>
+            {/* Add a highlight box for model configuration */}
+            <div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <IconInfoCircleFilled class="h-5 w-5 text-primary-500" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-primary-800">
+                    {t.configureAiModels}
+                  </h3>
+                  <div className="mt-2 text-sm text-primary-700">
+                    <p>{t.configureAiModelsDescription}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-						{/* Model Manager */}
-						<ModelManager
-							models={models.value}
-							onUpdateModel={handleUpdateModel}
-							onDeleteModel={handleDeleteModel}
-							onAddModel={handleAddModel}
-							showNewModelForm={showNewModelForm}
-							editingModel={editingModel}
-							preselectedCapability={preselectedCapability}
-							lang={lang}
-						/>
+            {/* Capabilities Visualization */}
+            <div className="py-6">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">
+                {t.availableCapabilities}
+              </h3>
+              <Capabilities
+                enabledCapabilities={enabledCapabilities.value}
+                models={models.value}
+                selectedModels={selectedModels.value}
+                onSelectModel={handleSelectModel}
+                onEnableCapability={handleEnableCapability}
+                lang={lang}
+              />
+            </div>
 
-						{/* Universal API Key */}
-						<div className="mt-8">
-							<label
-								htmlFor="universalApiKey"
-								className="block text-sm font-medium text-gray-700 mb-1"
-							>
-								{t.universalApiKey || "Universal API Key"}
-							</label>
-							<Input
-								type={showPassword.value ? "text" : "password"}
-								id="universalApiKey"
-								name="universalApiKey"
-								value={newSettings.value.universalApiKey}
-								onChange={handleChange}
-								className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-							/>
-						</div>
+            {/* Model Manager */}
+            <ModelManager
+              models={models.value}
+              onUpdateModel={handleUpdateModel}
+              onDeleteModel={handleDeleteModel}
+              onAddModel={handleAddModel}
+              showNewModelForm={showNewModelForm}
+              editingModel={editingModel}
+              preselectedCapability={preselectedCapability}
+              lang={lang}
+            />
 
-						{/* System Prompt */}
-						<div className="mt-8">
-							<label
-								htmlFor="systemPrompt"
-								className="block text-sm font-medium text-gray-700 mb-1"
-							>
-								{t.systemPrompt}{" "}
-								<span className="text-gray-500">{t.systemPromptOptional}</span>
-							</label>
-							<Textarea
-								id="systemPrompt"
-								name="systemPrompt"
-								value={newSettings.value.systemPrompt}
-								onChange={handleSystemPromptChange}
-								rows={4}
-								className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-								placeholder={t.systemPromptPlaceholder}
-							/>
-							<p className="mt-1 text-sm text-gray-500">
-								{t.systemPromptDescription}
-							</p>
-						</div>
-					</>
-				)}
+            {/* Universal API Key */}
+            <div className="mt-8">
+              <label
+                htmlFor="universalApiKey"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                {t.universalApiKey || "Universal API Key"}
+              </label>
+              <Input
+                type={showPassword.value ? "text" : "password"}
+                id="universalApiKey"
+                name="universalApiKey"
+                value={newSettings.value.universalApiKey}
+                onChange={handleChange}
+                className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              />
+            </div>
 
-				{/* Token Usage Tab */}
-				{activeTab.value === "token-usage" && <TokenUsage lang={lang} />}
-			</div>
-		</div>
-	);
+            {/* System Prompt */}
+            <div className="mt-8">
+              <label
+                htmlFor="systemPrompt"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                {t.systemPrompt}{" "}
+                <span className="text-gray-500">{t.systemPromptOptional}</span>
+              </label>
+              <Textarea
+                id="systemPrompt"
+                name="systemPrompt"
+                value={newSettings.value.systemPrompt}
+                onChange={handleSystemPromptChange}
+                rows={4}
+                className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder={t.systemPromptPlaceholder}
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                {t.systemPromptDescription}
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* Token Usage Tab */}
+        {activeTab.value === "token-usage" && <TokenUsage lang={lang} />}
+
+        {/* Chat Sync Tab */}
+        {activeTab.value === "sync" && <EncryptedSyncSettings />}
+      </div>
+    </div>
+  );
 }

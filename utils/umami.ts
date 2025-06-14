@@ -12,24 +12,27 @@ export async function trackPageView(req: Request) {
         screen: "1920x1080",
         title: "",
         url: url.toString(),
-        website: '6f5f48af-a00c-42f7-9796-677e299e04c1',
-        name: 'pageview',
+        website: "6f5f48af-a00c-42f7-9796-677e299e04c1",
+        name: "pageview",
       },
-      type: 'event',
+      type: "event",
     };
     // console.log({data});
 
     // Fire and forget - don't await
     await fetch(`${UMAMI_URL}/api/send`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "User-Agent": req.headers.get("User-Agent") || "" },
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": req.headers.get("User-Agent") || "",
+      },
       body: JSON.stringify(data),
     }).catch((e) => {
       // console.error("Failed to track page view", e);
     }).then((res) => {
       //console.log("Tracked page view", res);
     });
-  } catch (e){
+  } catch (e) {
     // console.error("Failed to track page view", e);
     // Silently fail if tracking fails
   }

@@ -2,17 +2,22 @@
  * This function should accept a prompt and return a response from the LLM as a string.
  * It always responds in a stream so we need to handle that.
  */
-import { settings, messages as chatMessages, lang, addMessage } from "../../components/chat/store.ts";
+import {
+  addMessage,
+  lang,
+  messages as chatMessages,
+  settings,
+} from "../../components/chat/store.ts";
 import { fetchEventSource } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
 
 export async function getLLMResponse(prompt: string): Promise<string> {
   // Add the user message to the global message store
   const userMessage = { role: "user", content: prompt };
   addMessage(userMessage);
-  
+
   return new Promise((resolve, reject) => {
     const responseChunks: string[] = [];
-    
+
     fetchEventSource("/api/chat", {
       method: "POST",
       headers: {
@@ -31,7 +36,9 @@ export async function getLLMResponse(prompt: string): Promise<string> {
         if (response.ok) {
           console.log("Connection established");
         } else {
-          reject(`Failed to establish connection: ${response.status} ${response.statusText}`);
+          reject(
+            `Failed to establish connection: ${response.status} ${response.statusText}`,
+          );
         }
       },
       onerror(err) {
@@ -52,7 +59,7 @@ export async function getLLMResponse(prompt: string): Promise<string> {
 function createRequestBody(prompt: string) {
   // Get the messages but don't append the new prompt as it's already added via addMessage
   const messages = chatMessages.value;
-  
+
   return {
     lang: lang.value,
     messages: messages,

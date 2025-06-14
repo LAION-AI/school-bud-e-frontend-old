@@ -121,7 +121,7 @@ interface Window {
 }
 
 interface Image {
-  type: 'image_url' | 'pdf_url';
+  type: "image_url" | "pdf_url";
   image_url?: {
     url: string;
     detail: string;
@@ -139,7 +139,7 @@ interface Image {
 }
 
 interface File {
-  type: 'file_url';
+  type: "file_url";
   file_url: {
     url: string;
     detail: string;

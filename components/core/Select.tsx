@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 
 export interface SelectOption {
   value: string;
@@ -48,10 +48,12 @@ export default function Select({
   helpText,
   ...props
 }: SelectProps) {
-  const baseSelectClass = "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md";
-  const errorSelectClass = "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
+  const baseSelectClass =
+    "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md";
+  const errorSelectClass =
+    "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
   const disabledSelectClass = "bg-gray-100 cursor-not-allowed";
-  
+
   const selectClasses = [
     baseSelectClass,
     error ? errorSelectClass : "",
@@ -89,8 +91,8 @@ export default function Select({
             </option>
           )}
           {options.map((option) => (
-            <option 
-              key={option.value} 
+            <option
+              key={option.value}
               value={option.value}
               disabled={option.disabled}
             >
@@ -105,8 +107,18 @@ export default function Select({
         )}
         {!icon && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            <svg
+              className="h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
         )}
@@ -123,4 +135,4 @@ export default function Select({
       )}
     </div>
   );
-} 
+}

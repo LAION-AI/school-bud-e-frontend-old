@@ -7,7 +7,9 @@ interface ChatAPISettingsProps {
   lang: string;
 }
 
-export default function ChatAPISettings({ settings, onUpdateSettings, lang }: ChatAPISettingsProps) {
+export default function ChatAPISettings(
+  { settings, onUpdateSettings, lang }: ChatAPISettingsProps,
+) {
   return (
     <div class="mb-4">
       <h3 class="font-medium mb-2">

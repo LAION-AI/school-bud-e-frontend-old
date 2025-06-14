@@ -8,18 +8,17 @@ import SidebarHeader from "./SidebarHeader.tsx";
 import TestsSection from "./TestsSection.tsx";
 import UserProfileSection from "./UserProfileSection.tsx";
 import VideoNovelLink from "./VideoNovelLink.tsx";
+import ChatSyncInitializer from "../chat/ChatSyncInitializer.tsx";
 import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarProps {
   currentChatSuffix: string;
-  onDownloadChat: () => void;
   lang?: string;
 }
 
 export default function Sidebar({
   currentChatSuffix,
   lang = "en",
-  onDownloadChat,
 }: SidebarProps) {
   const t = translations[lang as keyof typeof translations];
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -27,6 +26,10 @@ export default function Sidebar({
     const collapsed = urlParams.get("collapsed");
     return collapsed === "true";
   });
+
+  const onDownloadChat = () => {
+    console.log("Download chat not yet implemented");
+  };
 
   // State to manage which section is highlighted
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -54,9 +57,8 @@ export default function Sidebar({
   useEffect(() => {
     const urlParams = new URLSearchParams(globalThis.location?.search);
     urlParams.set("collapsed", `${isCollapsed}`);
-    const newUrl = `${globalThis.location?.origin}${
-      globalThis.location?.pathname
-    }?${urlParams.toString()}`;
+    const newUrl =
+      `${globalThis.location?.origin}${globalThis.location?.pathname}?${urlParams.toString()}`;
     globalThis.history?.replaceState(null, "", newUrl);
   }, [isCollapsed]);
 
@@ -78,7 +80,7 @@ export default function Sidebar({
 
   return (
     <div
-      class={`sidebar border-r-2 bg-white h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
+      class={`sidebar border-r border-gray-200 bg-white h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
         isCollapsed ? "w-0 overflow-hidden" : "w-[21rem]"
       }`}
     >
@@ -88,10 +90,11 @@ export default function Sidebar({
         translations={t}
       />
 
-      <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
+      <div
+        class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300"
+      >
         <nav
           class="p-3 space-y-3"
-          onClick={handleLinkClick}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               handleLinkClick(e as unknown as MouseEvent);
@@ -120,17 +123,22 @@ export default function Sidebar({
             lang={lang}
           />
           <VideoNovelLink isCollapsed={isCollapsed} />
-          {/*
+          {
+            /*
           <GamesSection
             isCollapsed={isCollapsed}
             highlight={selectedSection === "games"}
           />
-          */}
+          */
+          }
         </nav>
       </div>
 
       <div class="p-3 pt-0">
         <TourProgressSidebarSection />
+        <div class="mb-3">
+          <ChatSyncInitializer />
+        </div>
         <UserProfileSection
           lang={lang}
         />

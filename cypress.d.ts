@@ -1,11 +1,15 @@
 declare namespace Cypress {
   type ChainableElement = JQuery<HTMLElement>;
-  
+
   interface Chainable {
     intercept(url: string | RegExp): Chainable;
     intercept(method: string, url: string | RegExp): Chainable;
-    intercept(method: string, url: string | RegExp, response?: unknown): Chainable;
-    
+    intercept(
+      method: string,
+      url: string | RegExp,
+      response?: unknown,
+    ): Chainable;
+
     get(selector: string): Chainable;
     click(): Chainable;
     type(text: string): Chainable;
@@ -15,7 +19,7 @@ declare namespace Cypress {
     clear(): Chainable;
     reload(): Chainable;
     wait(alias: string): Chainable;
-    
+
     // Basic assertions
     should(chainer: string, value?: unknown): Chainable;
   }

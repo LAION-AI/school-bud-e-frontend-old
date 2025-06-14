@@ -1,8 +1,7 @@
-/// <reference lib="deno.ns" />
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-
-import { assertEquals, assertExists } from "https://deno.land/std@0.210.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertExists,
+} from "https://deno.land/std@0.210.0/testing/asserts.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/mod.ts";
 
 // Mock fetch for testing
@@ -10,7 +9,10 @@ const originalFetch = globalThis.fetch;
 let mockResponses = new Map<string, Response>();
 
 function setupMock() {
-  globalThis.fetch = async (input: string | URL | Request, init?: RequestInit) => {
+  globalThis.fetch = async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
     const url = input instanceof URL ? input.toString() : input.toString();
     const mockResponse = mockResponses.get(url);
     if (mockResponse) {
@@ -26,10 +28,13 @@ function resetMock() {
 }
 
 function mockResponse(url: string, data: unknown, status = 200) {
-  mockResponses.set(url, new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  }));
+  mockResponses.set(
+    url,
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
 }
 
 Deno.test({
@@ -41,9 +46,9 @@ Deno.test({
       name: "should handle sending messages",
       async fn() {
         const testMessage = "Hello, this is a test message";
-        mockResponse("/api/chat", { 
+        mockResponse("/api/chat", {
           role: "assistant",
-          content: "Hello! How can I help you today?"
+          content: "Hello! How can I help you today?",
         });
 
         const response = await fetch("/api/chat", {
@@ -55,15 +60,15 @@ Deno.test({
         assertEquals(response.status, 200);
         const data = await response.json();
         assertExists(data.content);
-      }
+      },
     });
 
     await t.step({
       name: "should handle errors gracefully",
       async fn() {
-        mockResponse("/api/chat", { 
+        mockResponse("/api/chat", {
           error: "API Error",
-          detail: "Something went wrong"
+          detail: "Something went wrong",
         }, 500);
 
         const response = await fetch("/api/chat", {
@@ -75,11 +80,11 @@ Deno.test({
         assertEquals(response.status, 500);
         const data = await response.json();
         assertExists(data.error);
-      }
+      },
     });
 
     resetMock();
-  }
+  },
 });
 
 Deno.test({
@@ -97,7 +102,7 @@ Deno.test({
           audioBlob: new Blob(),
           createdAt: Date.now(),
           images: [],
-          segments: []
+          segments: [],
         };
 
         mockResponse("/api/novels", { success: true, novel: testNovel });
@@ -119,9 +124,9 @@ Deno.test({
         assertEquals(loadResponse.status, 200);
         const loadData = await loadResponse.json();
         assertEquals(loadData.name, "Test Novel");
-      }
+      },
     });
 
     resetMock();
-  }
-}); 
+  },
+});

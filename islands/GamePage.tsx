@@ -16,20 +16,23 @@ export default function GamePage({ game }: GamePageProps) {
           <div class="flex space-x-4">
             <Button
               onClick={async () => {
-                const newName = prompt("Enter new name for the game:", game.title);
+                const newName = prompt(
+                  "Enter new name for the game:",
+                  game.title,
+                );
                 if (newName && newName !== game.title) {
                   try {
                     const response = await fetch(`/api/game/${game.id}`, {
-                      method: 'PATCH',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ name: newName })
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: newName }),
                     });
                     if (response.ok) {
                       window.location.reload();
                     }
                   } catch (error) {
-                    console.error('Error renaming game:', error);
-                    alert('Failed to rename game');
+                    console.error("Error renaming game:", error);
+                    alert("Failed to rename game");
                   }
                 }
               }}
@@ -42,14 +45,14 @@ export default function GamePage({ game }: GamePageProps) {
                 if (confirm("Are you sure you want to delete this game?")) {
                   try {
                     const response = await fetch(`/api/game/${game.id}`, {
-                      method: 'DELETE'
+                      method: "DELETE",
                     });
                     if (response.ok) {
-                      window.location.href = '/games';
+                      window.location.href = "/games";
                     }
                   } catch (error) {
-                    console.error('Error deleting game:', error);
-                    alert('Failed to delete game');
+                    console.error("Error deleting game:", error);
+                    alert("Failed to delete game");
                   }
                 }
               }}
@@ -61,7 +64,9 @@ export default function GamePage({ game }: GamePageProps) {
           </div>
         </div>
         <div class="p-6">
-          <GameComponent gameUrl={{ code: game.description, name: game.title }} />
+          <GameComponent
+            gameUrl={{ code: game.description, name: game.title }}
+          />
         </div>
       </div>
     </div>

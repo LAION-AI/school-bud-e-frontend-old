@@ -1,10 +1,11 @@
-import type { Handlers } from "$fresh/server.ts";
+import { FreshContext } from "fresh";
 import { ServerSentEventStream } from "https://deno.land/std@0.210.0/http/server_sent_event_stream.ts";
 import { formatTemplates } from "../../../types/formats.ts";
 
 import { chatContent } from "../../../internalization/content.ts";
 import { deductOutputTokens } from "./(_utils)/shop.ts";
 import { getApiKeys } from "./(_utils)/apiKeys.ts";
+import { Handlers } from "fresh/compat";
 
 // Definiere das Message-Interface
 interface Message {
@@ -91,42 +92,55 @@ ${value.requirements.join("\n")}`
   // Log message contents for debugging
   apiMessages.forEach((msg: Message, idx: number) => {
     if (typeof msg.content === "string") {
-      console.debug(`[Chat API] Message ${idx}: string content (${msg.content.length} chars)`);
+      console.debug(
+        `[Chat API] Message ${idx}: string content (${msg.content.length} chars)`,
+      );
     } else if (Array.isArray(msg.content)) {
-      console.debug(`[Chat API] Message ${idx}: array content with ${msg.content.length} items`);
-      
+      console.debug(
+        `[Chat API] Message ${idx}: array content with ${msg.content.length} items`,
+      );
+
       // Check for different content types in this message
       const contentTypes = msg.content
-        .filter(item => typeof item === 'object')
-        .map(item => item.type)
+        .filter((item) => typeof item === "object")
+        .map((item) => item.type)
         .filter(Boolean);
-        
+
       if (contentTypes.length > 0) {
         console.debug(`[Chat API] Message ${idx} content types:`, contentTypes);
       }
-      
+
       // Check and log PDF items specifically
-      const pdfItems = msg.content.filter(item => 
-        typeof item === 'object' && item.type === 'pdf_url' && item.pdf_url);
-        
+      const pdfItems = msg.content.filter((item) =>
+        typeof item === "object" && item.type === "pdf_url" && item.pdf_url
+      );
+
       if (pdfItems.length > 0) {
-        console.debug(`[Chat API] Found ${pdfItems.length} PDF items in message ${idx}`);
-        
+        console.debug(
+          `[Chat API] Found ${pdfItems.length} PDF items in message ${idx}`,
+        );
+
         pdfItems.forEach((item, i) => {
           if (item.pdf_url) {
             const urlType = item.pdf_url.url.substring(0, 20);
-            const size = item.pdf_url.size || 'unknown';
-            console.debug(`[Chat API] PDF ${i} in message ${idx}: URL type: ${urlType}..., size: ${size}`);
+            const size = item.pdf_url.size || "unknown";
+            console.debug(
+              `[Chat API] PDF ${i} in message ${idx}: URL type: ${urlType}..., size: ${size}`,
+            );
           }
         });
       }
     } else if (msg.content && typeof msg.content === "object") {
-      console.debug(`[Chat API] Message ${idx}: object content of type ${msg.content.type || "unknown"}`);
+      console.debug(
+        `[Chat API] Message ${idx}: object content of type ${
+          msg.content.type || "unknown"
+        }`,
+      );
     }
   });
 
   // Create a copy of messages with processedContent for API request
-  const apiMessagesWithProcessedContent = apiMessages.map(msg => {
+  const apiMessagesWithProcessedContent = apiMessages.map((msg) => {
     if (msg.processedContent) {
       return { ...msg, content: msg.processedContent };
     }
@@ -159,10 +173,12 @@ ${value.requirements.join("\n")}`
 
   // Use VLM if we have images OR PDFs
   const shouldUseVLM = isImageInMessages || isPDFInMessages;
-  console.debug(`[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`);
+  console.debug(
+    `[Chat API] Using VLM: ${shouldUseVLM} (Images: ${isImageInMessages}, PDFs: ${isPDFInMessages})`,
+  );
 
   vlmApiModel = "gemini-2.5-flash-online";
-  const { api_url, api_key, api_model  } = await getApiKeys({
+  const { api_url, api_key, api_model } = await getApiKeys({
     messages: apiMessagesWithProcessedContent,
     isImageInMessages: shouldUseVLM,
     isCorrectionInLastMessage,
@@ -176,7 +192,6 @@ ${value.requirements.join("\n")}`
     vlmCorrectionModel,
   }, "gemini-2.5-flash-online");
 
-
   // Process PDFs and images for API request
   try {
     console.debug("[Chat API] Not Processing PDFs in messages...");
@@ -184,7 +199,7 @@ ${value.requirements.join("\n")}`
       api_url,
       api_key,
       api_model,
-      shopApiKey
+      shopApiKey,
     });
     console.debug("[Chat API] Not PDF processing complete");
   } catch (error) {
@@ -251,26 +266,32 @@ ${value.requirements.join("\n")}`
           // Check if the last message contains a PDF that might cause issues
           const lastMessage = apiMessages[apiMessages.length - 1];
           let hasBlobPdf = false;
-          
+
           if (lastMessage && Array.isArray(lastMessage.content)) {
             for (const item of lastMessage.content) {
-              if (item && 
-                  typeof item === 'object' && 
-                  item.type === 'pdf_url' && 
-                  item.pdf_url?.url && 
-                  item.pdf_url.url.startsWith('blob:')) {
+              if (
+                item &&
+                typeof item === "object" &&
+                item.type === "pdf_url" &&
+                item.pdf_url?.url &&
+                item.pdf_url.url.startsWith("blob:")
+              ) {
                 hasBlobPdf = true;
-                console.debug("[Stream] Detected blob: PDF URL in message that may cause issues");
+                console.debug(
+                  "[Stream] Detected blob: PDF URL in message that may cause issues",
+                );
                 break;
               }
             }
           }
-          
+
           if (hasBlobPdf) {
             console.debug("[Stream] Warning user about blob: PDF URLs");
-            controller.enqueue("⚠️ Note: PDF files with blob URLs can't be processed by the server. " +
-              "Please convert PDFs to data URLs client-side before sending them. " +
-              "The system will continue processing other content.\n\n");
+            controller.enqueue(
+              "⚠️ Note: PDF files with blob URLs can't be processed by the server. " +
+                "Please convert PDFs to data URLs client-side before sending them. " +
+                "The system will continue processing other content.\n\n",
+            );
           }
 
           while (true) {
@@ -359,7 +380,8 @@ function hasKorrekturHashtag(messages: Message[]): boolean {
 }
 
 export const handler: Handlers = {
-  async POST(req: Request) {
+  async POST(ctx: FreshContext) {
+    const req = ctx.req;
     const payload = await req.json();
     console.debug("payload", payload);
 

@@ -11,7 +11,7 @@ async function importGames() {
   try {
     console.log("Reading default games from static file...");
     const defaultGames = JSON.parse(
-      await Deno.readTextFile("./static/saved-games.json")
+      await Deno.readTextFile("./static/saved-games.json"),
     ) as SavedGamesData;
 
     console.log(`Found ${defaultGames.games.length} games to import`);
@@ -19,7 +19,6 @@ async function importGames() {
     // Store the games in Redis
     await redis.set("savedGames", JSON.stringify(defaultGames));
     console.log("Successfully imported games into Redis");
-
   } catch (error) {
     console.error("Error importing games:", error);
   } finally {
@@ -30,4 +29,4 @@ async function importGames() {
 // Run the import
 if (import.meta.main) {
   await importGames();
-} 
+}

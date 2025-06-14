@@ -1,12 +1,14 @@
-import { Handlers } from "$fresh/server.ts";
 import { deductInputTokens, deductOutputTokens } from "./chat/(_utils)/shop.ts";
+import { Handlers } from "fresh/compat";
 
 const STT_KEY = Deno.env.get("STT_KEY") || "";
 const STT_MODEL = Deno.env.get("STT_MODEL") || "";
 const STT_URL = Deno.env.get("STT_URL") || "";
 
 export const handler: Handlers = {
-  async POST(req) {
+  async POST(ctx) {
+    const req = ctx.req;
+
     try {
       const formData = await req.formData();
       const audioFile = formData.get("audio") as File;
@@ -19,7 +21,7 @@ export const handler: Handlers = {
         const { apiKey, endpoint } = await deductInputTokens(
           [{ role: "user", content: "Audio transcription request" }],
           shopApiKey,
-          "whisper-1"
+          "whisper-1",
         );
         sttKey = apiKey;
         sttUrl = endpoint;
@@ -30,7 +32,9 @@ export const handler: Handlers = {
       console.log("sttModel", sttModel);
 
       if (sttKey.startsWith("gsk_")) {
-        sttUrl = sttUrl == "" ? "https://api.groq.com/openai/v1/audio/transcriptions" : sttUrl;
+        sttUrl = sttUrl == ""
+          ? "https://api.groq.com/openai/v1/audio/transcriptions"
+          : sttUrl;
         sttModel = sttModel == "" ? "whisper-large-v3-turbo" : sttModel;
       }
 

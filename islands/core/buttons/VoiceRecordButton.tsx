@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 import type { JSX } from "preact";
 import { IconMicrophone } from "@tabler/icons-preact";
 import { addMessage, settings } from "../../../components/chat/store.ts";
@@ -13,7 +13,7 @@ interface SpeechRecognition extends EventTarget {
   addEventListener: (
     type: string,
     callback: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions,
   ) => void;
 }
 
@@ -81,7 +81,7 @@ function VoiceRecordButton({
 
   async function toggleRecording() {
     console.log("Current recording state:", isRecording);
-    
+
     if (isRecording) {
       // Stop recording
       mediaRecorderRef.current?.stop();
@@ -89,9 +89,11 @@ function VoiceRecordButton({
     } else {
       // Start recording - set state first
       setIsRecording(true);
-      
+
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
 
@@ -125,7 +127,9 @@ function VoiceRecordButton({
     const sttKey = settings.peek().sttKey;
 
     if (sttKey.startsWith("gsk_")) {
-      serverUrl = serverUrl === "" ? "https://api.groq.com/openai/v1/audio/transcriptions" : serverUrl;
+      serverUrl = serverUrl === ""
+        ? "https://api.groq.com/openai/v1/audio/transcriptions"
+        : serverUrl;
       modelName = modelName === "" ? "whisper-large-v3-turbo" : modelName;
     }
 
@@ -165,7 +169,7 @@ function VoiceRecordButton({
   }
 
   const prependToTranscript = "";
-  
+
   // deno-lint-ignore no-explicit-any
   function onSpeak(event: any) {
     // console.log(resetTranscript);
@@ -189,13 +193,17 @@ function VoiceRecordButton({
     <button
       onClick={toggleRecording}
       disabled={!IS_BROWSER}
-      class={`border disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${isRecording ? "animate-pulse bg-red-600" : ""}`}
+      class={`border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${
+        isRecording ? "animate-pulse bg-red-600" : ""
+      }`}
       type="button"
       aria-label={isRecording ? "Stop recording" : "Start recording"}
     >
-      <IconMicrophone class={`icon w-5 h-5 ${isRecording ? "text-white" : "text-gray-500"}`} />
+      <IconMicrophone
+        class={`icon w-5 h-5 ${isRecording ? "text-white" : "text-gray-500"}`}
+      />
     </button>
   );
 }
 
-export default VoiceRecordButton; 
+export default VoiceRecordButton;

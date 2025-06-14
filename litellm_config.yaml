@@ -1,0 +1,7 @@
+model_list:
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: azure/<your-azure-model-deployment>
+      api_base: os.environ/AZURE_API_BASE # runs os.getenv("AZURE_API_BASE")
+      api_key: os.environ/AZURE_API_KEY # runs os.getenv("AZURE_API_KEY")
+      api_version: "2023-07-01-preview"

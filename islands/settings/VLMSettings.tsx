@@ -2,12 +2,17 @@ import { Settings } from "../../types/settings.ts";
 import { settingsContent } from "../../internalization/content.ts";
 
 interface VLMSettingsProps {
-  settings: Pick<Settings, "vlmKey" | "vlmUrl" | "vlmModel" | "vlmCorrectionModel">;
+  settings: Pick<
+    Settings,
+    "vlmKey" | "vlmUrl" | "vlmModel" | "vlmCorrectionModel"
+  >;
   onUpdateSettings: (key: string, value: string) => void;
   lang: string;
 }
 
-export default function VLMSettings({ settings, onUpdateSettings, lang }: VLMSettingsProps) {
+export default function VLMSettings(
+  { settings, onUpdateSettings, lang }: VLMSettingsProps,
+) {
   return (
     <div class="mb-4">
       <h3 class="font-medium mb-2">

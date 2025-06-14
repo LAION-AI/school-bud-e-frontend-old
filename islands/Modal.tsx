@@ -8,7 +8,9 @@ interface ModalProps {
   size?: "sm" | "md" | "lg";
 }
 
-export default function Modal({ isOpen, onClose, title, children, size = "md" }: ModalProps) {
+export default function Modal(
+  { isOpen, onClose, title, children, size = "md" }: ModalProps,
+) {
   const modalRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
   const lastFocusableRef = useRef<HTMLButtonElement>(null);
@@ -21,9 +23,11 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
     };
 
     const handleTab = (e: KeyboardEvent) => {
-      if (!isOpen || !firstFocusableRef.current || !lastFocusableRef.current) return;
-      
-      if (e.key === 'Tab') {
+      if (!isOpen || !firstFocusableRef.current || !lastFocusableRef.current) {
+        return;
+      }
+
+      if (e.key === "Tab") {
         if (e.shiftKey) {
           // Shift + Tab
           if (document.activeElement === firstFocusableRef.current) {
@@ -41,7 +45,10 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
     };
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node) && isOpen) {
+      if (
+        modalRef.current && !modalRef.current.contains(e.target as Node) &&
+        isOpen
+      ) {
         onClose();
       }
     };
@@ -75,14 +82,16 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
   const sizeClasses = {
     sm: "max-w-md",
     md: "max-w-xl",
-    lg: "max-w-4xl"
+    lg: "max-w-4xl",
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
-      <div 
+      <div
         ref={modalRef}
-        className={`${sizeClasses[size]} w-full bg-white rounded-lg shadow-xl transform transition-all duration-300 ease-in-out`}
+        className={`${
+          sizeClasses[size]
+        } w-full bg-white rounded-lg shadow-xl transform transition-all duration-300 ease-in-out`}
         data-tour="settings-modal"
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -94,9 +103,20 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
             aria-label="Close"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <title>Close</title>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -116,4 +136,4 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
       </div>
     </div>
   );
-} 
+}

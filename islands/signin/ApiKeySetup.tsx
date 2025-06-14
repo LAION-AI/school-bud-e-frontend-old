@@ -10,7 +10,9 @@ interface ApiKeySetupProps {
   lang?: string;
 }
 
-export default function ApiKeySetup({ userType, onComplete, onBack, lang = "en" }: ApiKeySetupProps) {
+export default function ApiKeySetup(
+  { userType, onComplete, onBack, lang = "en" }: ApiKeySetupProps,
+) {
   const universalKey = useSignal("");
   const showPassword = useSignal(false);
   const hasValidKey = useSignal(false);
@@ -29,41 +31,44 @@ export default function ApiKeySetup({ userType, onComplete, onBack, lang = "en" 
         </p>
       </div>
 
-      {userType === "teacher" ? (
-        <TeacherContent
-          selectedOption={selectedOption}
-          universalKey={universalKey}
-          showPassword={showPassword}
-          hasValidKey={hasValidKey}
-          lang={lang}
-        />
-      ) : (
-        <StudentContent
-          selectedOption={selectedOption}
-          universalKey={universalKey}
-          showPassword={showPassword}
-          hasValidKey={hasValidKey}
-          lang={lang}
-        />
-      )}
+      {userType === "teacher"
+        ? (
+          <TeacherContent
+            selectedOption={selectedOption}
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
+        )
+        : (
+          <StudentContent
+            selectedOption={selectedOption}
+            universalKey={universalKey}
+            showPassword={showPassword}
+            hasValidKey={hasValidKey}
+            lang={lang}
+          />
+        )}
 
-      {(selectedOption.value === "free" || selectedOption.value === "store") && (
-        <div class="flex justify-between">
-          <Button
-            variant="secondary"
-            onClick={onBack}
-          >
-            {lang === "de" ? "Zurück" : "Back"}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onComplete}
-            disabled={!hasValidKey.value}
-          >
-            {lang === "de" ? "Weiter" : "Continue"}
-          </Button>
-        </div>
-      )}
+      {(selectedOption.value === "free" || selectedOption.value === "store") &&
+        (
+          <div class="flex justify-between">
+            <Button
+              variant="secondary"
+              onClick={onBack}
+            >
+              {lang === "de" ? "Zurück" : "Back"}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={onComplete}
+              disabled={!hasValidKey.value}
+            >
+              {lang === "de" ? "Weiter" : "Continue"}
+            </Button>
+          </div>
+        )}
     </div>
   );
-} 
+}

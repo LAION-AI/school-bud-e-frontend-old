@@ -1,28 +1,31 @@
 {
   "imports": {
     "$std/": "https://deno.land/std@0.216.0/",
-    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
-    "preact": "https://esm.sh/preact@10.26.4",
-    "preact-markdown": "npm:preact-markdown@^2.1.0",
-    "preact/": "https://esm.sh/preact@10.26.4/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
-    "tailwindcss": "npm:tailwindcss@3.4.1",
-    "tailwindcss/": "npm:/tailwindcss@3.4.1/",
-    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+    "@tailwindcss/cli": "npm:@tailwindcss/cli@^4.1.7",
+    "tailwindcss": "npm:tailwindcss@^4.1.7",
     "tiktoken": "npm:tiktoken@^1.0.20",
     "shepherd.js": "npm:shepherd.js@14.5.0",
-    "cytoscape": "npm:cytoscape@3.28.1",
-    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
+    "cytoscape": "npm:cytoscape@3.32.0",
+    "yjs": "npm:yjs@^13.5.41",
+    "y-webrtc": "npm:y-webrtc@^10.3.0", 
+    "y-indexeddb": "npm:y-indexeddb@^9.0.12",
+    "qrcode": "npm:qrcode@^1.5.3",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
+    "fresh": "jsr:@fresh/core@^2.0.0-alpha.34",
+    "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
+    "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
+    "preact": "npm:preact@^10.26.6",
+    "@preact/signals": "npm:@preact/signals@^2.0.4"
   },
   "tasks": {
     "test": "deno test -A",
-    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "start": "deno run -A --watch=routes/ dev.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A --no-check --watch=routes/,islands/,components/ main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
-    "cypress": "deno run -A npm:cypress@latest open"
+    "cypress": "deno run -A npm:cypress@latest open",
+    "styles": "deno run npm:@tailwindcss/cli -i ./static/styles.css -o ./static/output.css --watch --allow-read"
   },
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -33,7 +36,5 @@
   "lint": { "rules": { "tags": ["fresh", "recommended"] } },
   "exclude": ["**/_fresh/*"],
   "nodeModulesDir": "auto",
-  "fresh": {
-    "watchIgnorePaths": ["node_modules/", "static/"]
-  }
+  "fresh": { "watchIgnorePaths": ["node_modules/", "static/"] }
 }

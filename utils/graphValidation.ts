@@ -43,40 +43,42 @@ const graphResultSchema = z.object({
  */
 export function validateGraphWithSelectedNode(
   result: AIFormatResult<GraphJson>,
-  selectedNode: string
+  selectedNode: string,
 ): { valid: boolean; error?: string } {
   try {
     // First validate the basic structure
     const validationResult = graphResultSchema.safeParse(result);
-    
+
     if (!validationResult.success) {
-      return { 
-        valid: false, 
-        error: `Graph validation failed: ${validationResult.error.message}` 
+      return {
+        valid: false,
+        error: `Graph validation failed: ${validationResult.error.message}`,
       };
     }
-    
+
     // If there's no format or the request failed, return early
     if (result.state !== "success" || !result.format) {
-      return { 
+      return {
         valid: false,
-        error: result.error || "No graph format returned" 
+        error: result.error || "No graph format returned",
       };
     }
-    
+
     // Check if the selected node exists in the graph
-    const nodeExists = result.format.items.some(item => item.item === selectedNode);
-    
+    const nodeExists = result.format.items.some((item) =>
+      item.item === selectedNode
+    );
+
     if (!nodeExists) {
       return {
         valid: false,
-        error: `Selected node "${selectedNode}" not found in graph response`
+        error: `Selected node "${selectedNode}" not found in graph response`,
       };
     }
-    
+
     // Check connections related to the selected node
     let hasSelectedNodeConnections = false;
-    
+
     // Look through all connections for the selected node
     for (const item of result.format.items) {
       // Check child items
@@ -84,35 +86,42 @@ export function validateGraphWithSelectedNode(
         hasSelectedNodeConnections = true;
         break;
       }
-      
+
       // Check connections
-      if (item.connections?.some(conn => 
-        conn.from === selectedNode || conn.to === selectedNode
-      )) {
+      if (
+        item.connections?.some((conn) =>
+          conn.from === selectedNode || conn.to === selectedNode
+        )
+      ) {
         hasSelectedNodeConnections = true;
         break;
       }
-      
+
       // If this is the selected node, check if it has connections
-      if (item.item === selectedNode && 
-         (item.childItems?.length || item.connections?.length)) {
+      if (
+        item.item === selectedNode &&
+        (item.childItems?.length || item.connections?.length)
+      ) {
         hasSelectedNodeConnections = true;
         break;
       }
     }
-    
+
     if (!hasSelectedNodeConnections) {
       return {
         valid: true, // Still valid, but with a warning
-        error: `Warning: Selected node "${selectedNode}" has no connections in the graph`
+        error:
+          `Warning: Selected node "${selectedNode}" has no connections in the graph`,
       };
     }
-    
+
     return { valid: true };
   } catch (error) {
-    return { 
+    return {
       valid: false,
-      error: `Validation error: ${error instanceof Error ? error.message : String(error)}`
+      error: `Validation error: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
     };
   }
 }
@@ -125,17 +134,17 @@ export function validateGraphWithSelectedNode(
  */
 export function validateGraphFormat<T extends GraphJson>(
   graphResult: AIFormatResult<T>,
-  selectedNode: string
+  selectedNode: string,
 ): T {
   const validation = validateGraphWithSelectedNode(graphResult, selectedNode);
-  
+
   if (!validation.valid) {
     throw new Error(validation.error);
   }
-  
+
   if (!graphResult.format) {
     throw new Error("No graph format returned");
   }
-  
+
   return graphResult.format;
-} 
+}

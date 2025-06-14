@@ -1,0 +1,29 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "This repository contains comprehensive research on implementing peer-to-peer (P2P) synchronization for client data across browsers and React Native applications.",
+  "main": "cypress.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LAION-AI/school-bud-e-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LAION-AI/school-bud-e-frontend/issues"
+  },
+  "homepage": "https://github.com/LAION-AI/school-bud-e-frontend#readme",
+  "dependencies": {
+    "uuid": "^11.1.0",
+    "y-indexeddb": "^9.0.12",
+    "y-webrtc": "^10.3.0",
+    "yjs": "^13.6.27"
+  }
+}

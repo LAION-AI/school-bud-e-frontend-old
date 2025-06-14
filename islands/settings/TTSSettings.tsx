@@ -7,7 +7,9 @@ interface TTSSettingsProps {
   lang: string;
 }
 
-export default function TTSSettings({ settings, onUpdateSettings, lang }: TTSSettingsProps) {
+export default function TTSSettings(
+  { settings, onUpdateSettings, lang }: TTSSettingsProps,
+) {
   return (
     <div class="mb-4">
       <h3 class="font-medium mb-2">

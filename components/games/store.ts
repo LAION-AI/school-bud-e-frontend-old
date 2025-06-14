@@ -16,12 +16,15 @@ export const error = signal<string | null>(null);
 export const hasGames = computed(() => savedGames.value.length > 0);
 export const points = computed(() => currentGame.value?.points ?? 0);
 export const totalPointsAcrossAllGames = computed(() => {
-  return savedGames.value.reduce((total, game) => total + (game.points || 0), 0);
+  return savedGames.value.reduce(
+    (total, game) => total + (game.points || 0),
+    0,
+  );
 });
 
 // Game progress computation
 export const getGameProgress = (gameName: string) => {
-  const game = savedGames.value.find(g => g.name === gameName);
+  const game = savedGames.value.find((g) => g.name === gameName);
   if (!game) return 0;
   // Assuming 100 points is full progress
   return Math.min((game.points || 0) / 100, 1);
@@ -35,10 +38,13 @@ export async function fetchGames() {
     console.log("[Store] Making fetch request to /api/game");
     const response = await fetch("/api/game");
     console.log("[Store] Response status:", response.status);
-    console.log("[Store] Response headers:", Object.fromEntries(response.headers.entries()));
-    
+    console.log(
+      "[Store] Response headers:",
+      Object.fromEntries(response.headers.entries()),
+    );
+
     const responseText = await response.text();
-    
+
     if (!responseText) {
       console.log("[Store] Empty response received");
       savedGames.value = [];
@@ -193,7 +199,7 @@ if (typeof window !== "undefined") {
           points: (currentGame.value.points || 0) + points,
         };
       }
-      
+
       // Play a sound
       audio.volume = 1;
       audio.play();

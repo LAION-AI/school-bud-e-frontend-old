@@ -4,37 +4,21 @@
 .env.test.local
 .env.production.local
 .env.local
-.DS_Store
-.vscode
-.idea
 
 # Fresh build directory
 _fresh/
-# npm dependencies
+# npm + other dependencies
 node_modules/
+vendor/
 
-docker-compose/caddy/Caddyfile
-docker-compose/caddy/data
-docker-compose/caddy/data/*
-docker-compose/caddy/config
-docker-compose/caddy/config/*
-docker-compose/app/*
-
-static/articles
-
-
+ai-tasks-server/**/__pycache__
 ai-tasks-server/emottsvoices
 ai-tasks-server/segments
 ai-tasks-server/tts_segments
-ai-tasks-server/.ropeproject
-ai-tasks-server/__pycache__
+ai-tasks-server/emottsvoices.tar
 ai-tasks-server/final_audiobook_input.xml
 ai-tasks-server/input_audiobook.xml
-ai-tasks-server/output_video.xml
-ai-tasks-server/writing_cheat_sheet
-ai-tasks-server/output_video.xml
-ai-tasks-server/emottsvoices.tar
-ai-tasks-server/.python-version
-ai-tasks-server/sessions.json
-ai-tasks-server/trace.json
-__pycache__
+
+docker-compose/caddy/config
+docker-compose/caddy/data
+docker-compose/caddy/Caddyfile

@@ -1,14 +1,32 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { useSignal, useSignalEffect } from "@preact/signals";
-import { IconMicrophone, IconMessageCircle, IconVolume, IconLoader2, IconX, IconPlus, IconArrowRight } from "@tabler/icons-preact";
+import {
+  IconArrowRight,
+  IconLoader2,
+  IconMessageCircle,
+  IconMicrophone,
+  IconPlus,
+  IconVolume,
+  IconX,
+} from "@tabler/icons-preact";
 import { settings } from "../components/chat/store.ts";
 import { getLLMResponse } from "./chat/getLLMResponse.ts";
 import ChatHistory from "../components/chat/ChatHistory.tsx";
-import { messages as storeMessages, addMessage, startNewChat } from "../components/chat/store.ts";
+import {
+  addMessage,
+  messages as storeMessages,
+  startNewChat,
+} from "../components/chat/store.ts";
 import { startStream } from "../components/chat/stream.ts";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 
-type ButtonState = "idle" | "mode_select" | "chat" | "listening" | "processing" | "responding";
+type ButtonState =
+  | "idle"
+  | "mode_select"
+  | "chat"
+  | "listening"
+  | "processing"
+  | "responding";
 
 export default function AIFloatingButton() {
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
@@ -21,7 +39,9 @@ export default function AIFloatingButton() {
   const isProcessing = useSignal(false);
 
   // Don't render on chat pages
-  const isOnChatPage = IS_BROWSER ? location.pathname.startsWith('/chat') : false;
+  const isOnChatPage = IS_BROWSER
+    ? location.pathname.startsWith("/chat")
+    : false;
   if (isOnChatPage) return null;
 
   // Voice recording functions
@@ -33,16 +53,18 @@ export default function AIFloatingButton() {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
       };
-      
+
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
         await processAudio(audioBlob);
       };
-      
+
       mediaRecorder.start();
     } catch (error) {
       console.error("Error starting recording:", error);
@@ -54,7 +76,7 @@ export default function AIFloatingButton() {
     if (!mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
     setButtonState("processing");
   };
@@ -62,7 +84,8 @@ export default function AIFloatingButton() {
   // Chat functions
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   };
 
@@ -73,7 +96,7 @@ export default function AIFloatingButton() {
     inputRef.current.value = "";
     addMessage({ role: "user", content: userMessage });
     setTimeout(scrollToBottom, 0);
-    
+
     isProcessing.value = true;
 
     try {
@@ -96,19 +119,19 @@ export default function AIFloatingButton() {
     try {
       const formData = new FormData();
       formData.append("audio", audioBlob, "recording.wav");
-      
+
       const serverConfig = settings.peek();
       formData.append("sttUrl", serverConfig.sttUrl);
       formData.append("sttKey", serverConfig.sttKey);
       formData.append("sttModel", serverConfig.sttModel);
-      
+
       const sttResponse = await fetch("/api/stt", {
         method: "POST",
         body: formData,
       });
-      
+
       if (!sttResponse.ok) throw new Error("Failed to transcribe audio");
-      
+
       const transcript = await sttResponse.text();
       const response = await getLLMResponse(transcript);
       await playResponse(response);
@@ -121,7 +144,7 @@ export default function AIFloatingButton() {
   const playResponse = async (text: string) => {
     try {
       setButtonState("responding");
-      
+
       const ttsResponse = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -136,26 +159,26 @@ export default function AIFloatingButton() {
         }),
       });
       console.log("ttsResponse", ttsResponse);
-      
+
       if (!ttsResponse.ok) throw new Error("Failed to convert text to speech");
-      
+
       const audioBlob = await ttsResponse.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       console.log("audioUrl", audioUrl);
-      
+
       if (!audioPlayerRef.current) {
         audioPlayerRef.current = new Audio();
       }
-      
+
       audioPlayerRef.current.src = audioUrl;
       audioPlayerRef.current.onended = () => {
         setButtonState("idle");
       };
-      
+
       audioPlayerRef.current.onerror = () => {
         setButtonState("idle");
       };
-      
+
       await audioPlayerRef.current.play();
     } catch (error) {
       console.error("Error playing response:", error);
@@ -196,7 +219,12 @@ export default function AIFloatingButton() {
       case "listening":
         return <IconMicrophone size={24} />;
       case "processing":
-        return <IconLoader2 size={24} style={{ animation: "spin 1s linear infinite" }} />;
+        return (
+          <IconLoader2
+            size={24}
+            style={{ animation: "spin 1s linear infinite" }}
+          />
+        );
       case "responding":
         return <IconVolume size={24} />;
       case "chat":
@@ -209,10 +237,18 @@ export default function AIFloatingButton() {
     rounded-full
     transition-all duration-300 ease-in-out
     border-white border-4
-    ${isActive ? "bg-gradient-to-r from-primary-500 to-purple-600" : "bg-gradient-to-r from-primary-400 to-purple-500 hover:from-primary-500 hover:to-purple-600"}
+    ${
+    isActive
+      ? "bg-gradient-to-r from-primary-500 to-purple-600"
+      : "bg-gradient-to-r from-primary-400 to-purple-500 hover:from-primary-500 hover:to-purple-600"
+  }
     text-white
     w-[50px] h-[50px]
-    ${isActive ? "shadow-[0_0_15px_rgba(0,123,255,0.8),0_0_30px_rgba(255,0,0,0.4),0_0_45px_rgba(0,255,0,0.3)]" : "shadow-[0_4px_12px_rgba(0,0,0,0.25)]"}
+    ${
+    isActive
+      ? "shadow-[0_0_15px_rgba(0,123,255,0.8),0_0_30px_rgba(255,0,0,0.4),0_0_45px_rgba(0,255,0,0.3)]"
+      : "shadow-[0_4px_12px_rgba(0,0,0,0.25)]"
+  }
   `;
 
   return (
@@ -236,7 +272,10 @@ export default function AIFloatingButton() {
               </button>
             </div>
 
-            <div ref={messagesContainerRef} class="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div
+              ref={messagesContainerRef}
+              class="flex-1 overflow-y-auto p-4 bg-gray-50"
+            >
               <ChatHistory messages={storeMessages.value} />
             </div>
 
@@ -271,34 +310,49 @@ export default function AIFloatingButton() {
             </div>
           </div>
         )}
-        
+
         <div class="hidden md:flex bg-gradient-to-r from-primary-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full items-center gap-3">
           <button
             type="button"
-            onClick={() => buttonState === "chat" ? setButtonState("idle") : setButtonState("chat")}
+            onClick={() =>
+              buttonState === "chat"
+                ? setButtonState("idle")
+                : setButtonState("chat")}
             class={getButtonClass(buttonState === "chat")}
             aria-label="Chat mode"
           >
             <IconMessageCircle size={20} />
           </button>
-          
+
           <div class="w-px h-8 bg-white/20" />
-          
+
           <button
             type="button"
             onMouseDown={() => buttonState === "idle" && startRecording()}
             onMouseUp={() => buttonState === "listening" && stopRecording()}
-            disabled={buttonState === "processing" || buttonState === "responding"}
-            class={getButtonClass(buttonState === "listening" || buttonState === "processing" || buttonState === "responding")}
+            disabled={buttonState === "processing" ||
+              buttonState === "responding"}
+            class={getButtonClass(
+              buttonState === "listening" || buttonState === "processing" ||
+                buttonState === "responding",
+            )}
             aria-label="Voice mode"
           >
-            {buttonState === "listening" ? <IconMicrophone size={20} /> :
-             buttonState === "processing" ? <IconLoader2 size={20} style={{ animation: "spin 1s linear infinite" }} /> :
-             buttonState === "responding" ? <IconVolume size={20} /> :
-             <IconMicrophone size={20} />}
+            {buttonState === "listening"
+              ? <IconMicrophone size={20} />
+              : buttonState === "processing"
+              ? (
+                <IconLoader2
+                  size={20}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
+              )
+              : buttonState === "responding"
+              ? <IconVolume size={20} />
+              : <IconMicrophone size={20} />}
           </button>
         </div>
       </div>
     </div>
   );
-} 
+}

@@ -60,9 +60,9 @@ export default function ModelSelector({
             value={currentConfig.key || ""}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            placeholder={
-              lang === "de" ? "API-Schlüssel eingeben" : "Enter API key"
-            }
+            placeholder={lang === "de"
+              ? "API-Schlüssel eingeben"
+              : "Enter API key"}
           />
         </div>
 
@@ -94,9 +94,9 @@ export default function ModelSelector({
             value={currentConfig.url}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            placeholder={
-              lang === "de" ? "API-Endpunkt eingeben" : "Enter API endpoint"
-            }
+            placeholder={lang === "de"
+              ? "API-Endpunkt eingeben"
+              : "Enter API endpoint"}
           />
         </div>
 

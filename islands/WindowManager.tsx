@@ -18,7 +18,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
   const activeWindowId = useSignal<string>(initialWindow.id);
 
   const handleMinimize = (windowId: string) => {
-    windows.value = windows.value.map(w => 
+    windows.value = windows.value.map((w) =>
       w.id === windowId ? { ...w, isMinimized: !w.isMinimized } : w
     );
   };
@@ -30,7 +30,7 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
   return (
     <div class="relative md:min-h-screen">
       <div class="flex space-x-2 p-4 bg-white shadow-sm">
-        {windows.value.map(window => (
+        {windows.value.map((window) => (
           <button
             key={window.id}
             type="button"
@@ -47,16 +47,14 @@ export default function WindowManager({ initialWindow }: WindowManagerProps) {
       </div>
 
       <div class="p-4">
-        {windows.value.map(window => (
+        {windows.value.map((window) => (
           !window.isMinimized && (
             <button
               key={window.id}
               type="button"
               onClick={() => handleActivate(window.id)}
               class={`rounded-lg shadow-lg overflow-hidden transition-all ${
-                window.id === activeWindowId.value
-                  ? "z-10"
-                  : "z-0 opacity-50"
+                window.id === activeWindowId.value ? "z-10" : "z-0 opacity-50"
               }`}
             >
               {window.content}

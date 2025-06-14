@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import { IS_BROWSER } from "$fresh/runtime.ts";
+import { IS_BROWSER } from "fresh/runtime";
 
 export interface TextareaProps {
   label?: string;
@@ -42,10 +42,12 @@ export default function Textarea({
   helpText,
   ...props
 }: TextareaProps) {
-  const baseTextareaClass = "border-2 block w-full px-3 py-2 sm:text-sm border-gray-200 rounded-md focus:ring-primary-500 focus:border-primary-500";
-  const errorTextareaClass = "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
+  const baseTextareaClass =
+    "border-2 block w-full px-3 py-2 sm:text-sm border-gray-200 rounded-md focus:ring-primary-500 focus:border-primary-500";
+  const errorTextareaClass =
+    "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500";
   const disabledTextareaClass = "bg-gray-100 cursor-not-allowed";
-  
+
   const textareaClasses = [
     baseTextareaClass,
     error ? errorTextareaClass : "",
@@ -93,4 +95,4 @@ export default function Textarea({
       )}
     </div>
   );
-} 
+}

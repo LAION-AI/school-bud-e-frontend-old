@@ -3,7 +3,6 @@ import { MessageContent } from "./MessageContent.tsx";
 import EditIcon from "./icons/EditIcon.tsx";
 import RefreshIcon from "./icons/RefreshIcon.tsx";
 import SpeakIcon from "./icons/SpeakIcon.tsx";
-import DownloadIcon from "./icons/DownloadIcon.tsx";
 
 interface AudioItem {
   audio: HTMLAudioElement;
@@ -14,8 +13,9 @@ type AudioFileDict = Record<number, Record<number, AudioItem>>;
 
 interface MessageProps {
   item: {
+    id?: string;
     role: string;
-    content: string | string[];
+    content: string | (string | import("../types.d.ts").Image)[];
   };
   groupIndex: number;
   currentEditIndex: number;
@@ -23,7 +23,6 @@ interface MessageProps {
   onEditAction: (groupIndex: number) => void;
   onRefreshAction: (groupIndex: number) => void;
   onSpeakAtGroupIndexAction: (groupIndex: number) => void;
-  onDownloadAudio: (audioDict: Record<string, { audio: HTMLAudioElement }>) => void;
 }
 
 export function Message({
@@ -34,54 +33,46 @@ export function Message({
   onEditAction,
   onRefreshAction,
   onSpeakAtGroupIndexAction,
-  onDownloadAudio,
 }: MessageProps): JSX.Element {
   return (
     <div
-      class={`message-group flex flex-col group pb-2 ${item.role === "user" ? "items-end" : "items-start"}`}
+      class={`message-group flex flex-col group pb-2 ${
+        item.role === "user" ? "items-end" : "items-start"
+      }`}
     >
       <span
-        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible ${item.role === "user" ? "text-primary-600" : "text-gray-600"}`}
+        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible bg-white rounded-xl gap-1 group-hover:shadow-sm ${
+          item.role === "user" ? "text-primary-600" : "text-gray-600"
+        }`}
       >
         {groupIndex !== 0 && (
-          <button onClick={() => onEditAction(groupIndex)} type="button">
+          <button onClick={() => onEditAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <EditIcon isActive={currentEditIndex === groupIndex} />
           </button>
         )}
 
         {item.role !== "user" && groupIndex !== 0 && (
-          <button onClick={() => onRefreshAction(groupIndex)} type="button">
+          <button onClick={() => onRefreshAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <RefreshIcon />
           </button>
         )}
         {item.role !== "user" && (
-          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button">
+          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
             <SpeakIcon
-              isPlaying={
-                audioFileDict[groupIndex] &&
+              isPlaying={audioFileDict[groupIndex] &&
                 Object.values(audioFileDict[groupIndex]).some(
-                  (audioFile) => !audioFile.audio.paused
-                )
-              }
+                  (audioFile) => !audioFile.audio.paused,
+                )}
             />
           </button>
         )}
-        {item.role !== "user" &&
-          audioFileDict[groupIndex] &&
-          Object.keys(audioFileDict[groupIndex]).length > 0 && (
-            <button
-              onClick={() => onDownloadAudio(audioFileDict[groupIndex])}
-              type="button"
-            >
-              <DownloadIcon />
-            </button>
-          )}
       </span>
       <div
-        class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${item.role === "user"
-          ? "bg-primary-100 rounded-tr-md ml-auto"
-          : "bg-gray-100"
-          } p-4`}
+        class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${
+          item.role === "user"
+            ? "bg-primary-100 rounded-tr-md ml-auto"
+            : ""
+        } px-4`}
       >
         <MessageContent content={item.content} />
       </div>

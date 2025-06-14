@@ -11,13 +11,24 @@ interface GraphProps {
   zoomingEnabled?: boolean;
 }
 
-export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false, height = "400px", zoomingEnabled = true}: GraphProps) {
+export function Graph(
+  {
+    graphData,
+    onNodeSelect,
+    selectedNodeId,
+    isRoot = false,
+    height = "400px",
+    zoomingEnabled = true,
+  }: GraphProps,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
   const [isPositioning, setIsPositioning] = useState(true);
 
   // Convert graph data to Cytoscape format
-  const convertGraphData = (items: GraphNode[]): cytoscape.ElementDefinition[] => {
+  const convertGraphData = (
+    items: GraphNode[],
+  ): cytoscape.ElementDefinition[] => {
     const elements: cytoscape.ElementDefinition[] = [];
     const nodeSet = new Set<string>();
 
@@ -27,14 +38,17 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
         const nodeData: Record<string, unknown> = {
           id: node.item,
           label: node.item,
-          ...(isRoot && { type: "root" })
+          ...(isRoot && { type: "root" }),
         };
-        
+
         // If node has position data, use it
-        if (node.position && node.position.x !== undefined && node.position.y !== undefined) {
+        if (
+          node.position && node.position.x !== undefined &&
+          node.position.y !== undefined
+        ) {
           nodeData.position = { x: node.position.x, y: node.position.y };
         }
-        
+
         elements.push({ data: nodeData });
         nodeSet.add(node.item);
       }
@@ -47,7 +61,9 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
       });
       node.connections?.forEach((connection) => {
         if (!nodeSet.has(connection.from)) {
-          elements.push({ data: { id: connection.from, label: connection.from } });
+          elements.push({
+            data: { id: connection.from, label: connection.from },
+          });
           nodeSet.add(connection.from);
         }
         if (!nodeSet.has(connection.to)) {
@@ -67,9 +83,9 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
     cy.nodes().forEach((node: cytoscape.NodeSingular) => {
       const nodeId = node.id();
       const position = node.position();
-      
+
       // Find the node in graphData and update its position
-      const graphNode = graphData.find(n => n.item === nodeId);
+      const graphNode = graphData.find((n) => n.item === nodeId);
       if (graphNode) {
         if (!graphNode.position) {
           graphNode.position = { x: 0, y: 0 };
@@ -136,14 +152,14 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
           name: "cose",
           animate: true,
           // Listen for layout events
-          ready: function() {
+          ready: function () {
             // Layout is initialized but not started
           },
-          stop: function() {
+          stop: function () {
             // Layout is complete
             saveNodePositions(cy);
             setIsPositioning(false);
-          }
+          },
         },
       });
 
@@ -173,11 +189,15 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
   }, [graphData, selectedNodeId, isRoot]);
 
   return (
-    <div class="relative border rounded-2xl mb-4 bg-gray-50" style={{ width: "100%", height }}>
+    <div
+      class="relative border border-gray-200 rounded-2xl mb-4 bg-gray-50"
+      style={{ width: "100%", height }}
+    >
       {isPositioning && (
         <div class="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-80 z-10">
           <div class="flex flex-col items-center">
-            <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-2"></div>
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent mb-2">
+            </div>
             <p class="text-gray-700">Calculating optimal node positions...</p>
           </div>
         </div>
@@ -185,7 +205,10 @@ export function Graph({ graphData, onNodeSelect, selectedNodeId, isRoot = false,
       <div
         ref={containerRef}
         class="w-full h-full"
-        style={{ opacity: isPositioning ? "0.3" : "1", transition: "opacity 0.3s ease-in-out" }}
+        style={{
+          opacity: isPositioning ? "0.3" : "1",
+          transition: "opacity 0.3s ease-in-out",
+        }}
       />
     </div>
   );

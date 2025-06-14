@@ -1,6 +1,7 @@
 import { Signal } from "@preact/signals";
 import { IconEye, IconEyeCancel } from "@tabler/icons-preact";
 import { useRef } from "preact/hooks";
+import Input from "../../components/core/Input.tsx";
 
 interface KeyInputProps {
   universalKey: Signal<string>;
@@ -9,7 +10,9 @@ interface KeyInputProps {
   lang?: string;
 }
 
-export function KeyInput({ universalKey, showPassword, hasValidKey, lang = "en" }: KeyInputProps) {
+export function KeyInput(
+  { universalKey, showPassword, hasValidKey, lang = "en" }: KeyInputProps,
+) {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateKey = (value: string) => {
     universalKey.value = value;
@@ -36,12 +39,11 @@ export function KeyInput({ universalKey, showPassword, hasValidKey, lang = "en" 
 
   return (
     <div class="relative">
-      <input
-        type={showPassword.value ? "text" : "password"}
+      <Input
+        type={showPassword.value ? "text": "password"}
         value={universalKey.value}
         onInput={handleInput}
         onPaste={handlePaste}
-        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary-500"
         placeholder={lang === "de" ? "API-Schlüssel eingeben" : "Enter API Key"}
         ref={inputRef}
       />
@@ -50,8 +52,8 @@ export function KeyInput({ universalKey, showPassword, hasValidKey, lang = "en" 
         onClick={togglePasswordVisibility}
         class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
       >
-        {showPassword.value ? <IconEyeCancel /> : <IconEye/>}
+        {showPassword.value ? <IconEyeCancel /> : <IconEye />}
       </button>
     </div>
   );
-} 
+}

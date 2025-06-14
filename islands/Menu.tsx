@@ -32,7 +32,6 @@ export default function Menu({ lang }: { lang: string }): JSX.Element {
     <>
       {/* Language Selector */}
       <ProfileDropdownItem>
-
         <select
           class="bg-transparent"
           onChange={(e) =>

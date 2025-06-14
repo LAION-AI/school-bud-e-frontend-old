@@ -7,7 +7,9 @@ interface STTSettingsProps {
   lang: string;
 }
 
-export default function STTSettings({ settings, onUpdateSettings, lang }: STTSettingsProps) {
+export default function STTSettings(
+  { settings, onUpdateSettings, lang }: STTSettingsProps,
+) {
   return (
     <div class="mb-4">
       <h3 class="font-medium mb-2">

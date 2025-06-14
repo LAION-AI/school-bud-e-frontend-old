@@ -1,6 +1,8 @@
-import { Handlers } from "$fresh/server.ts";
+import { FreshContext } from "fresh";
+import { Handlers } from "fresh/compat";
 
-const WIKIPEDIA_API_URL = Deno.env.get("WIKIPEDIA_API_URL") || "http://37.27.128.150:9999/search";
+const WIKIPEDIA_API_URL = Deno.env.get("WIKIPEDIA_API_URL") ||
+  "http://37.27.128.150:9999/search";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -8,11 +10,14 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const handler: Handlers = {
-  async GET(req: Request) {
+  async GET(ctx: FreshContext) {
+    const req = ctx.req;
+
     try {
       const url = new URL(req.url);
       const text = url.searchParams.get("text");
-      const collection = url.searchParams.get("collection") || "English-ConcatX-Abstract";
+      const collection = url.searchParams.get("collection") ||
+        "English-ConcatX-Abstract";
       const n = Number.parseInt(url.searchParams.get("n") || "2", 10);
       const apiUrl = url.searchParams.get("apiUrl") || WIKIPEDIA_API_URL;
 
@@ -20,9 +25,12 @@ export const handler: Handlers = {
         throw new Error("Text parameter is required");
       }
 
-      const response = await fetch(`${apiUrl}?query=${encodeURIComponent(text)}&limit=${n}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${apiUrl}?query=${encodeURIComponent(text)}&limit=${n}`,
+        {
+          method: "GET",
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -41,7 +49,9 @@ export const handler: Handlers = {
     }
   },
 
-  async POST(req: Request) {
+  async POST(ctx: FreshContext) {
+    const req = ctx.req;
+
     try {
       const payload = await req.json();
       const { query } = payload;
@@ -53,9 +63,12 @@ export const handler: Handlers = {
         throw new Error("Query parameter is required");
       }
 
-      const response = await fetch(`${apiUrl}?query=${encodeURIComponent(query)}&limit=${n}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${apiUrl}?query=${encodeURIComponent(query)}&limit=${n}`,
+        {
+          method: "GET",
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

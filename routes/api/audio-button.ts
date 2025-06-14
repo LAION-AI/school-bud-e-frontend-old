@@ -1,9 +1,14 @@
-import { Handlers } from "$fresh/server.ts";
+import { FreshContext } from "fresh";
+import { Handlers } from "fresh/compat";
 
 export const handler: Handlers = {
-  async GET(req: Request) {
+  async GET(ctx: FreshContext) {
+    const req = ctx.req;
     const url = new URL(req.url);
-    const scriptPath = new URL("../../static/audio-button.min.js", import.meta.url);
+    const scriptPath = new URL(
+      "../../static/audio-button.min.js",
+      import.meta.url,
+    );
     const script = await Deno.readTextFile(scriptPath);
 
     // Check if client supports Brotli compression
@@ -17,7 +22,10 @@ export const handler: Handlers = {
     });
 
     if (supportsBrotli) {
-      const brotliPath = new URL("../../static/audio-button.min.js.br", import.meta.url);
+      const brotliPath = new URL(
+        "../../static/audio-button.min.js.br",
+        import.meta.url,
+      );
       const brotliScript = await Deno.readTextFile(brotliPath);
       headers.set("Content-Encoding", "br");
       return new Response(brotliScript, { headers });

@@ -8,9 +8,10 @@ interface SidebarLinkProps {
   className?: string;
 }
 
-const activeClass = "bg-primary-100 text-primary-900 hover:bg-primary-200 focus-visible:ring-primary-500";
+const activeClass =
+  "bg-primary-100 text-primary-900 hover:bg-primary-100 focus-visible:ring-primary-500";
 
-const defaultClass = "text-gray-700 hover:bg-gray-50 hover:text-gray-900";
+const defaultClass = "text-gray-700 hover:bg-gray-100 hover:text-gray-900";
 
 export default function SidebarLink({
   href,
@@ -34,10 +35,10 @@ export default function SidebarLink({
     return () => globalThis.removeEventListener("popstate", updateActive);
   }, [href, propIsActive]);
 
-
   return (
     <a
       href={href}
+      f-client-nav
       class={`block px-3 rounded-lg text-sm transition-all duration-200 outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 ${
         isActive ? activeClass : defaultClass
       } ${className}`}

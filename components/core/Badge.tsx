@@ -1,6 +1,12 @@
 import { JSX } from "preact";
 
-type BadgeVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
+type BadgeVariant =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "danger"
+  | "warning"
+  | "info";
 
 interface BadgeProps {
   text: string;
@@ -23,17 +29,19 @@ const sizeStyles = {
   md: "px-2.5 py-0.5 text-sm",
 };
 
-export default function Badge({ 
-  text, 
-  variant = "primary", 
+export default function Badge({
+  text,
+  variant = "primary",
   size = "sm",
   className = "",
 }: BadgeProps): JSX.Element {
   return (
     <span
-      className={`inline-flex items-center rounded-full font-medium ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`inline-flex items-center rounded-full font-medium ${
+        variantStyles[variant]
+      } ${sizeStyles[size]} ${className}`}
     >
       {text}
     </span>
   );
-} 
+}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 
-const buildCode = (scriptRef:any, code: string) => {
-  let finalCode = '';
+const buildCode = (scriptRef: any, code: string) => {
+  let finalCode = "";
   if (scriptRef.current) {
     if (!code.includes("function createButton")) {
       finalCode += `// Hilfsfunktionen für die KI zur schnellen Erweiterung
@@ -48,12 +48,12 @@ function createRandomEntity(scene) {
     finalCode += code;
   }
   return finalCode;
-}
+};
 interface GameProps {
   gameUrl: {
-    code: string,
-    name?: string
-  }
+    code: string;
+    name?: string;
+  };
 }
 
 export function Game({ gameUrl: gameData }: GameProps) {
@@ -62,16 +62,17 @@ export function Game({ gameUrl: gameData }: GameProps) {
   const phaserScriptRef = useRef<HTMLScriptElement>(null);
   const phaserRexScriptRef = useRef<HTMLScriptElement>(null);
   const scriptRef = useRef<HTMLScriptElement>(null);
-  const [gameName, setGameName] = useState('');
-  let code = ''
+  const [gameName, setGameName] = useState("");
+  let code = "";
   try {
     code = gameData.code;
-  } catch (e) { console.error(e); }
+  } catch (e) {
+    console.error(e);
+  }
   const [editableCode, setEditableCode] = useState(code);
 
-
   useEffect(() => {
-    if(code === "") return;
+    if (code === "") return;
     if (!containerRef.current) return;
     setEditableCode(code);
 
@@ -80,21 +81,22 @@ export function Game({ gameUrl: gameData }: GameProps) {
       // shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
 
       // Create container for the game
-      const gameContainer = document.createElement('div');
-      gameContainer.id = 'phaser-game';
-      gameContainer.style.cssText = 'width: 100%; aspect-ratio:800/ 600;  border: 1px solid #ccc; border-radius: 0.5rem; overflow: hidden;';
+      const gameContainer = document.createElement("div");
+      gameContainer.id = "phaser-game";
+      gameContainer.style.cssText =
+        "width: 100%; aspect-ratio:800/ 600;  border: 1px solid #ccc; border-radius: 0.5rem; overflow: hidden;";
 
       // Create and append scripts to shadow DOM
-      const phaserScript = document.createElement('script');
-      phaserScript.src = '/games/phaser.min.js';
+      const phaserScript = document.createElement("script");
+      phaserScript.src = "/games/phaser.min.js";
       phaserScriptRef.current = phaserScript;
 
-      const phaserRexScript = document.createElement('script');
-      phaserRexScript.src = '/games/rexuiplugin.min.js';
+      const phaserRexScript = document.createElement("script");
+      phaserRexScript.src = "/games/rexuiplugin.min.js";
       phaserRexScriptRef.current = phaserRexScript;
 
-      const gameScript = document.createElement('script');
-      gameScript.type = 'module';
+      const gameScript = document.createElement("script");
+      gameScript.type = "module";
       scriptRef.current = gameScript;
 
       // containerRef.current.appendChild(phaserRexScript);
@@ -102,22 +104,20 @@ export function Game({ gameUrl: gameData }: GameProps) {
       containerRef.current.appendChild(gameScript);
       containerRef.current.appendChild(gameContainer);
 
-
-
       let rexLoaded = false;
       phaserRexScript.onload = () => {
         rexLoaded = true;
-      }
+      };
       // Set up script loading sequence
       phaserScript.onload = () => {
-        console.log("Phaser Script loaded")
+        console.log("Phaser Script loaded");
         if (true) {
-          console.log("Rex loaded before phaser")
+          console.log("Rex loaded before phaser");
           gameScript.innerHTML = buildCode(scriptRef, code);
         } else {
-          console.log("Waiting for Rex to Load")
-          phaserRexScript.addEventListener('load', () => {
-            console.log("Rex loaded after phaser")
+          console.log("Waiting for Rex to Load");
+          phaserRexScript.addEventListener("load", () => {
+            console.log("Rex loaded after phaser");
             gameScript.innerHTML = buildCode(scriptRef, code);
           });
         }
@@ -153,25 +153,25 @@ export function Game({ gameUrl: gameData }: GameProps) {
             type="button"
             onClick={async () => {
               if (!gameName) {
-                alert('Please enter a game name');
+                alert("Please enter a game name");
                 return;
               }
               try {
-                const response = await fetch('/api/game', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ name: gameName, code })
+                const response = await fetch("/api/game", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name: gameName, code }),
                 });
                 const data = await response.json();
                 if (data.success) {
-                  alert('Game saved successfully!');
-                  setGameName('');
+                  alert("Game saved successfully!");
+                  setGameName("");
                 } else {
                   alert(`Failed to save game: ${data.error}`);
                 }
               } catch (error) {
-                console.error('Error saving game:', error);
-                alert('Failed to save game');
+                console.error("Error saving game:", error);
+                alert("Failed to save game");
               }
             }}
             class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
