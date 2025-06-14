@@ -1,6 +1,7 @@
 import type { PageProps } from "fresh";
 import { page } from "fresh";
 import ChatIsland from "../../../islands/ChatIsland.tsx";
+import ChatSyncInitializer from "../../../islands/chat/ChatSyncInitializer.tsx";
 import { define } from "../../../utils.ts";
 
 interface Data {
@@ -27,6 +28,7 @@ export default function ChatPage({ params }: PageProps) {
       <head>
         <title>Chat {id} - School Bud-E</title>
       </head>
+      <ChatSyncInitializer />
       {componentToRender}
     </>
   );
