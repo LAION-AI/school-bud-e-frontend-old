@@ -1,5 +1,4 @@
 import ChatList from "./(_islands)/ChatList.tsx";
-import ChatSyncInitializer from "../../../islands/chat/ChatSyncInitializer.tsx";
 import { IconMessagePlus } from "@tabler/icons-preact";
 import translations from "../../../islands/sidebar/sidebar.translations.json" with {
   type: "json",
@@ -15,10 +14,7 @@ export default function ChatListPage({ lang = "en" }: ChatListPageProps) {
   return (
     <div class="max-w-screen mx-auto px-4 py-6">
       <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center space-x-4">
-          <h1 class="text-2xl font-bold text-gray-900">{t.navigation.chats}</h1>
-          <ChatSyncInitializer />
-        </div>
+        <h1 class="text-2xl font-bold text-gray-900">{t.navigation.chats}</h1>
         <a
           href="/chat/new"
           class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"

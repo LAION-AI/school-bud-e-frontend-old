@@ -1,261 +1,349 @@
-import { useEffect, useRef, useCallback } from 'preact/hooks';
-import { chats } from '../../components/chat/store.ts';
+import { useEffect, useRef } from 'preact/hooks';
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
+import { chats } from '../../components/chat/store.ts';
 
-// Global singleton to prevent multiple connections to the same room
-const globalSyncManagers = new Map<string, ChatSyncManager>();
+// Crypto utilities for ECDSA key generation and encryption
+class CryptoManager {
+  private keyPair: CryptoKeyPair | null = null;
+  private publicKeyString: string | null = null;
+  private peerPublicKeys: Map<string, CryptoKey> = new Map();
 
-interface ChatSyncConfig {
-  roomName: string;
-  userName: string;
-  password: string;
-  enabled: boolean;
+  async generateKeyPair(): Promise<{ publicKey: string; privateKey: string }> {
+    this.keyPair = await crypto.subtle.generateKey(
+      {
+        name: 'ECDSA',
+        namedCurve: 'P-256'
+      },
+      true,
+      ['sign', 'verify']
+    ) as CryptoKeyPair;
+
+    const publicKeyBuffer = await crypto.subtle.exportKey('raw', this.keyPair.publicKey);
+    const privateKeyBuffer = await crypto.subtle.exportKey('pkcs8', this.keyPair.privateKey);
+    
+    this.publicKeyString = this.bufferToBase64(publicKeyBuffer);
+    const privateKeyString = this.bufferToBase64(privateKeyBuffer);
+
+    return {
+      publicKey: this.publicKeyString,
+      privateKey: privateKeyString
+    };
+  }
+
+  async loadKeyPair(privateKeyString: string, publicKeyString?: string): Promise<string> {
+    const privateKeyBuffer = this.base64ToBuffer(privateKeyString);
+    
+    const privateKey = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKeyBuffer,
+      {
+        name: 'ECDSA',
+        namedCurve: 'P-256',
+      },
+      true,
+      ['sign']
+    );
+
+    if (publicKeyString) {
+      this.publicKeyString = publicKeyString;
+      const publicKey = await this.importPublicKey(publicKeyString);
+      this.keyPair = { privateKey, publicKey };
+    } else {
+      throw new Error('Public key required when loading key pair');
+    }
+
+    return this.publicKeyString;
+  }
+
+  async importPublicKey(publicKeyString: string): Promise<CryptoKey> {
+    const publicKeyBuffer = this.base64ToBuffer(publicKeyString);
+    return await crypto.subtle.importKey(
+      'raw',
+      publicKeyBuffer,
+      {
+        name: 'ECDSA',
+        namedCurve: 'P-256',
+      },
+      false,
+      ['verify']
+    );
+  }
+
+  async addPeerPublicKey(peerId: string, publicKeyString: string): Promise<void> {
+    const publicKey = await this.importPublicKey(publicKeyString);
+    this.peerPublicKeys.set(peerId, publicKey);
+  }
+
+  generateShareableLink(baseUrl: string): string {
+    if (!this.publicKeyString) throw new Error('No public key available');
+    return `${baseUrl}?publicKey=${encodeURIComponent(this.publicKeyString)}`;
+  }
+
+  generateQRCode(userName: string): string {
+    if (!this.publicKeyString) throw new Error('No public key available');
+    return JSON.stringify({
+      type: 'school-bud-e-sync',
+      publicKey: this.publicKeyString,
+      userName: userName
+    });
+  }
+
+  getPublicKey(): string | null {
+    return this.publicKeyString;
+  }
+
+  private bufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  private base64ToBuffer(base64: string): ArrayBuffer {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
 }
 
-interface ChatSyncState {
+interface SyncSettings {
+  enabled: boolean;
+  userName: string;
+  privateKey: string;
+  publicKey: string;
+  peerPublicKeys: string[];
+}
+
+interface SyncState {
   connected: boolean;
   peers: number;
-  syncing: boolean;
-  error: string | null;
+  encrypted: boolean;
+  publicKey: string | null;
 }
 
-// Simple chat sync manager for main thread
-class ChatSyncManager {
-  doc: Y.Doc;
-  chatData: Y.Map<any>;
-  provider: WebrtcProvider;
-  persistence: IndexeddbPersistence;
-  userId: string;
-  config: ChatSyncConfig;
-  refCount: number;
-  connected: boolean;
+// Global singleton instances
+let globalDoc: Y.Doc | null = null;
+let globalProvider: WebrtcProvider | null = null;
+let globalPersistence: IndexeddbPersistence | null = null;
+let globalRefCount = 0;
+const globalCryptoManagers = new Map<string, CryptoManager>();
+
+async function initializeGlobalSync(settings: SyncSettings): Promise<CryptoManager> {
+  globalRefCount++;
   
-  constructor(config: ChatSyncConfig) {
-    this.doc = new Y.Doc();
-    this.chatData = this.doc.getMap('chats');
-    this.userId = crypto.randomUUID();
-    this.config = config;
-    this.refCount = 1;
-    this.connected = false;
+  // Get or create crypto manager for this user
+  const userKey = settings.publicKey || 'new-user';
+  let cryptoManager = globalCryptoManagers.get(userKey);
+  
+  if (!cryptoManager) {
+    cryptoManager = new CryptoManager();
     
-    // Setup persistence
-    this.persistence = new IndexeddbPersistence(`chat-sync-${config.roomName}`, this.doc);
+    if (settings.privateKey && settings.publicKey) {
+      await cryptoManager.loadKeyPair(settings.privateKey, settings.publicKey);
+    } else {
+      const keyPair = await cryptoManager.generateKeyPair();
+      settings.privateKey = keyPair.privateKey;
+      settings.publicKey = keyPair.publicKey;
+      localStorage.setItem('chatSyncSettings', JSON.stringify(settings));
+    }
     
-    // Setup WebRTC provider
-    this.provider = new WebrtcProvider(config.roomName, this.doc, {
-      signaling: ['ws://192.168.178.40:1234'],
-      password: config.password
-    });
+    // Load peer public keys
+    for (const peerKey of settings.peerPublicKeys) {
+      await cryptoManager.addPeerPublicKey(peerKey, peerKey);
+    }
     
-    // Track connection status
-    this.provider.on('synced', (event: any) => {
-      this.connected = event.synced || false;
-    });
-    
-    // Set awareness data
-    this.provider.awareness.setLocalState({
-      name: config.userName,
-      userId: this.userId,
-      color: this.getRandomColor()
-    });
-    
-    // Sync local chats to YJS
-    this.syncLocalChatsToYJS();
-    
-    // Listen for changes from other peers
-    this.chatData.observe(() => {
-      this.syncYJSChatsToLocal();
-    });
+    globalCryptoManagers.set(settings.publicKey, cryptoManager);
   }
   
-  addRef() {
-    this.refCount++;
-  }
-  
-  removeRef() {
-    this.refCount--;
-    return this.refCount;
-  }
-  
-  getRandomColor() {
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
-    return colors[Math.floor(Math.random() * colors.length)];
-  }
-  
-  syncLocalChatsToYJS() {
-    const localChats = chats.peek();
-    for (const [chatKey, messages] of Object.entries(localChats)) {
-      if (chatKey.startsWith('bude-chat-')) {
-        // Only sync if this chat has been modified locally and isn't already in YJS
-        const existingYJSChat = this.chatData.get(chatKey);
-        if (!existingYJSChat || JSON.stringify(existingYJSChat) !== JSON.stringify(messages)) {
-          this.chatData.set(chatKey, {
-            messages,
-            lastModified: Date.now(),
-            modifiedBy: this.userId
-          });
+  // Initialize global YJS instances only once
+  if (!globalDoc) {
+    globalDoc = new Y.Doc();
+    
+    // Use a global sync space for all School Bud-E users
+    const connectionId = 'school-bud-e-encrypted-sync';
+    globalProvider = new WebrtcProvider(connectionId, globalDoc, {
+      signaling: ['ws://192.168.178.40:1234']
+    });
+    
+    globalPersistence = new IndexeddbPersistence(`chat-sync-${connectionId}`, globalDoc);
+    
+    // Get the shared chats map
+    const sharedChats = globalDoc.getMap('chats');
+    
+    // Sync local chats to shared document when they change
+    let isUpdatingFromRemote = false;
+    
+    // Watch for local changes and sync to Y.js
+    const syncLocalToRemote = () => {
+      if (isUpdatingFromRemote) return;
+      
+      const localChats = chats.value;
+      for (const [key, messages] of Object.entries(localChats)) {
+        const currentRemoteMessages = sharedChats.get(key);
+        if (JSON.stringify(currentRemoteMessages) !== JSON.stringify(messages)) {
+          sharedChats.set(key, messages);
         }
       }
-    }
-  }
-  
-  syncYJSChatsToLocal() {
-    const yjsChats = Object.fromEntries(this.chatData.entries());
-    const localChats = chats.peek();
-    let hasChanges = false;
+    };
     
-    for (const [chatKey, chatData] of Object.entries(yjsChats)) {
-      if (chatKey.startsWith('bude-chat-') && chatData && typeof chatData === 'object') {
-        const yjsMessages = chatData.messages;
-        const localMessages = localChats[chatKey];
-        
-        // Only update if the YJS version is different and newer
-        if (yjsMessages && 
-            (JSON.stringify(yjsMessages) !== JSON.stringify(localMessages))) {
-          localChats[chatKey] = yjsMessages;
-          hasChanges = true;
+    // Watch for remote changes and sync to local
+    sharedChats.observe((event) => {
+      isUpdatingFromRemote = true;
+      
+      const newChats = { ...chats.value };
+      let hasChanges = false;
+      
+      event.changes.keys.forEach((change, key) => {
+        if (change.action === 'add' || change.action === 'update') {
+          const remoteMessages = sharedChats.get(key);
+          if (remoteMessages && Array.isArray(remoteMessages) && JSON.stringify(newChats[key]) !== JSON.stringify(remoteMessages)) {
+            newChats[key] = remoteMessages;
+            hasChanges = true;
+          }
+        } else if (change.action === 'delete') {
+          if (newChats[key]) {
+            delete newChats[key];
+            hasChanges = true;
+          }
         }
+      });
+      
+      if (hasChanges) {
+        chats.value = newChats;
       }
-    }
+      
+      setTimeout(() => {
+        isUpdatingFromRemote = false;
+      }, 100);
+    });
     
-    if (hasChanges) {
-      chats.value = { ...localChats };
+    // Initial sync from local to remote
+    setTimeout(syncLocalToRemote, 1000);
+    
+    // Set up periodic sync to catch any missed changes
+    setInterval(() => {
+      if (!isUpdatingFromRemote) {
+        syncLocalToRemote();
+      }
+    }, 5000);
+  }
+  
+  return cryptoManager;
+}
+
+function cleanupGlobalSync(): void {
+  globalRefCount--;
+  
+  if (globalRefCount <= 0) {
+    if (globalProvider) {
+      globalProvider.destroy();
+      globalProvider = null;
     }
-  }
-  
-  getPeerCount(): number {
-    return this.provider.awareness?.getStates()?.size || 0;
-  }
-  
-  isConnected(): boolean {
-    return this.connected;
-  }
-  
-  destroy() {
-    this.provider?.disconnect();
-    this.provider?.destroy();
-    this.persistence?.destroy();
-    this.doc.destroy();
+    if (globalPersistence) {
+      globalPersistence.destroy();
+      globalPersistence = null;
+    }
+    if (globalDoc) {
+      globalDoc.destroy();
+      globalDoc = null;
+    }
+    globalCryptoManagers.clear();
+    globalRefCount = 0;
   }
 }
 
 export function useChatSync() {
-  const syncManagerRef = useRef<ChatSyncManager | null>(null);
-  const configRef = useRef<ChatSyncConfig | null>(null);
-  
-  const getSyncConfig = useCallback((): ChatSyncConfig => {
+  const cryptoManagerRef = useRef<CryptoManager | null>(null);
+
+  const getSettings = (): SyncSettings => {
+    const stored = localStorage.getItem('chatSyncSettings');
+    if (stored) {
+      return JSON.parse(stored);
+    }
     return {
-      roomName: localStorage.getItem("bud-e-sync-room") || "school-bud-e-default",
-      userName: localStorage.getItem("bud-e-sync-user") || "Student",
-      password: localStorage.getItem("bud-e-sync-password") || "secure123",
-      enabled: localStorage.getItem("bud-e-sync-enabled") === "true",
+      enabled: false,
+      userName: 'Anonymous',
+      privateKey: '',
+      publicKey: '',
+      peerPublicKeys: []
     };
-  }, []);
-  
-  const initializeSync = useCallback(() => {
-    const config = getSyncConfig();
-    
-    if (!config.enabled) {
-      // Clean up local reference but don't destroy shared instance
-      if (syncManagerRef.current) {
-        const remaining = syncManagerRef.current.removeRef();
-        if (remaining === 0) {
-          // No more references, safe to destroy
-          syncManagerRef.current.destroy();
-          globalSyncManagers.delete(getRoomKey(syncManagerRef.current.config));
-        }
-        syncManagerRef.current = null;
-      }
-      return;
-    }
-    
-    const roomKey = getRoomKey(config);
-    
-    // Check if we already have a manager for this room
-    let existingManager = globalSyncManagers.get(roomKey);
-    
-    if (existingManager) {
-      // Reuse existing manager
-      existingManager.addRef();
-      syncManagerRef.current = existingManager;
-      configRef.current = config;
-      console.log('Reusing existing chat sync for room:', config.roomName);
-    } else {
-      // Create new manager
-      console.log('Initializing new chat sync...', config);
-      const newManager = new ChatSyncManager(config);
-      globalSyncManagers.set(roomKey, newManager);
-      syncManagerRef.current = newManager;
-      configRef.current = config;
-    }
-  }, [getSyncConfig]);
-  
-  const getRoomKey = (config: ChatSyncConfig): string => {
-    return `${config.roomName}-${config.password}`;
   };
-  
-  const getSyncState = useCallback((): ChatSyncState => {
-    if (!syncManagerRef.current) {
-      return {
-        connected: false,
-        peers: 0,
-        syncing: false,
-        error: null
-      };
+
+  const saveSettings = (settings: SyncSettings) => {
+    localStorage.setItem('chatSyncSettings', JSON.stringify(settings));
+  };
+
+  const isEnabled = () => {
+    return getSettings().enabled;
+  };
+
+  const getSyncState = (): SyncState => {
+    if (!cryptoManagerRef.current || !globalProvider) {
+      return { connected: false, peers: 0, encrypted: true, publicKey: null };
     }
-    
     return {
-      connected: syncManagerRef.current.isConnected(),
-      peers: syncManagerRef.current.getPeerCount(),
-      syncing: getSyncConfig().enabled,
-      error: null
+      connected: globalProvider.connected || false,
+      peers: globalProvider.awareness.getStates().size || 0,
+      encrypted: true,
+      publicKey: cryptoManagerRef.current.getPublicKey()
     };
-  }, [getSyncConfig]);
-  
-  const forceSync = useCallback(() => {
-    if (syncManagerRef.current) {
-      syncManagerRef.current.syncLocalChatsToYJS();
-    }
-  }, []);
-  
-  // Initialize and cleanup
-  useEffect(() => {
-    initializeSync();
+  };
+
+  const initializeSync = async () => {
+    const settings = getSettings();
+    if (!settings.enabled) return;
+
+    cryptoManagerRef.current = await initializeGlobalSync(settings);
+  };
+
+  const addPeer = async (publicKey: string) => {
+    if (!cryptoManagerRef.current) return;
     
-    // Listen for storage changes (settings updates)
-    const handleStorageChange = () => {
+    const settings = getSettings();
+    if (!settings.peerPublicKeys.includes(publicKey)) {
+      settings.peerPublicKeys.push(publicKey);
+      await cryptoManagerRef.current.addPeerPublicKey(publicKey, publicKey);
+      saveSettings(settings);
+    }
+  };
+
+  const generateShareableLink = (): string => {
+    if (!cryptoManagerRef.current) throw new Error('Sync not initialized');
+    const baseUrl = globalThis.location?.origin + globalThis.location?.pathname;
+    return cryptoManagerRef.current.generateShareableLink(baseUrl);
+  };
+
+  const generateQRCode = (): string => {
+    if (!cryptoManagerRef.current) throw new Error('Sync not initialized');
+    const settings = getSettings();
+    return cryptoManagerRef.current.generateQRCode(settings.userName);
+  };
+
+  useEffect(() => {
+    if (isEnabled()) {
       initializeSync();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      if (syncManagerRef.current) {
-        const remaining = syncManagerRef.current.removeRef();
-        if (remaining === 0) {
-          // No more references, safe to destroy
-          syncManagerRef.current.destroy();
-          globalSyncManagers.delete(getRoomKey(syncManagerRef.current.config));
-        }
-        syncManagerRef.current = null;
-      }
-    };
-  }, [initializeSync]);
-  
-  // Sync when chats change
-  useEffect(() => {
-    if (syncManagerRef.current && getSyncConfig().enabled) {
-      syncManagerRef.current.syncLocalChatsToYJS();
     }
-  }, [chats.value, getSyncConfig]);
-  
+
+    return () => {
+      cleanupGlobalSync();
+      cryptoManagerRef.current = null;
+    };
+  }, []);
+
   return {
-    initializeSync,
+    isEnabled,
     getSyncState,
-    forceSync,
-    isEnabled: () => getSyncConfig().enabled
+    getSettings,
+    saveSettings,
+    addPeer,
+    generateShareableLink,
+    generateQRCode
   };
 } 

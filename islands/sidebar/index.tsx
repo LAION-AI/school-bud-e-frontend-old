@@ -8,6 +8,7 @@ import SidebarHeader from "./SidebarHeader.tsx";
 import TestsSection from "./TestsSection.tsx";
 import UserProfileSection from "./UserProfileSection.tsx";
 import VideoNovelLink from "./VideoNovelLink.tsx";
+import ChatSyncInitializer from "../chat/ChatSyncInitializer.tsx";
 import translations from "./sidebar.translations.json" with { type: "json" };
 
 interface SidebarProps {
@@ -135,6 +136,9 @@ export default function Sidebar({
 
       <div class="p-3 pt-0">
         <TourProgressSidebarSection />
+        <div class="mb-3">
+          <ChatSyncInitializer />
+        </div>
         <UserProfileSection
           lang={lang}
         />

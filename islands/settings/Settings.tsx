@@ -10,6 +10,7 @@ import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
 import Input from "../../components/core/Input.tsx";
 import Textarea from "../../components/core/Textarea.tsx";
+import { EncryptedSyncSettings } from "../../components/chat/EncryptedSyncSettings.tsx";
 
 interface Model {
   id: string;
@@ -31,13 +32,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
     ...settings.peek(),
   });
   
-  // Sync settings
-  const syncSettings = useSignal({
-    roomName: localStorage.getItem("bud-e-sync-room") || "school-bud-e-default",
-    userName: localStorage.getItem("bud-e-sync-user") || "Student",
-    password: localStorage.getItem("bud-e-sync-password") || "secure123",
-    enabled: localStorage.getItem("bud-e-sync-enabled") === "true",
-  });
+
   const activeTab = useSignal("general");
   const models = useSignal<Model[]>([]);
   const selectedModels = useSignal<Record<string, string>>({});
@@ -485,126 +480,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
         {activeTab.value === "token-usage" && <TokenUsage lang={lang} />}
 
         {/* Chat Sync Tab */}
-        {activeTab.value === "sync" && (
-          <div className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <IconInfoCircleFilled class="h-5 w-5 text-blue-500" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800">
-                    Chat Synchronization
-                  </h3>
-                  <div className="mt-2 text-sm text-blue-700">
-                    <p>Sync your chats across devices using P2P technology. Your chats are encrypted and shared only with authorized devices.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Sync Enable Toggle */}
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={syncSettings.value.enabled}
-                  onChange={(e) => {
-                    const enabled = (e.target as HTMLInputElement).checked;
-                    syncSettings.value = { ...syncSettings.value, enabled };
-                    localStorage.setItem("bud-e-sync-enabled", enabled.toString());
-                  }}
-                  className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
-                />
-                <span className="ml-2 text-sm font-medium text-gray-700">
-                  Enable Chat Synchronization
-                </span>
-              </label>
-            </div>
-
-            {/* Sync Settings */}
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label htmlFor="roomName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Room Name
-                </label>
-                <Input
-                  type="text"
-                  id="roomName"
-                  value={syncSettings.value.roomName}
-                  onChange={(e) => {
-                    const roomName = (e.target as HTMLInputElement).value;
-                    syncSettings.value = { ...syncSettings.value, roomName };
-                    localStorage.setItem("bud-e-sync-room", roomName);
-                  }}
-                  className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="school-bud-e-default"
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  Devices with the same room name will sync chats together
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
-                  User Name
-                </label>
-                <Input
-                  type="text"
-                  id="userName"
-                  value={syncSettings.value.userName}
-                  onChange={(e) => {
-                    const userName = (e.target as HTMLInputElement).value;
-                    syncSettings.value = { ...syncSettings.value, userName };
-                    localStorage.setItem("bud-e-sync-user", userName);
-                  }}
-                  className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Student"
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  Your display name for other users
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="syncPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Room Password
-                </label>
-                <Input
-                  type="password"
-                  id="syncPassword"
-                  value={syncSettings.value.password}
-                  onChange={(e) => {
-                    const password = (e.target as HTMLInputElement).value;
-                    syncSettings.value = { ...syncSettings.value, password };
-                    localStorage.setItem("bud-e-sync-password", password);
-                  }}
-                  className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="secure123"
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  Password to join the sync room (shared with other users)
-                </p>
-              </div>
-            </div>
-
-            {/* Sync Status */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-800 mb-2">Sync Status</h3>
-              <div className="flex items-center">
-                <div className={`w-3 h-3 rounded-full ${syncSettings.value.enabled ? 'bg-green-500' : 'bg-gray-400'} mr-2`}></div>
-                <span className="text-sm text-gray-600">
-                  {syncSettings.value.enabled ? 'Sync Enabled' : 'Sync Disabled'}
-                </span>
-              </div>
-              {syncSettings.value.enabled && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Chat synchronization will start when you navigate to a chat
-                </p>
-              )}
-            </div>
-          </div>
-        )}
+        {activeTab.value === "sync" && <EncryptedSyncSettings />}
       </div>
     </div>
   );
