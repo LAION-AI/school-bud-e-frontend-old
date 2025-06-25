@@ -21,7 +21,7 @@ export interface TestCredentials {
 
 // Load environment variables
 const loadEnvVar = (key: string, fallback?: string): string => {
-  const value = Deno.env.get(key) || fallback;
+  const value = process.env[key] || fallback;
   if (!value) {
     throw new Error(`Environment variable ${key} is required for tests. Please set it in your .env file.`);
   }

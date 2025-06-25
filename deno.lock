@@ -26,7 +26,6 @@
     "jsr:@std/path@^1.1.0": "1.1.0",
     "jsr:@std/semver@1": "1.0.5",
     "npm:@opentelemetry/api@^1.9.0": "1.9.0",
-    "npm:@playwright/test@^1.53.1": "1.53.1",
     "npm:@preact/signals@^2.0.4": "2.2.0_preact@10.26.9",
     "npm:@stagewise/toolbar@~0.4.9": "0.4.9",
     "npm:@tabler/icons-preact@^3.30.0": "3.34.0_preact@10.26.9",
@@ -37,10 +36,10 @@
     "npm:buffer@*": "6.0.3",
     "npm:cssnano@6.0.3": "6.0.3_postcss@8.4.35",
     "npm:cytoscape@3.32.0": "3.32.0",
+    "npm:dotenv@^16.5.0": "16.5.0",
     "npm:esbuild-wasm@0.23.1": "0.23.1",
     "npm:esbuild@0.23.1": "0.23.1",
     "npm:ioredis@*": "5.6.1",
-    "npm:playwright@*": "1.53.1",
     "npm:postcss@8.4.35": "8.4.35",
     "npm:postcss@^8.5.3": "8.5.3",
     "npm:preact-render-to-string@^6.5.11": "6.5.13_preact@10.26.9",
@@ -490,13 +489,6 @@
     },
     "@pkgjs/parseargs@0.11.0": {
       "integrity": "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="
-    },
-    "@playwright/test@1.53.1": {
-      "integrity": "sha512-Z4c23LHV0muZ8hfv4jw6HngPJkbbtZxTkxPNIg7cJcTc9C28N/p2q7g3JZS2SiKBBHJ3uM1dgDye66bB7LEk5w==",
-      "dependencies": [
-        "playwright"
-      ],
-      "bin": true
     },
     "@preact/signals-core@1.10.0": {
       "integrity": "sha512-qlKeXlfqtlC+sjxCPHt6Sk0/dXBrKZVcPlianqjNc/vW263YBFiP5mRrgKpHoO0q222Thm1TdYQWfCKpbbgvwA=="
@@ -1072,6 +1064,9 @@
         "domhandler"
       ]
     },
+    "dotenv@16.5.0": {
+      "integrity": "sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg=="
+    },
     "eastasianwidth@0.2.0": {
       "integrity": "sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA=="
     },
@@ -1526,20 +1521,6 @@
     },
     "pirates@4.0.7": {
       "integrity": "sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA=="
-    },
-    "playwright-core@1.53.1": {
-      "integrity": "sha512-Z46Oq7tLAyT0lGoFx4DOuB1IA9D1TPj0QkYxpPVUnGDqHHvDpCftu1J2hM2PiWsNMoZh8+LQaarAWcDfPBc6zg==",
-      "bin": true
-    },
-    "playwright@1.53.1": {
-      "integrity": "sha512-LJ13YLr/ocweuwxyGf1XNFWIU4M2zUSo149Qbp+A4cpwDjsxRPj7k6H25LBrEHiEwxvRbD8HdwvQmRMSvquhYw==",
-      "dependencies": [
-        "playwright-core"
-      ],
-      "optionalDependencies": [
-        "fsevents@2.3.2"
-      ],
-      "bin": true
     },
     "pngjs@5.0.0": {
       "integrity": "sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw=="
@@ -2621,12 +2602,12 @@
       "jsr:@fresh/core@^2.0.0-alpha.34",
       "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
       "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
-      "npm:@playwright/test@^1.53.1",
       "npm:@preact/signals@^2.0.4",
       "npm:@stagewise/toolbar@~0.4.9",
       "npm:@tabler/icons-preact@^3.30.0",
       "npm:@tailwindcss/cli@^4.1.7",
       "npm:cytoscape@3.32.0",
+      "npm:dotenv@^16.5.0",
       "npm:preact@^10.26.6",
       "npm:qrcode@^1.5.3",
       "npm:shepherd.js@14.5.0",

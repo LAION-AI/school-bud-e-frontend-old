@@ -4,6 +4,7 @@
     "@stagewise/toolbar": "npm:@stagewise/toolbar@^0.4.9",
     "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
     "@tailwindcss/cli": "npm:@tailwindcss/cli@^4.1.7",
+    "dotenv": "npm:dotenv@^16.5.0",
     "tailwindcss": "npm:tailwindcss@^4.1.7",
     "tiktoken": "npm:tiktoken@^1.0.20",
     "shepherd.js": "npm:shepherd.js@14.5.0",
@@ -17,8 +18,7 @@
     "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
     "preact": "npm:preact@^10.26.6",
-    "@preact/signals": "npm:@preact/signals@^2.0.4",
-    "@playwright/test": "npm:@playwright/test@^1.53.1"
+    "@preact/signals": "npm:@preact/signals@^2.0.4"
   },
   "tasks": {
     "test": "deno test -A",

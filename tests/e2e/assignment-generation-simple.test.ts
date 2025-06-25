@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import dotenv from 'dotenv';
+dotenv.config();
 
 test.describe('Assignment/Test Generation - Simple', () => {
   // Configuration helper function
@@ -11,7 +13,7 @@ test.describe('Assignment/Test Generation - Simple', () => {
     await page.getByRole('button', { name: 'Neues Modell' }).click();
 
     // Fill in OpenAI model details
-    const openaiApiKey = Deno.env.get('TEST_OPENAI_API_KEY');
+    const openaiApiKey = process.env.TEST_OPENAI_API_KEY;
     if (!openaiApiKey) {
       throw new Error('TEST_OPENAI_API_KEY environment variable is required for tests');
     }
@@ -177,7 +179,7 @@ test.describe('Assignment/Test Generation - Simple', () => {
     // Quick setup of model
     await page.goto('/settings');
     await page.getByRole('button', { name: 'Neues Modell' }).click();
-    const openaiApiKey = Deno.env.get('TEST_OPENAI_API_KEY');
+    const openaiApiKey = process.env.TEST_OPENAI_API_KEY;
     if (!openaiApiKey) {
       throw new Error('TEST_OPENAI_API_KEY environment variable is required for tests');
     }

@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+const TEST_GROQ_API_KEY = process.env.TEST_GROQ_API_KEY;
+const TEST_GROQ_API_ENDPOINT = process.env.TEST_GROQ_API_ENDPOINT;
+const TEST_GROQ_MODEL_LLAMA = process.env.TEST_GROQ_MODEL_LLAMA;
+
 test.describe('Chat Comprehensive Functionality', () => {
   
   test.beforeEach(async ({ page }) => {
@@ -15,9 +19,9 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     await page.locator('div').filter({ hasText: /^Text-Chat$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('Test LLM');
-    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-key');
-    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('http://localhost:11434/v1/chat/completions');
-    await page.getByRole('textbox', { name: 'Modell*' }).fill('llama3.2:3b');
+    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill(TEST_GROQ_API_KEY);
+    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill(TEST_GROQ_API_ENDPOINT);
+    await page.getByRole('textbox', { name: 'Modell*' }).fill(TEST_GROQ_MODEL_LLAMA);
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     
     // Return to chat
@@ -38,9 +42,9 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     await page.locator('div').filter({ hasText: /^Text-Chat$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('Correction Model');
-    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-key');
-    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('http://localhost:11434/v1/chat/completions');
-    await page.getByRole('textbox', { name: 'Modell*' }).fill('llama3.2:3b');
+    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill(TEST_GROQ_API_KEY);
+    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill(TEST_GROQ_API_ENDPOINT);
+    await page.getByRole('textbox', { name: 'Modell*' }).fill(TEST_GROQ_MODEL_LLAMA);
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     await page.getByRole('link', { name: 'Chat 1 Chat herunterladen' }).click();
     
@@ -51,6 +55,7 @@ test.describe('Chat Comprehensive Functionality', () => {
     await chatInput.fill('This text has some errors');
     await page.keyboard.press('Enter');
     await expect(page.getByText('This text has some errors')).toBeVisible();
+    await page.waitForTimeout(2000);
     
     // Send correction message with German hashtag
     await chatInput.fill('Korrigiere bitte den Text #korrektur');
@@ -71,13 +76,13 @@ test.describe('Chat Comprehensive Functionality', () => {
     // Set up text chat
     await page.locator('div').filter({ hasText: /^Text-Chat$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('Text Model');
-    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-key');
-    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('http://localhost:11434/v1/chat/completions');
-    await page.getByRole('textbox', { name: 'Modell*' }).fill('llama3.2:3b');
+    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill(TEST_GROQ_API_KEY);
+    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill(TEST_GROQ_API_ENDPOINT);
+    await page.getByRole('textbox', { name: 'Modell*' }).fill(TEST_GROQ_MODEL_LLAMA);
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     
     // Set up VLM chat
-    await page.locator('div').filter({ hasText: /^Bild-Chat$/ }).getByLabel('Aktivieren').click();
+    await page.locator('div').filter({ hasText: /^Bild-Verständnis$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('Vision Model');
     await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-vlm-key');
     await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('https://api.openai.com/v1/chat/completions');
@@ -99,7 +104,7 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     
     // Set up VLM for PDF processing
-    await page.locator('div').filter({ hasText: /^Bild-Chat$/ }).getByLabel('Aktivieren').click();
+    await page.locator('div').filter({ hasText: /^Bild-Verständnis$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('PDF Vision Model');
     await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-key');
     await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('https://api.openai.com/v1/chat/completions');
@@ -295,12 +300,10 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     
     // Test shop API key setup (Universal API Key section)
-    await page.locator('div').filter({ hasText: /^Universal-API-Schlüssel$/ }).getByLabel('Aktivieren').click();
-    await page.getByRole('textbox', { name: 'Universal API-Schlüssel*' }).fill('shop-test-key-123');
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    await page.locator('#universalApiKey').fill('shop-test-key-123');
     
-    // Verify shop key was added
-    await expect(page.getByText('shop-test-key-123')).toBeVisible();
+    // Verify shop key was entered (the input should show password characters or the value)
+    await expect(page.locator('#universalApiKey')).toHaveValue('shop-test-key-123');
     
     await page.getByRole('link', { name: 'Chat 1 Chat herunterladen' }).click();
     
@@ -316,16 +319,21 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('navigation').getByRole('link', { name: 'Jetzt starten' }).click();
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     
-    // Set up both shop and direct API keys
-    await page.locator('div').filter({ hasText: /^Universal-API-Schlüssel$/ }).getByLabel('Aktivieren').click();
-    await page.getByRole('textbox', { name: 'Universal API-Schlüssel*' }).fill('shop-key');
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    // Set up Universal API Key (shop key)
+    await page.locator('#universalApiKey').fill('shop-key');
+    await expect(page.locator('#universalApiKey')).toHaveValue('shop-key');
     
-    await page.locator('div').filter({ hasText: /^Text-Chat$/ }).getByLabel('Aktivieren').click();
-    await page.getByRole('textbox', { name: 'Name*' }).fill('Direct API Model');
-    await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('direct-key');
-    await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('http://localhost:11434/v1/chat/completions');
-    await page.getByRole('textbox', { name: 'Modell*' }).fill('llama3.2:3b');
+    // Set up direct API model
+    await page.getByRole('button', { name: 'Neues Modell' }).click();
+    await page.locator('#name').fill('Direct API Model');
+    await page.locator('#key').fill('direct-key');
+    await page.locator('#url').fill('http://localhost:11434/v1/chat/completions');
+    await page.locator('#model').fill('llama3.2:3b');
+    
+    // Select chat capability
+    await page.getByRole('checkbox', { name: '💬 Text-Chat' }).check();
+    
+    // Submit the form
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     
     await page.getByRole('link', { name: 'Chat 1 Chat herunterladen' }).click();
@@ -334,8 +342,12 @@ test.describe('Chat Comprehensive Functionality', () => {
     const chatInput = page.getByRole('textbox', { name: 'Schreibe mit dem School Bud-E' });
     await chatInput.fill('Test credential priority');
     await page.keyboard.press('Enter');
+    await page.waitForLoadState('networkidle');
     
     await expect(page.getByText('Test credential priority')).toBeVisible();
+
+    // Check if AI sent a response
+    await expect(page.locator('.message-group.flex.flex-col.group.pb-2.items-start')).toBeVisible();
   });
 
   test('should handle VLM vs LLM model selection based on content type', async ({ page }) => {
@@ -350,7 +362,7 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('textbox', { name: 'Modell*' }).fill('llama3.2:3b');
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     
-    await page.locator('div').filter({ hasText: /^Bild-Chat$/ }).getByLabel('Aktivieren').click();
+    await page.locator('div').filter({ hasText: /^Bild-Verständnis$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('VLM Model');
     await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('vlm-key');
     await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('https://api.openai.com/v1/chat/completions');
@@ -373,7 +385,7 @@ test.describe('Chat Comprehensive Functionality', () => {
     await page.getByRole('navigation').getByRole('link', { name: 'Jetzt starten' }).click();
     await page.getByRole('button', { name: 'API-Schlüssel einrichten' }).click();
     
-    await page.locator('div').filter({ hasText: /^Bild-Chat$/ }).getByLabel('Aktivieren').click();
+    await page.locator('div').filter({ hasText: /^Bild-Verständnis$/ }).getByLabel('Aktivieren').click();
     await page.getByRole('textbox', { name: 'Name*' }).fill('Blob Test Model');
     await page.getByRole('textbox', { name: 'API-Schlüssel*' }).fill('test-key');
     await page.getByRole('textbox', { name: 'API-Endpunkt*' }).fill('https://api.openai.com/v1/chat/completions');
