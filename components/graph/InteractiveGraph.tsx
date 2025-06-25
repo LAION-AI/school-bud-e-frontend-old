@@ -164,34 +164,32 @@ export function InteractiveGraph({
               selector: "node",
               style: {
                 shape: "ellipse",
-                "background-color": "#eee", // Default color
-                width: 65, // Larger nodes for visibility
-                height: 65, // Larger nodes for visibility
+                "background-color": "#2BBDE5", // Primary blue from Figma design
+                width: 80, // Slightly larger for better visibility
+                height: 80, // Slightly larger for better visibility
                 label: "data(label)",
-                "text-valign": "center", // Center text for visibility
+                "text-valign": "bottom", // Position text below the circle
                 "text-halign": "center",
-                "text-margin-y": "0px", // Move text to center
+                "text-margin-y": 10, // Add space between circle and text
                 "text-wrap": "wrap",
-                "text-max-width": "50px", // Wider text area
-                "font-size": "12px", // Larger font
-                "font-weight": "bold", // Bold text
+                "text-max-width": "80px", // Match node width
+                "font-size": "14px", // Slightly larger font
+                "font-weight": "semibold", // Bold text for visibility
                 color: "#000000", // Black text
-                "text-outline-width": "1px",
+                "text-outline-width": "2px",
                 "text-outline-color": "#ffffff", // White outline for visibility
-                "font-family": "'Poppins', sans-serif",
+                "font-family": "'Plus Jakarta Sans', 'Inter', sans-serif",
                 "background-image": (ele: { data: (id: string) => string }) => {
                   const nodeData = nodeMap.current.get(ele.data("id"));
                   return nodeData?.image ? `url(${nodeData.image})` : "none";
                 },
                 "background-fit": "cover",
-                "border-width": "1px",
-                "border-color": "#aaa", // Black border for visibility
+                "border-width": "0px", // Remove border for cleaner look
                 "border-style": "solid",
-                "shadow-blur": "10px",
-                "shadow-color": "rgba(0, 0, 0, 0.5)", // Darker shadow for visibility
-                "shadow-offset-x": "0px",
-                "shadow-offset-y": "2px",
-                "z-index": "10", // Ensure nodes are above other elements
+                "box-shadow": "0 0 10px 0 rgba(43, 189, 229, 0.3)", // Blue shadow matching the node color
+                "box-shadow-offset-x": "0px",
+                "box-shadow-offset-y": "4px",
+                "z-index": 10, // Ensure nodes are above other elements
               },
             },
             {
@@ -199,7 +197,7 @@ export function InteractiveGraph({
               style: {
                 "border-width": "4px",
                 "border-color": "#ffd700", // Gold border on selection
-                "background-color": "#a0e81c", // Lighter green when selected
+                "background-color": "#33bfd7", // Darker blue when selected (primary-400)
               },
             },
             {
@@ -221,11 +219,9 @@ export function InteractiveGraph({
               selector: "edge",
               style: {
                 width: 3, // Thicker edges
-                "line-color": "#000", // Black edges for visibility
-                "target-arrow-color": "#000",
-                "target-arrow-shape": "triangle",
+                "line-color": "#B7D7E0", // Black edges for visibility
                 "curve-style": "bezier",
-                "z-index": "5", // Ensure edges are visible
+                "z-index": 5, // Ensure edges are visible
                 "opacity": 1, // Always fully opaque
                 "visibility": "visible", // Always visible
                 "min-zoomed-font-size": 0, // Ensure edges are visible at all zoom levels
@@ -234,6 +230,9 @@ export function InteractiveGraph({
                 "text-outline-width": 2, // Add outline to text for better visibility
                 "text-outline-color": "#ffffff", // White outline for text
                 "text-outline-opacity": 1, // Full opacity for outline
+                "line-style": "dashed",
+                "line-dash-pattern": [7, 5],
+                "line-cap": "round",
               },
             },
             // Add a specific style for edges connected to selected nodes
@@ -243,7 +242,7 @@ export function InteractiveGraph({
               style: {
                 "line-color": "#000", // Keep the same color for consistency
                 "width": 3, // Keep the same width
-                "z-index": "6", // Slightly higher z-index to ensure they appear on top
+                "z-index": 6, // Slightly higher z-index to ensure they appear on top
                 "opacity": 1, // Ensure full opacity
               },
             },
@@ -1422,7 +1421,7 @@ export function InteractiveGraph({
             )}
 
             {/* Main Toolbar */}
-            <div class="inline-flex items-center justify-center p-2 bg-white border border-t-gray-100 border-l-gray-100 border-r-gray-300 border-b-gray-300 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90">
+            <div class="inline-flex items-center justify-center p-2 bg-white border border-gray-200 shadow-lg rounded-full backdrop-blur-sm bg-opacity-90">
               <div class="flex items-center space-x-1 max-w-[300px] flex-wrap">
                 {/* Button to spread all nodes */}
                 <button

@@ -1,6 +1,6 @@
 import { useSignal, useComputed } from '@preact/signals';
 import { useEffect } from 'preact/hooks';
-import { IconInfoCircleFilled, IconCopy, IconQrcode, IconKey, IconUsers, IconShield } from '@tabler/icons-preact';
+import { IconInfoCircleFilled, IconCopy, IconQrcode, IconKey, IconUsers, IconShield, IconLoader2 } from '@tabler/icons-preact';
 import { useChatSync } from '../../lib/sync/useChatSync.ts';
 import Input from '../core/Input.tsx';
 import { Button } from '../Button.tsx';
@@ -14,14 +14,28 @@ export function EncryptedSyncSettings() {
   const copySuccess = useSignal('');
   const syncState = useSignal(getSyncState());
   const qrCodeImage = useSignal('');
+  const isInitializingKey = useSignal(false);
 
   // Update sync state periodically
   useEffect(() => {
     const interval = setInterval(() => {
-      syncState.value = getSyncState();
+      const newState = getSyncState();
+      if (settings.value.enabled && !syncState.value.publicKey && !newState.publicKey) {
+        isInitializingKey.value = true;
+      } else if (newState.publicKey) {
+        isInitializingKey.value = false;
+      }
+      syncState.value = newState;
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  // Initialize key generation when sync is enabled
+  useEffect(() => {
+    if (settings.value.enabled && !syncState.value.publicKey) {
+      isInitializingKey.value = true;
+    }
+  }, [settings.value.enabled]);
 
   const publicKey = useComputed(() => syncState.value.publicKey);
   const shareableLink = useComputed(() => {
@@ -133,7 +147,7 @@ export function EncryptedSyncSettings() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+      <div className="border-l-4 border-blue-500 p-4 rounded bg-gray-200">
         <div className="flex">
           <div className="flex-shrink-0">
             <IconShield className="h-5 w-5 text-blue-500" />
@@ -156,7 +170,7 @@ export function EncryptedSyncSettings() {
             type="checkbox"
             checked={settings.value.enabled}
             onChange={(e: Event) => handleToggleSync((e.target as HTMLInputElement).checked)}
-            className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
+            className="rounded border-gray-300 text-primary-600 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
           />
           <span className="ml-2 text-sm font-medium text-gray-700">
             Enable Encrypted Chat Synchronization
@@ -177,7 +191,7 @@ export function EncryptedSyncSettings() {
               id="userName"
               value={settings.value.userName}
               onChange={(e: Event) => handleUserNameChange((e.target as HTMLInputElement).value)}
-              className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              className="focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
               placeholder="Your name"
             />
             <p className="mt-1 text-sm text-gray-500">
@@ -270,6 +284,24 @@ export function EncryptedSyncSettings() {
                   </div>
                 )}
               </div>
+            ) : isInitializingKey.value ? (
+              <div className="space-y-3">
+                {/* Key skeleton with spinner */}
+                <div className="bg-gray-50 p-3 rounded-md border">
+                  <div className="flex items-center space-x-2">
+                    <IconLoader2 className="h-4 w-4 animate-spin text-gray-400" />
+                    <div className="text-sm text-gray-500">Generating secure key pair...</div>
+                  </div>
+                  <div className="mt-2 bg-gray-200 rounded h-12 animate-pulse"></div>
+                </div>
+
+                {/* Button skeleton to prevent CLS */}
+                <div className="flex space-x-2">
+                  <div className="bg-gray-200 h-8 w-20 rounded animate-pulse"></div>
+                  <div className="bg-gray-200 h-8 w-24 rounded animate-pulse"></div>
+                  <div className="bg-gray-200 h-8 w-20 rounded animate-pulse"></div>
+                </div>
+              </div>
             ) : (
               <div className="text-sm text-gray-500">
                 Public key will be generated when sync is initialized
@@ -288,7 +320,7 @@ export function EncryptedSyncSettings() {
                 id="newPeerKey"
                 value={newPeerKey.value}
                 onChange={(e: Event) => newPeerKey.value = (e.target as HTMLInputElement).value}
-                className="flex-1 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                className="flex-1 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 placeholder="Paste public key, shareable link, or QR code data"
               />
               <Button

@@ -2,6 +2,7 @@ import { useSignalEffect } from "@preact/signals";
 import { IconBrain, IconPlus, IconTrash } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import Input from "../../components/core/Input.tsx";
+import { Button } from "../../components/Button.tsx";
 import { useEffect, useRef } from "preact/hooks";
 import type { Signal } from "@preact/signals";
 
@@ -121,18 +122,17 @@ export default function ModelManager({
         <h3 className="text-lg font-medium text-gray-900">
           {lang === "de" ? "KI-Modelle" : "AI Models"}
         </h3>
-        <button
-          type="button"
+        <Button
           onClick={() => {
             showNewModelForm.value = true;
             editingModel.value = null;
             preselectedCapability.value = null;
           }}
-          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          variant="primary"
         >
           <IconPlus className="h-4 w-4 mr-1" />
           {lang === "de" ? "Neues Modell" : "New Model"}
-        </button>
+        </Button>
       </div>
 
       {/* Model List */}

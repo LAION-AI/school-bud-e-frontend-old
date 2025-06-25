@@ -20,7 +20,7 @@ export default function GraphList() {
   // Loading skeleton UI during SSR or initial client load
   if (!isClient.value || isLoading) {
     return (
-      <div class="container mx-auto px-6 py-8 max-w-4xl">
+      <div class="container mx-auto px-6 max-w-4xl">
         <div class="animate-pulse mb-8">
           <div class="h-8 bg-gray-200 rounded w-1/3 mb-4" />
         </div>
@@ -52,7 +52,7 @@ export default function GraphList() {
   const graphEntries = Array.from(graphs.value.entries());
 
   return (
-    <div class="container mx-auto px-6 py-8 max-w-4xl">
+    <div class="container mx-auto px-6 max-w-4xl">
       <h1 class="text-3xl font-bold mb-6">Your Knowledge Graphs</h1>
 
       {graphEntries.length > 0

@@ -5,6 +5,7 @@ import uvicorn
 
 #from app.api.v1.endpoints import small_routes, heavy_routes 
 from app.api.v1.pdf_to_markdown import routes as pdf_to_markdown_routes
+from app.api.v1.endpoints import task_review
 
 # multiprocessing_logging.install_mp_handler()
 
@@ -22,6 +23,7 @@ app.add_middleware(
 #app.include_router(small_routes.router)
 # app.include_router(heavy_routes.router)
 app.include_router(pdf_to_markdown_routes.router)
+app.include_router(task_review.router, prefix="/api/v1/task-review")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8083) 

@@ -4,7 +4,7 @@ import {
   assertExists,
 } from "https://deno.land/std@0.210.0/testing/asserts.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/mod.ts";
-import type { EditSession, VideoNovelSegment } from "../types/formats.ts";
+import type { EditSession, VideoNovelSegment } from "../../types/formats.ts";
 
 // Mock fetch for testing
 const originalFetch = globalThis.fetch;

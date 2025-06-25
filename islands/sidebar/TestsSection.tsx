@@ -30,7 +30,7 @@ export default function TestsSection({
             isActive={activeRoute === "/tests"}
             className="flex items-center group"
           >
-            <span className="flex-1 py-2">
+            <span className="flex-1">
               {translations.actions.allTests}
             </span>
           </SidebarLink>
@@ -39,7 +39,7 @@ export default function TestsSection({
             isActive={activeRoute === "/tests/check"}
             className="flex items-center group"
           >
-            <span className="flex-1 py-2">
+            <span className="flex-1">
               {translations.actions.checkTests}
             </span>
           </SidebarLink>

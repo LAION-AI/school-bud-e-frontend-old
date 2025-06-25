@@ -9,8 +9,12 @@ import {
 } from "@tabler/icons-preact";
 import { useEffect, useState } from "preact/hooks";
 import * as graphStore from "../../../../components/graph/store.ts";
-import type { Test } from "../../../components/tests/store.ts";
+import type { Test } from "../../../../components/tests/store.ts";
 import { Button } from "../../../../components/Button.tsx";
+
+interface TestsListIslandProps {
+  lang?: string;
+}
 
 // Format date to be more compact
 function formatDate(date: number | string | Date): string {
@@ -530,10 +534,31 @@ function openTestInNewTab(test: Test, nodeName: string) {
   }
 }
 
-export default function TestsListIsland() {
+export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
   const [tests, setTests] = useState<Test[]>([]);
   const [loading, setLoading] = useState(true);
   const [nodesMap, setNodesMap] = useState<Record<string, string>>({});
+
+  // Translation functions
+  const getTitle = () => {
+    return lang === "de" ? "Deine Aufgaben" : "Your Tests";
+  };
+
+  const getCreateTestText = () => {
+    return lang === "de" ? "Aufgabe erstellen" : "Create Test";
+  };
+
+  const getNoTestsText = () => {
+    return lang === "de" ? "Keine Aufgaben gefunden" : "No tests found";
+  };
+
+  const getCreateNewTestText = () => {
+    return lang === "de" ? "Erstelle eine neue Aufgabe um zu beginnen" : "Create a new test to get started";
+  };
+
+  const getLoadingText = () => {
+    return lang === "de" ? "Aufgaben werden geladen..." : "Loading tests...";
+  };
 
   useEffect(() => {
     // Load all tests
@@ -556,15 +581,18 @@ export default function TestsListIsland() {
   }, []);
 
   const handleGoToGraph = () => {
-    window.location.href = "/graph";
+    const langParam = lang !== "en" ? `?lang=${lang}` : "";
+    window.location.href = `/graph${langParam}`;
   };
 
   const handleStartTest = (testId: string) => {
-    window.location.href = `/tests/view/${testId}`;
+    const langParam = lang !== "en" ? `?lang=${lang}` : "";
+    window.location.href = `/tests/view/${testId}${langParam}`;
   };
 
   const handleCreateTest = () => {
-    window.location.href = "/tests/compose";
+    const langParam = lang !== "en" ? `?lang=${lang}` : "";
+    window.location.href = `/tests/compose${langParam}`;
   };
 
   const handleExportToDocument = (e: Event, test: Test) => {
@@ -585,41 +613,24 @@ export default function TestsListIsland() {
   };
 
   return (
-    <div class="container mx-auto px-6 py-10 h-screen overflow-auto">
-      <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">Tests</h1>
-          <p class="mt-2 text-gray-600">Create and manage your tests</p>
-        </div>
-        <div class="flex gap-4">
-          <Button onClick={handleCreateTest}>
-            <IconPlus class="w-5 h-5 mr-2" />
-            Create Test
-          </Button>
-          <Button variant="outline" onClick={handleGoToGraph}>
-            <IconBook class="w-5 h-5 mr-2" />
-            Go to Graph
-          </Button>
-        </div>
-      </div>
+    <div class="container mx-auto px-6 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold mb-6">{getTitle()}</h1>
 
-      <div class="">
-        {loading
-          ? <div class="text-gray-600">Loading tests...</div>
-          : tests.length === 0
-          ? (
-            <div class="text-center py-12">
-              <h3 class="text-lg font-medium text-gray-900 mb-2">
-                No tests yet
-              </h3>
-              <p class="text-gray-600 mb-4">
-                Get started by creating your first test
-              </p>
-              <Button variant="primary" onClick={handleCreateTest}>
-                Create Test
-              </Button>
-            </div>
-          )
+      {loading
+        ? <div class="text-gray-600">{getLoadingText()}</div>
+        : tests.length === 0
+        ? (
+          <div class="text-center py-8 border border-dashed border-gray-300 rounded-lg">
+            <p class="text-lg text-gray-700 mb-2">{getNoTestsText()}</p>
+            <p class="text-gray-500 mb-4">
+              {getCreateNewTestText()}
+            </p>
+            <Button variant="primary" onClick={handleCreateTest}>
+              <IconPlus class="w-5 h-5 mr-2" />
+              {getCreateTestText()}
+            </Button>
+          </div>
+        )
           : (
             <div class="space-y-3">
               {tests.map((test) => (
@@ -673,7 +684,7 @@ export default function TestsListIsland() {
                     <a
                       class="flex items-center justify-center opacity-80 hover:opacity-100 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
                       title="Edit Test"
-                      href={`/tests/compose/${test.id}`}
+                      href={`/tests/compose/${test.id}${lang !== "en" ? `?lang=${lang}` : ""}`}
                       aria-label="Edit Test"
                     >
                       <IconEdit class="w-5 h-5" />
@@ -695,7 +706,6 @@ export default function TestsListIsland() {
               ))}
             </div>
           )}
-      </div>
     </div>
   );
 }

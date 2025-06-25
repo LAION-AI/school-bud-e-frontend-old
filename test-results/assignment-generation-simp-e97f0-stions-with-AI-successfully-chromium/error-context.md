@@ -1,0 +1,94 @@
+# Page snapshot
+
+```yaml
+- img "Ein kleines Löwe in einem Abschlusskleid."
+- navigation:
+  - button "Chats" [expanded]:
+    - img
+    - text: Chats
+    - img
+  - link "Chat 1 Chat herunterladen Chat löschen":
+    - /url: /chat/0
+    - text: Chat 1
+    - button "Chat herunterladen"
+    - button "Chat löschen"
+  - link "Neuer Chat":
+    - /url: /chat/0
+  - button "Aufgaben":
+    - img
+    - text: Aufgaben
+    - img
+  - button "Graphs":
+    - img
+    - text: Graphs
+    - img
+  - button "Presentation Generator":
+    - img
+    - text: Presentation Generator
+    - img
+  - button "Video Roman":
+    - img
+    - text: Video Roman
+    - img
+- link "Open settings page":
+  - /url: /settings
+  - img
+  - text: Einstellungen
+- button "KI-Sprache aktivieren":
+  - img
+  - text: Ton aktivieren
+- heading "Einstellungen" [level=1]
+- navigation "Tabs":
+  - button "Allgemein"
+  - button "Token-Nutzung"
+  - button "Chat Sync"
+- img
+- heading "KI-Modelle konfigurieren" [level=3]
+- paragraph: Füge KI-Modelle hinzu und weise ihnen Fähigkeiten zu. Wähle dann für jede Fähigkeit das gewünschte Modell aus.
+- heading "Verfügbare Funktionen" [level=3]
+- img "Bud-E Logo":
+  - img "Bud-E Logo"
+- img "Capability Segments":
+  - img "Text-Chat": 💬
+  - img "Bild-Verständnis": 👁️
+  - img "Sprachausgabe": 🔊
+  - img "Spracherkennung": 🎤
+- heading "Text-Chat" [level=3]
+- button "Aktivieren":
+  - img "Plus Icon"
+- paragraph: Bud-E kann mit dir über Text kommunizieren.
+- heading "Bild-Verständnis" [level=3]
+- button "Aktivieren":
+  - img "Plus Icon"
+- paragraph: Bud-E kann Bilder sehen und verstehen, die du hochlädst.
+- heading "Sprachausgabe" [level=3]
+- button "Aktivieren":
+  - img "Plus Icon"
+- paragraph: Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln.
+- heading "Spracherkennung" [level=3]
+- button "Aktivieren":
+  - img "Plus Icon"
+- paragraph: Bud-E kann zuhören und deine gesprochene Sprache verstehen.
+- heading "KI-Modelle" [level=3]
+- button "Neues Modell":
+  - img
+  - text: Neues Modell
+- link "Bud-E Shop Key":
+  - /url: https://shop.schoolbude.com
+  - text: Bud-E Shop Key
+  - img
+- textbox "Bud-E Shop Key"
+- text: System-Prompt (Optional)
+- textbox "System-Prompt (Optional)"
+- paragraph: Passe an, wie die KI antwortet, indem du spezifische Anweisungen gibst.
+- button
+- button:
+  - textbox "What do you want to change? (Ctrl+Alt+C)"
+  - button [disabled]
+- button "stagewise":
+  - img "stagewise"
+  - img
+- button
+- button
+- button
+```

@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { Button } from "../../../../components/Button.tsx";
-import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../../components/tests/store.ts";
 import { startStream } from "../../../../components/chat/stream.ts";
 import { addMessage, messages } from "../../../../components/chat/store.ts";
-import { IconArrowLeft, IconEye, IconTrash, IconX } from "@tabler/icons-preact";
+import { IconArrowLeft, IconEye, IconTrash, IconX, IconExclamationCircle } from "@tabler/icons-preact";
 
 interface TestViewIslandProps {
   testId: string;
@@ -30,6 +29,8 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
   >(null);
   const [checkingShortAnswers, setCheckingShortAnswers] = useState(false);
   const [revisitMode, setRevisitMode] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // References for input elements to manage focus
   const inputRefs = useRef<
@@ -205,110 +206,146 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
     if (shortAnswerQuestions.length === 0) return feedback;
 
     setCheckingShortAnswers(true);
+    setSubmissionError(null);
 
-    // Construct a prompt to evaluate the short answers
-    let prompt =
-      "I need you to evaluate some short answer test responses. For each question, I'll provide the correct answer and the student's response. Please tell me if each response is correct or not, and provide a brief explanation.";
+    try {
+      // Construct a prompt to evaluate the short answers
+      let prompt =
+        "I need you to evaluate some short answer test responses. For each question, I'll provide the correct answer and the student's response. Please tell me if each response is correct or not, and provide a brief explanation.";
 
-    for (const question of shortAnswerQuestions) {
-      const questionIndex = test.questions.findIndex((q) =>
-        q.id === question.id
+      for (const question of shortAnswerQuestions) {
+        const questionIndex = test.questions.findIndex((q) =>
+          q.id === question.id
+        );
+        const userAnswer = selectedAnswers[questionIndex.toString()] as string ||
+          "(No answer provided)";
+
+        prompt += `\n\nQuestion ${questionIndex + 1}: ${question.question}\n`;
+        prompt += `Correct answer: ${question.correctAnswer}\n`;
+        prompt += `Student's answer: ${userAnswer}\n`;
+        prompt +=
+          "Is this correct? Please explain why or why not in 1-2 sentences.";
+      }
+
+      // Send to LLM for evaluation
+      addMessage({ role: "user", content: prompt });
+      await startStream(prompt);
+
+      return feedback;
+    } catch (error) {
+      console.error("Error checking short answers with LLM:", error);
+      setSubmissionError(
+        "Unable to check short answer questions with AI. Your test has been submitted, but some answers may not be fully evaluated. Please check your AI credentials in settings."
       );
-      const userAnswer = selectedAnswers[questionIndex.toString()] as string ||
-        "(No answer provided)";
-
-      prompt += `\n\nQuestion ${questionIndex + 1}: ${question.question}\n`;
-      prompt += `Correct answer: ${question.correctAnswer}\n`;
-      prompt += `Student's answer: ${userAnswer}\n`;
-      prompt +=
-        "Is this correct? Please explain why or why not in 1-2 sentences.";
+      
+      // Update feedback to show error for short answer questions
+      const updatedFeedback = feedback.map((item) => {
+        const question = test.questions[item.questionIdx];
+        if (question.type === "short_answer") {
+          return {
+            ...item,
+            explanation: "❌ Unable to check answer - AI evaluation failed"
+          };
+        }
+        return item;
+      });
+      
+      return updatedFeedback;
+    } finally {
+      setCheckingShortAnswers(false);
     }
-
-    // Send to LLM for evaluation
-    addMessage({ role: "user", content: prompt });
-    await startStream(prompt);
-
-    return feedback;
   };
 
   const handleSubmit = async () => {
     if (!test) return;
 
-    let correctCount = 0;
-    const feedbackItems: Array<
-      { questionIdx: number; isCorrect: boolean; explanation?: string }
-    > = [];
+    setIsSubmitting(true);
+    setSubmissionError(null);
 
-    for (const [idx, question] of test.questions.entries()) {
-      const userAnswer = selectedAnswers[idx.toString()];
-      let isCorrect = false;
+    try {
+      let correctCount = 0;
+      const feedbackItems: Array<
+        { questionIdx: number; isCorrect: boolean; explanation?: string }
+      > = [];
 
-      if (question.type === "multiple_choice") {
-        // For multiple choice, check if selected answers match correct answers
-        const selectedOptions = userAnswer as string[];
-        const correctOptions = Array.isArray(question.correctAnswer)
-          ? question.correctAnswer
-          : [question.correctAnswer as string];
+      for (const [idx, question] of test.questions.entries()) {
+        const userAnswer = selectedAnswers[idx.toString()];
+        let isCorrect = false;
 
-        isCorrect = selectedOptions.length === correctOptions.length &&
-          selectedOptions.every((option) => correctOptions.includes(option));
-      } else if (question.type === "true_false") {
-        // For true/false, direct comparison with language normalization
-        const normalizedUserAnswer = (userAnswer as string).toLowerCase();
-        const normalizedCorrectAnswer = (question.correctAnswer as string)
-          .toLowerCase();
+        if (question.type === "multiple_choice") {
+          // For multiple choice, check if selected answers match correct answers
+          const selectedOptions = userAnswer as string[];
+          const correctOptions = Array.isArray(question.correctAnswer)
+            ? question.correctAnswer
+            : [question.correctAnswer as string];
 
-        // Handle German/English equivalents
-        isCorrect = normalizedUserAnswer === normalizedCorrectAnswer ||
-          (normalizedUserAnswer === "falsch" &&
-            normalizedCorrectAnswer === "false") ||
-          (normalizedUserAnswer === "false" &&
-            normalizedCorrectAnswer === "falsch") ||
-          (normalizedUserAnswer === "wahr" &&
-            normalizedCorrectAnswer === "true") ||
-          (normalizedUserAnswer === "true" &&
-            normalizedCorrectAnswer === "wahr");
-      } else if (question.type === "short_answer") {
-        // For short answer, we'll use fuzzy matching initially but will validate with LLM later
-        const normalizedUserAnswer = (userAnswer as string).toLowerCase()
-          .trim();
-        const normalizedCorrectAnswer = (question.correctAnswer as string)
-          .toLowerCase().trim();
+          isCorrect = selectedOptions.length === correctOptions.length &&
+            selectedOptions.every((option) => correctOptions.includes(option));
+        } else if (question.type === "true_false") {
+          // For true/false, direct comparison with language normalization
+          const normalizedUserAnswer = (userAnswer as string).toLowerCase();
+          const normalizedCorrectAnswer = (question.correctAnswer as string)
+            .toLowerCase();
 
-        // Simple initial check - we'll validate further with LLM
-        isCorrect = normalizedUserAnswer.includes(normalizedCorrectAnswer) ||
-          normalizedCorrectAnswer.includes(normalizedUserAnswer);
+          // Handle German/English equivalents
+          isCorrect = normalizedUserAnswer === normalizedCorrectAnswer ||
+            (normalizedUserAnswer === "falsch" &&
+              normalizedCorrectAnswer === "false") ||
+            (normalizedUserAnswer === "false" &&
+              normalizedCorrectAnswer === "falsch") ||
+            (normalizedUserAnswer === "wahr" &&
+              normalizedCorrectAnswer === "true") ||
+            (normalizedUserAnswer === "true" &&
+              normalizedCorrectAnswer === "wahr");
+        } else if (question.type === "short_answer") {
+          // For short answer, we'll use fuzzy matching initially but will validate with LLM later
+          const normalizedUserAnswer = (userAnswer as string).toLowerCase()
+            .trim();
+          const normalizedCorrectAnswer = (question.correctAnswer as string)
+            .toLowerCase().trim();
+
+          // Simple initial check - we'll validate further with LLM
+          isCorrect = normalizedUserAnswer.includes(normalizedCorrectAnswer) ||
+            normalizedCorrectAnswer.includes(normalizedUserAnswer);
+        }
+
+        if (isCorrect && question.type !== "short_answer") {
+          correctCount++;
+        }
+
+        feedbackItems.push({
+          questionIdx: idx,
+          isCorrect,
+          explanation: question.type === "short_answer"
+            ? "Checking with AI..."
+            : undefined,
+        });
       }
 
-      if (isCorrect && question.type !== "short_answer") {
-        correctCount++;
-      }
-
-      feedbackItems.push({
-        questionIdx: idx,
-        isCorrect,
-        explanation: question.type === "short_answer"
-          ? "Checking with AI..."
-          : undefined,
+      setScore({
+        correct: correctCount,
+        total: test.questions.length,
       });
-    }
 
-    setScore({
-      correct: correctCount,
-      total: test.questions.length,
-    });
+      const submission = {
+        answers: { ...selectedAnswers },
+        feedback: feedbackItems,
+      };
 
-    const submission = {
-      answers: { ...selectedAnswers },
-      feedback: feedbackItems,
-    };
+      setSubmission(submission);
+      setShowResults(true);
 
-    setSubmission(submission);
-    setShowResults(true);
-
-    // Use LLM to validate short answers
-    if (test.questions.some((q) => q.type === "short_answer")) {
-      await checkShortAnswersWithLLM(feedbackItems);
+      // Use LLM to validate short answers
+      if (test.questions.some((q) => q.type === "short_answer")) {
+        await checkShortAnswersWithLLM(feedbackItems);
+      }
+    } catch (error) {
+      console.error("Error submitting test:", error);
+      setSubmissionError(
+        "Failed to submit test. Please try again or check your internet connection."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -896,6 +933,18 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               </div>
             ))}
 
+            {submissionError && (
+              <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-start">
+                  <IconExclamationCircle class="w-5 h-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h3 class="text-sm font-medium text-red-800 mb-1">Test Submission Error</h3>
+                    <p class="text-sm text-red-700">{submissionError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div class="flex justify-end space-x-4">
               <Button
                 variant="outline"
@@ -903,8 +952,16 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
               >
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={checkingShortAnswers}>
-                {checkingShortAnswers ? "Checking answers..." : "Submit Test"}
+              <Button 
+                onClick={handleSubmit} 
+                disabled={checkingShortAnswers || isSubmitting}
+              >
+                {isSubmitting 
+                  ? "Submitting..." 
+                  : checkingShortAnswers 
+                  ? "Checking answers..." 
+                  : "Submit Test"
+                }
               </Button>
             </div>
           </div>

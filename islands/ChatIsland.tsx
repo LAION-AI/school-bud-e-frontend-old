@@ -10,6 +10,7 @@ import {
   chats,
   chatSuffix,
   currentEditIndex,
+  handleEditAction,
   handleRefreshAction,
   messages,
 } from "../components/chat/store.ts";
@@ -190,7 +191,7 @@ export default function ChatIsland({ lang, id }: { lang: string; id: string }) {
         currentEditIndex={currentEditIndex.value}
         audioFileDict={getCurrentChatAudio()}
         onRefreshAction={handleRefreshAction}
-        onEditAction={() => {}}
+        onEditAction={handleEditAction}
         onSpeakAtGroupIndexAction={handleOnSpeakAtGroupIndexAction}
       >
         <ChatWarning lang={lang} />

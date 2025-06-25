@@ -1,28 +1,49 @@
 import { IconVolume, IconVolumeOff } from "@tabler/icons-preact";
 import { readAlways, toggleReadAlways } from "../../../components/chat/speech.ts";
 
-export default function SpeechToggleButton() {
+interface SpeechToggleButtonProps {
+  lang?: string;
+}
+
+export default function SpeechToggleButton({ lang = "de" }: SpeechToggleButtonProps) {
   const handleToggle = () => {
     toggleReadAlways(!readAlways.value);
+  };
+
+  const getText = () => {
+    if (readAlways.value) {
+      return lang === "en" ? "Disable Audio" : "Ton deaktivieren";
+    } else {
+      return lang === "en" ? "Enable Audio" : "Ton aktivieren";
+    }
+  };
+
+  const getAriaLabel = () => {
+    if (readAlways.value) {
+      return lang === "en" ? "Disable AI speech" : "KI-Sprache deaktivieren";
+    } else {
+      return lang === "en" ? "Enable AI speech" : "KI-Sprache aktivieren";
+    }
   };
 
   return (
     <button
       type="button"
       onClick={handleToggle}
-      class={`p-2 rounded-lg transition-colors flex items-center justify-center ${
+      class={`p-2 rounded-lg transition-colors flex items-center gap-2 ${
         readAlways.value
           ? "bg-primary-100 text-primary-600 hover:bg-primary-200"
           : "bg-gray-100 text-gray-400 hover:bg-gray-200"
       }`}
-      aria-label={readAlways.value ? "Disable AI speech" : "Enable AI speech"}
-      title={readAlways.value ? "Disable AI speech" : "Enable AI speech"}
+      aria-label={getAriaLabel()}
+      title={getAriaLabel()}
     >
       {readAlways.value ? (
         <IconVolume size={20} />
       ) : (
         <IconVolumeOff size={20} />
       )}
+      <span class="text-sm font-medium">{getText()}</span>
     </button>
   );
 } 

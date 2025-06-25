@@ -311,47 +311,7 @@ export default function AIFloatingButton() {
           </div>
         )}
 
-        <div class="hidden md:flex bg-gradient-to-r from-primary-400/20 to-purple-500/20 backdrop-blur-sm p-2 rounded-full items-center gap-3">
-          <button
-            type="button"
-            onClick={() =>
-              buttonState === "chat"
-                ? setButtonState("idle")
-                : setButtonState("chat")}
-            class={getButtonClass(buttonState === "chat")}
-            aria-label="Chat mode"
-          >
-            <IconMessageCircle size={20} />
-          </button>
 
-          <div class="w-px h-8 bg-white/20" />
-
-          <button
-            type="button"
-            onMouseDown={() => buttonState === "idle" && startRecording()}
-            onMouseUp={() => buttonState === "listening" && stopRecording()}
-            disabled={buttonState === "processing" ||
-              buttonState === "responding"}
-            class={getButtonClass(
-              buttonState === "listening" || buttonState === "processing" ||
-                buttonState === "responding",
-            )}
-            aria-label="Voice mode"
-          >
-            {buttonState === "listening"
-              ? <IconMicrophone size={20} />
-              : buttonState === "processing"
-              ? (
-                <IconLoader2
-                  size={20}
-                  style={{ animation: "spin 1s linear infinite" }}
-                />
-              )
-              : buttonState === "responding"
-              ? <IconVolume size={20} />
-              : <IconMicrophone size={20} />}
-          </button>
-        </div>
       </div>
     </div>
   );

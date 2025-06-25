@@ -1,6 +1,7 @@
 {
   "imports": {
     "$std/": "https://deno.land/std@0.216.0/",
+    "@stagewise/toolbar": "npm:@stagewise/toolbar@^0.4.9",
     "@tabler/icons-preact": "npm:@tabler/icons-preact@^3.30.0",
     "@tailwindcss/cli": "npm:@tailwindcss/cli@^4.1.7",
     "tailwindcss": "npm:tailwindcss@^4.1.7",
@@ -16,15 +17,17 @@
     "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
     "preact": "npm:preact@^10.26.6",
-    "@preact/signals": "npm:@preact/signals@^2.0.4"
+    "@preact/signals": "npm:@preact/signals@^2.0.4",
+    "@playwright/test": "npm:@playwright/test@^1.53.1"
   },
   "tasks": {
     "test": "deno test -A",
+    "test:e2e": "deno run --env-file -A npm:playwright test",
+    "test:e2e:ui": "deno run --env-file -A npm:playwright test --ui",
     "start": "deno run -A --watch=routes/ dev.ts",
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A --no-check --watch=routes/,islands/,components/ main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
-    "cypress": "deno run -A npm:cypress@latest open",
     "styles": "deno run npm:@tailwindcss/cli -i ./static/styles.css -o ./static/output.css --watch --allow-read"
   },
   "compilerOptions": {

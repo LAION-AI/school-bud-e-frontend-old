@@ -74,7 +74,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      <div className="relative rounded-md shadow-sm">
+      <div className="relative rounded-md">
         {icon && iconPosition === "left" && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             {icon}

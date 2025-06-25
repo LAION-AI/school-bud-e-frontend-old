@@ -20,9 +20,9 @@ export default function ChatList({
   const [isExpanded, setIsExpanded] = useState(true);
 
   const nextChatSuffix = useMemo(() => {
-    const keys = Object.keys(chats.peek());
+    const keys = Object.keys(chats.peek()).filter(key => key.startsWith("bude-chat-"));
     const numbers = keys.map(key => Number.parseInt(key.slice(10)));
-    return Math.max(...numbers) + 1;
+    return numbers.length > 0 ? Math.max(...numbers) + 1 : 0;
   }, [Object.keys(chats.peek()).length]);
 
   return (
@@ -54,13 +54,13 @@ export default function ChatList({
                   className="flex items-center group"
                   key={suffix}
                 >
-                  <span className="flex-1 py-2">
+                  <span className="flex-1">
                     {`Chat ${Number.parseInt(suffix) + 1}`}
                   </span>
                   <button
                     type="button"
                     onClick={onDownloadChat}
-                    class="group-hover:text-gray-400 text-transparent p-2"
+                    class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.downloadChat}
                   >
                     <IconDownload class="h-5 w-5" aria-hidden="true" />
@@ -68,7 +68,7 @@ export default function ChatList({
                   <button
                     type="button"
                     onClick={() => onDeleteChat(suffix)}
-                    class="group-hover:text-gray-400 text-transparent p-2"
+                    class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.deleteChat}
                   >
                     <IconX size={24} aria-hidden="true" />

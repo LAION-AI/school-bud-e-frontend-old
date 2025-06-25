@@ -245,12 +245,12 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
       {/* Mode selection tiles */}
       {showModes.value && (
         <div
-          class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-lg shadow-xl p-3 z-10 max-h-[400px] overflow-y-auto"
+          class="absolute bottom-full mb-2 left-0 w-full bg-white rounded-lg shadow-xl p-3 z-10 max-h-[400px] overflow-y-auto"
           onKeyDown={(e) => handleModeKeyDown(e, CHAT_MODES)}
           aria-label="Select a chat mode"
         >
           <h3 class="text-sm font-medium text-gray-700 mb-2">Select a mode</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div class="grid grid-cols-3 md:grid-cols-4 gap-2">
             {CHAT_MODES.map((mode, index) => (
               <button
                 key={mode.id}
@@ -337,7 +337,7 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
       )}
 
       {/* Mode indicator button */}
-      <div class="flex items-center py-1 mb-1">
+      <div class="flex items-center">
         <button
           type="button"
           onClick={toggleModesPanel}
@@ -346,7 +346,7 @@ export default function ChatModeSelector(props: ChatModeSelectorProps) {
               toggleModesPanel();
             }
           }}
-          class="flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 rounded-full px-2 py-1 bg-gray-100 hover:bg-gray-200 transition-colors"
+          class="flex items-center gap-1 text-base text-gray-600 hover:text-gray-900 rounded-full px-2 h-10 bg-gray-100 hover:bg-gray-200 transition-colors"
         >
           <span>{currentMode.icon}</span>
           <span>{currentMode.name}</span>

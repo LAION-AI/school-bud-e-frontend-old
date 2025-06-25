@@ -715,7 +715,7 @@ Format your response as a JSON object with the following structure:
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (error) {
       console.error("Error generating questions:", error);
-      setErrorMessage("Failed to generate questions. Please try again.");
+      setErrorMessage("❌ Failed to generate questions. Please try again.");
     } finally {
       setIsGeneratingQuestions(false);
     }

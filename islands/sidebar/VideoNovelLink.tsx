@@ -3,7 +3,7 @@ import { IconList, IconVideo } from "@tabler/icons-preact";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 
 export default function VideoNovelLink(
-  { isCollapsed }: { isCollapsed: boolean },
+  { isCollapsed, lang = "en" }: { isCollapsed: boolean; lang?: string },
 ) {
   const [expanded, setExpanded] = useState(() => {
     const path = globalThis.location?.pathname;
@@ -14,7 +14,7 @@ export default function VideoNovelLink(
   return (
     <CollapsibleSection
       icon={<IconVideo class={`${isCollapsed ? "" : "mr-2"}`} />}
-      title="Video Novel"
+      title={lang === "de" ? "Video Roman" : "Video Novel"}
       isCollapsed={isCollapsed}
       isExpanded={expanded}
       onToggle={() => setExpanded(!expanded)}
@@ -35,7 +35,7 @@ export default function VideoNovelLink(
             ? "text-amber-800"
             : "text-gray-600"}
         />
-        <span>All Novels</span>
+        <span>{lang === "de" ? "Alle Romane" : "All Novels"}</span>
       </a>
     </CollapsibleSection>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { deleteChat } from "../../components/chat/store.ts";
-import { TourProgressSidebarSection } from "../../components/sidebar/TourProgressSidebarSection.tsx";
+
 import ChatList from "./ChatList.tsx";
 import GraphsSection from "./GraphsSection.tsx";
 import PresentationsSection from "./PresentationsSection.tsx";
@@ -10,6 +10,25 @@ import UserProfileSection from "./UserProfileSection.tsx";
 import VideoNovelLink from "./VideoNovelLink.tsx";
 import ChatSyncInitializer from "../chat/ChatSyncInitializer.tsx";
 import translations from "./sidebar.translations.json" with { type: "json" };
+// 1. Import the toolbar
+import { initToolbar } from '@stagewise/toolbar';
+
+// 2. Define your toolbar configuration
+const stagewiseConfig = {
+  plugins: [],
+};
+
+// 3. Initialize the toolbar when your app starts
+// Framework-agnostic approach - call this when your app initializes
+function setupStagewise() {
+  // Only initialize once and only in development mode
+  if (process.env.NODE_ENV === 'development') {
+    initToolbar(stagewiseConfig);
+  }
+}
+
+// Call the setup function when appropriate for your framework
+setupStagewise();
 
 interface SidebarProps {
   currentChatSuffix: string;
@@ -102,27 +121,23 @@ export default function Sidebar({
           }}
         >
           <ChatList
-            isCollapsed={isCollapsed}
             currentChatSuffix={currentChatSuffix}
             onDownloadChat={onDownloadChat}
             onDeleteChat={deleteChat}
             translations={t}
           />
           <TestsSection
-            isCollapsed={isCollapsed}
             highlight={selectedSection === "tests"}
             lang={lang}
             translations={t}
           />
-          <GraphsSection
-            isCollapsed={isCollapsed}
-          />
+          <GraphsSection />
           <PresentationsSection
             isCollapsed={isCollapsed}
             translations={t}
             lang={lang}
           />
-          <VideoNovelLink isCollapsed={isCollapsed} />
+          <VideoNovelLink isCollapsed={isCollapsed} lang={lang} />
           {
             /*
           <GamesSection
@@ -135,9 +150,8 @@ export default function Sidebar({
       </div>
 
       <div class="p-3 pt-0">
-        <TourProgressSidebarSection />
         <div class="mb-3">
-          <ChatSyncInitializer />
+          <ChatSyncInitializer lang={lang} />
         </div>
         <UserProfileSection
           lang={lang}

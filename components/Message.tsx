@@ -1,8 +1,6 @@
 import type { JSX } from "preact";
 import { MessageContent } from "./MessageContent.tsx";
-import EditIcon from "./icons/EditIcon.tsx";
-import RefreshIcon from "./icons/RefreshIcon.tsx";
-import SpeakIcon from "./icons/SpeakIcon.tsx";
+import { IconEdit, IconRefresh, IconVolume } from "@tabler/icons-preact";
 
 interface AudioItem {
   audio: HTMLAudioElement;
@@ -40,33 +38,52 @@ export function Message({
         item.role === "user" ? "items-end" : "items-start"
       }`}
     >
-      <span
-        class={`text-sm font-semibold flex justify-center items-center invisible group-hover:visible bg-white rounded-xl gap-1 group-hover:shadow-sm ${
+      <div
+        class={`text-sm font-semibold flex justify-center items-center gap-1 invisible group-hover:visible bg-white rounded-xl px-2 py-1 shadow-lg ${
           item.role === "user" ? "text-primary-600" : "text-gray-600"
         }`}
       >
         {groupIndex !== 0 && (
-          <button onClick={() => onEditAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
-            <EditIcon isActive={currentEditIndex === groupIndex} />
+          <button 
+            onClick={() => onEditAction(groupIndex)} 
+            type="button" 
+            className={`p-1 rounded-md transition-colors ${
+              currentEditIndex === groupIndex 
+                ? "bg-primary-100 text-primary-600" 
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+          >
+            <IconEdit size={20} />
           </button>
         )}
 
         {item.role !== "user" && groupIndex !== 0 && (
-          <button onClick={() => onRefreshAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
-            <RefreshIcon />
+          <button 
+            onClick={() => onRefreshAction(groupIndex)} 
+            type="button" 
+            className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-600"
+          >
+            <IconRefresh size={20} />
           </button>
         )}
+        
         {item.role !== "user" && (
-          <button onClick={() => onSpeakAtGroupIndexAction(groupIndex)} type="button" className="cursor-pointer hover:bg-gray-100 rounded-md">
-            <SpeakIcon
-              isPlaying={audioFileDict[groupIndex] &&
-                Object.values(audioFileDict[groupIndex]).some(
-                  (audioFile) => !audioFile.audio.paused,
-                )}
-            />
+          <button 
+            onClick={() => onSpeakAtGroupIndexAction(groupIndex)} 
+            type="button" 
+            className={`p-1 rounded-md transition-colors ${
+              audioFileDict[groupIndex] &&
+              Object.values(audioFileDict[groupIndex]).some(
+                (audioFile) => !audioFile.audio.paused
+              )
+                ? "bg-primary-100 text-primary-600"
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+          >
+            <IconVolume size={20} />
           </button>
         )}
-      </span>
+      </div>
       <div
         class={`message mt-1 rounded-3xl whitespace-pre-wrap [overflow-wrap:anywhere] max-w-xl ${
           item.role === "user"

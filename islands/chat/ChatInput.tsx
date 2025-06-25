@@ -223,7 +223,7 @@ export default function ChatInput() {
 
   return (
     <>
-      <div class="max-w-xl w-full mx-auto relative">
+      <div class="max-w-4xl w-full mx-auto relative">
         {files.value.length > 0 && (
           <div class="flex justify-center">
             <div class="p-2 flex flex-wrap max-w-xs gap-8">

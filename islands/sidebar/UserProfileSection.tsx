@@ -6,14 +6,17 @@ export default function UserProfileSection({ lang = "en" }: { lang?: string }) {
     <div class="border-t border-gray-200 pt-2 flex items-center gap-2">
       <a
         href="/settings"
-        class="p-2 rounded hover:bg-primary-100 transition-colors flex items-center gap-2"
+        class="border border-gray-200 p-2 rounded hover:bg-primary-100 transition-colors flex items-center gap-2"
         aria-label="Open settings page"
         title={lang === "de" ? "Einstellungen öffnen" : "Open settings"}
         data-tour="open-settings-button"
       >
         <IconSettings />
+        <span class="text-sm font-medium">
+          {lang === "de" ? "Einstellungen" : "Settings"}
+        </span>
       </a>
-      <SpeechToggleButton />
+      <SpeechToggleButton lang={lang} />
     </div>
   );
 }

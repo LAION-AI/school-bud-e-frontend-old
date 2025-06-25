@@ -1,6 +1,6 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { IconInfoCircleFilled } from "@tabler/icons-preact";
+import { IconInfoCircleFilled, IconExternalLink } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import { settings } from "../../components/chat/store.ts";
 import Capabilities from "./Capabilities.tsx";
@@ -385,7 +385,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
         </nav>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-lg p-6">
         {/* General Settings Tab */}
         {activeTab.value === "general" && (
           <>
@@ -439,7 +439,15 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 htmlFor="universalApiKey"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                {t.universalApiKey || "Universal API Key"}
+                <a 
+                  href="https://shop.schoolbude.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary-600 hover:text-primary-800 underline inline-flex items-center gap-1"
+                >
+                  Bud-E Shop Key
+                  <IconExternalLink class="w-4 h-4" />
+                </a>
               </label>
               <Input
                 type={showPassword.value ? "text" : "password"}
@@ -447,7 +455,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 name="universalApiKey"
                 value={newSettings.value.universalApiKey}
                 onChange={handleChange}
-                className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                className="focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
               />
             </div>
 
@@ -466,7 +474,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 value={newSettings.value.systemPrompt}
                 onChange={handleSystemPromptChange}
                 rows={4}
-                className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                className="focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 placeholder={t.systemPromptPlaceholder}
               />
               <p className="mt-1 text-sm text-gray-500">

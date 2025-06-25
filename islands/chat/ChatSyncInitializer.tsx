@@ -1,9 +1,9 @@
 import { useChatSync } from '../../lib/sync/useChatSync.ts';
 import { ChatSyncStatus } from '../../components/chat/ChatSyncStatus.tsx';
 
-export default function ChatSyncInitializer() {
+export default function ChatSyncInitializer({ lang = "en" }: { lang?: string }) {
   // Initialize chat sync
   useChatSync();
   
-  return <ChatSyncStatus />;
+  return <ChatSyncStatus lang={lang} />;
 } 

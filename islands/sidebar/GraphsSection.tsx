@@ -33,7 +33,7 @@ export default function GraphsSection() {
             isActive={activeRoute === "/graph/list"}
             className="flex items-center group"
           >
-            <span className="flex items-center flex-1 py-2">
+            <span className="flex items-center flex-1">
               <IconList
                 size={16}
                 class={activeRoute === "/graph/list"
@@ -57,13 +57,13 @@ export default function GraphsSection() {
                     isActive={activeRoute === `/graph/${graphId}`}
                     className="flex items-center group"
                   >
-                    <span className="flex-1 py-2 truncate">
+                    <span className="flex-1 truncate">
                       {graphs.value.get(graphId)?.name || graphId}
                     </span>
                     <button
                       type="button"
                       onClick={() => deleteGraph(graphId)}
-                      class="group-hover:text-gray-400 text-transparent p-2"
+                      class="group-hover:text-gray-400 text-transparent px-2"
                       aria-label={`Delete graph ${
                         graphs.value.get(graphId)?.name || graphId
                       }`}

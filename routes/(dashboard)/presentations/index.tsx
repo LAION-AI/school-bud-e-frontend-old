@@ -13,31 +13,11 @@ export default function PresentationsPage() {
         />
       </head>
 
-      <div class="min-h-screen bg-gray-100 max-h-screen overflow-y-auto">
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div class="px-4 py-6 sm:px-0">
-            <div class="flex flex-col md:flex-row gap-6">
-              {/* Left column - Presentation Generator */}
-              <div class="w-full md:w-1/2 bg-primary-50 border border-primary-500 rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-4">Create New Presentation</h2>
-                <p class="text-gray-600 mb-6">
-                  Generate a new PowerPoint presentation using AI. Simply enter
-                  a topic and our AI will create a well-structured presentation
-                  with multiple slides.
-                </p>
-                <a href="/presentations/generator">
-                  <Button variant="primary">Create Presentation</Button>
-                </a>
-              </div>
-
-              {/* Right column - Presentations List */}
-              <div class="w-full md:w-1/2 bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-4">Your Presentations</h2>
-                <PresentationsListIsland />
-              </div>
-            </div>
-          </div>
-        </main>
+      <div class="min-h-screen bg-white max-h-screen overflow-y-auto">
+        <div class="container mx-auto px-6 py-8 max-w-4xl">
+          <h1 class="text-3xl font-bold mb-6">Your Presentations</h1>
+          <PresentationsListIsland />
+        </div>
       </div>
     </>
   );
