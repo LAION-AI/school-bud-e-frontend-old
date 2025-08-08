@@ -158,6 +158,50 @@ function VoiceRecordButton({
     }
   };
 
+  const transcribeWithAiSdk = async (audioBlob: Blob): Promise<string | null> => {
+    try {
+      const serverUrl = settings.peek().sttUrl || "";
+      let modelName = settings.peek().sttModel || "";
+      const sttKey = settings.peek().sttKey || "";
+      if (!sttKey) return null;
+
+      if (sttKey.startsWith("gsk_")) {
+        modelName = modelName || "whisper-large-v3-turbo";
+      } else {
+        modelName = modelName || "whisper-1";
+      }
+
+      // Dynamic import to avoid bundling issues when SDK isn't installed
+      const { transcribe } = await import("ai");
+      const useGroq = sttKey.startsWith("gsk_") || /groq/i.test(serverUrl);
+      const file = new File([audioBlob], "recording.webm", { type: audioBlob.type || "audio/webm" });
+
+      if (useGroq) {
+        const { createGroq } = await import("@ai-sdk/groq");
+        const groq = createGroq({ apiKey: sttKey, baseURL: serverUrl || undefined });
+        // Try preferred API; fall back to generic model selector if needed
+        const model: unknown = (groq as unknown as Record<string, unknown>).audioTranscription
+          ? (groq as unknown as { audioTranscription: (m: string) => unknown }).audioTranscription(modelName)
+          : (groq as unknown as (m: string) => unknown)(modelName);
+        const result = await transcribe({ model: model as any, file });
+        const text = (result as any)?.text as string | undefined;
+        return text ?? null;
+      } else {
+        const { createOpenAI } = await import("@ai-sdk/openai");
+        const openai = createOpenAI({ apiKey: sttKey, baseURL: serverUrl || undefined });
+        const model: unknown = (openai as unknown as Record<string, unknown>).audioTranscription
+          ? (openai as unknown as { audioTranscription: (m: string) => unknown }).audioTranscription(modelName)
+          : (openai as unknown as (m: string) => unknown)(modelName);
+        const result = await transcribe({ model: model as any, file });
+        const text = (result as any)?.text as string | undefined;
+        return text ?? null;
+      }
+    } catch (err) {
+      console.warn("AI SDK transcribe unavailable or failed; will fallback:", err);
+      return null;
+    }
+  };
+
   const transcribeViaProxy = async (audioBlob: Blob): Promise<string> => {
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.webm");
@@ -196,6 +240,14 @@ function VoiceRecordButton({
     console.log(settings.peek());
 
     try {
+      // Prefer AI SDK in-browser if available
+      const sdkText = await transcribeWithAiSdk(audioBlob);
+      if (sdkText && sdkText.trim() !== "") {
+        console.log("Text from AI SDK:", sdkText);
+        onFinishRecording(sdkText);
+        return;
+      }
+
       // Try direct call first if STT URL + Key are configured (frontend-only)
       const directText = await transcribeDirect(audioBlob);
       const text = directText ?? await transcribeViaProxy(audioBlob);

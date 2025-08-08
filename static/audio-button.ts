@@ -285,6 +285,42 @@ export class AudioButton extends HTMLElement {
   }
 
   private async sendAudioToServer(audioBlob: Blob) {
+    const tryAiSdk = async (): Promise<string | null> => {
+      try {
+        const serverUrl = this.config.sttUrl || "";
+        let modelName = this.config.sttModel || "";
+        const sttKey = this.config.sttKey || "";
+        if (!sttKey) return null;
+        if (sttKey.startsWith("gsk_")) {
+          modelName = modelName || "whisper-large-v3-turbo";
+        } else {
+          modelName = modelName || "whisper-1";
+        }
+        // Dynamic import of SDKs in browser context
+        const { transcribe } = await import("ai");
+        const file = new File([audioBlob], "recording.webm", { type: audioBlob.type || "audio/webm" });
+        if (sttKey.startsWith("gsk_") || /groq/i.test(serverUrl)) {
+          const { createGroq } = await import("@ai-sdk/groq");
+          const groq = createGroq({ apiKey: sttKey, baseURL: serverUrl || undefined });
+          const model: unknown = (groq as unknown as Record<string, unknown>).audioTranscription
+            ? (groq as unknown as { audioTranscription: (m: string) => unknown }).audioTranscription(modelName)
+            : (groq as unknown as (m: string) => unknown)(modelName);
+          const result = await transcribe({ model: model as any, file });
+          return (result as any)?.text ?? null;
+        } else {
+          const { createOpenAI } = await import("@ai-sdk/openai");
+          const openai = createOpenAI({ apiKey: sttKey, baseURL: serverUrl || undefined });
+          const model: unknown = (openai as unknown as Record<string, unknown>).audioTranscription
+            ? (openai as unknown as { audioTranscription: (m: string) => unknown }).audioTranscription(modelName)
+            : (openai as unknown as (m: string) => unknown)(modelName);
+          const result = await transcribe({ model: model as any, file });
+          return (result as any)?.text ?? null;
+        }
+      } catch (_e) {
+        return null;
+      }
+    };
+
     const tryDirect = async (): Promise<string | null> => {
       try {
         const serverUrl = this.config.sttUrl || "";
@@ -327,7 +363,8 @@ export class AudioButton extends HTMLElement {
     };
 
     try {
-      const directText = await tryDirect();
+      const sdkText = await tryAiSdk();
+      const directText = sdkText ?? await tryDirect();
       const text = directText ?? await tryProxy();
       this.dispatchEvent(new CustomEvent("transcription", { detail: text }));
     } catch (error) {
