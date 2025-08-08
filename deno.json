@@ -12,7 +12,10 @@
     "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.7",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@2.0.0-alpha.1",
     "preact": "npm:preact@^10.26.6",
-    "@preact/signals": "npm:@preact/signals@^2.0.4"
+    "@preact/signals": "npm:@preact/signals@^2.0.4",
+    "ai": "npm:ai@latest",
+    "@ai-sdk/openai": "npm:@ai-sdk/openai@latest",
+    "@ai-sdk/groq": "npm:@ai-sdk/groq@latest"
   },
   "tasks": {
     "test": "deno test -A",
