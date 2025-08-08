@@ -102,11 +102,11 @@ function VoiceRecordButton({
         };
 
         mediaRecorder.onstop = async () => {
-          const audioBlob = new Blob(audioChunksRef.current, {
-            type: "audio/wav",
-          });
+          // Use the actual recorder mime type if available; otherwise, let the browser infer
+          const mimeType = mediaRecorderRef.current?.mimeType || undefined;
+          const audioBlob = new Blob(audioChunksRef.current, mimeType ? { type: mimeType } : undefined);
           audioChunksRef.current = [];
-          await sendAudioToServer(audioBlob);
+          await transcribeAudio(audioBlob);
         };
 
         mediaRecorder.start();
@@ -117,14 +117,55 @@ function VoiceRecordButton({
     }
   }
 
-  const sendAudioToServer = async (audioBlob: Blob) => {
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "recording.wav");
+  const transcribeDirect = async (audioBlob: Blob): Promise<string | null> => {
+    try {
+      const serverUrl = settings.peek().sttUrl || "";
+      let modelName = settings.peek().sttModel || "";
+      const sttKey = settings.peek().sttKey || "";
 
-    console.log(settings.peek());
-    let serverUrl = settings.peek().sttUrl;
-    let modelName = settings.peek().sttModel;
-    const sttKey = settings.peek().sttKey;
+      if (!serverUrl || !sttKey) return null; // signal to fallback
+
+      // Apply GROQ defaults if key indicates GROQ
+      if (sttKey.startsWith("gsk_")) {
+        modelName = modelName === "" ? "whisper-large-v3-turbo" : modelName;
+      }
+
+      const sttFormData = new FormData();
+      sttFormData.append("file", audioBlob, "recording.webm");
+      sttFormData.append("model", modelName || "whisper-1");
+
+      const resp = await fetch(serverUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sttKey}`,
+        },
+        body: sttFormData,
+      });
+
+      if (!resp.ok) {
+        // Let caller decide to fallback
+        console.warn("Direct STT call failed with status", resp.status);
+        return null;
+      }
+
+      // Most STT endpoints return JSON with { text }
+      const data = await resp.json().catch(async () => ({ text: await resp.text() }));
+      const text = typeof data === "string" ? data : (data?.text ?? "");
+      return text || "";
+    } catch (err) {
+      console.warn("Direct STT call errored; will fallback:", err);
+      return null;
+    }
+  };
+
+  const transcribeViaProxy = async (audioBlob: Blob): Promise<string> => {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.webm");
+
+    const sttSettings = settings.peek();
+    let serverUrl = sttSettings.sttUrl;
+    let modelName = sttSettings.sttModel;
+    const sttKey = sttSettings.sttKey;
 
     if (sttKey.startsWith("gsk_")) {
       serverUrl = serverUrl === ""
@@ -138,27 +179,34 @@ function VoiceRecordButton({
     formData.append("sttModel", modelName);
     formData.append("shopApiKey", shopApiKey);
 
-    try {
-      const response = await fetch("/api/stt", {
-        method: "POST",
-        body: formData,
-      });
+    const response = await fetch("/api/stt", {
+      method: "POST",
+      body: formData,
+    });
 
-      if (response.ok) {
-        console.log("Audio uploaded successfully");
-        const text = await response.text();
-        console.log("Text from VoiceRecordButton:", text);
-        onFinishRecording(text);
-      } else {
-        console.error("Failed to upload audio");
-        const errorMessage = await response.text();
-        addMessage({
-          role: "assistant",
-          content: `❌ **Error**: ${errorMessage}`,
-        });
-      }
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage || "Failed to upload audio");
+    }
+
+    return await response.text();
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    console.log(settings.peek());
+
+    try {
+      // Try direct call first if STT URL + Key are configured (frontend-only)
+      const directText = await transcribeDirect(audioBlob);
+      const text = directText ?? await transcribeViaProxy(audioBlob);
+      console.log("Text from VoiceRecordButton:", text);
+      onFinishRecording(text);
     } catch (error) {
-      console.error("Error uploading audio:", error);
+      console.error("Error uploading/transcribing audio:", error);
+      addMessage({
+        role: "assistant",
+        content: `❌ **Error**: ${error instanceof Error ? error.message : "Unknown error during transcription"}`,
+      });
     }
   };
 
