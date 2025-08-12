@@ -13,6 +13,9 @@ import {
   type EventSourceMessage,
   fetchEventSource,
 } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
+import { generateText, streamText } from "ai"
+import { createOpenAI } from "@ai-sdk/openai"
+
 
 class RetriableError extends Error {}
 class FatalError extends Error {}
@@ -131,6 +134,12 @@ export const startStream = async (
     const assistantMessage = { role: "assistant", content: "" };
     addMessage(assistantMessage);
 
+    const openai = createOpenAI({
+      apiKey: settings.value.apiKey,
+      baseURL: settings.value.apiUrl
+    });
+
+    /*
     await fetchEventSource("/api/chat", {
       method: "POST",
       headers: {
@@ -190,7 +199,41 @@ export const startStream = async (
           throw err;
         }
       },
-    });
+    });*/
+    console.log(settings.value)
+    const stream = streamText({
+      model: openai("groq/deepseek-r1-distill-llama-70b"),
+      // model: openai(settings.value.apiModel),
+      messages: messages.value.map(msg => ({
+        role: msg.role as "user" | "assistant" | "system",
+        content: (typeof msg.content === "string" ? msg.content : "")
+    })),
+  })
+
+  console.log(stream)
+  let firstChunk = true
+  for await (const text of stream.textStream) {
+
+        const lastMessage = messages.value[messages.value.length - 1];
+        if (typeof lastMessage.content === "string") {
+          lastMessage.content += text;
+        } else {
+          lastMessage.content.push(text);
+        }
+
+        editMessage(messages.value.length - 1, {
+          role: "assistant",
+          content: lastMessage.content,
+        });
+  }
+  console.log("Stream closed");
+  streamComplete.value = true;
+  query.value = "";
+
+  const finalText = ongoingStream.join("");
+  if (finalText.trim()) {
+    getTTS(finalText, messages.value.length - 1, "stream1");
+  }
   }
 };
 

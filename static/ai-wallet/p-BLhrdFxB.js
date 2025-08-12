@@ -1,0 +1,2 @@
+import{h as r}from"./p-Jy50Njd1.js";const e=({to:e,class:o="",classObj:n},s)=>r("a",{href:e,class:Object.assign({"no-underline transition duration-300 ease-in-out rounded cursor-pointer":true,[o]:true},n),rel:"noopener noreferrer"},s);export{e as L};
+//# sourceMappingURL=p-BLhrdFxB.js.map

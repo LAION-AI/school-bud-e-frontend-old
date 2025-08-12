@@ -1,6 +1,8 @@
 import { signal, effect } from "@preact/signals";
 import { lang, messages, settings, chatSuffix } from "./store.ts";
 import { getStreamingTTS, stopStreamingTTS, isStreamingTTSActive } from "./streaming-tts.ts";
+import { experimental_generateSpeech as generateSpeech } from "ai"
+import { createOpenAI } from "@ai-sdk/openai";
 
 // Chat-aware audio cache: chatId -> messageIndex -> audioIndex -> AudioItem
 export const audioFileDict = signal<
@@ -141,11 +143,11 @@ export const getTTS = async (
   if (!cleanedText) return;
 
   // Use streaming TTS for long texts (>500 characters)
-  if (cleanedText.length > 500) {
+  /*if (cleanedText.length > 500) {
     console.log(`Text is long (${cleanedText.length} chars), using streaming TTS`);
     await getStreamingTTS(cleanedText, groupIndex, sourceFunction);
     return;
-  }
+  }*/
 
   const currentChatId = ensureCurrentChatAudioDict();
   const currentChatAudio = audioFileDict.value[currentChatId];
@@ -160,7 +162,16 @@ export const getTTS = async (
   }
 
   try {
-    const response = await fetch("/api/tts", {
+    const openai = createOpenAI({
+      apiKey: settings.value.apiKey,
+      baseURL: "https://server.budecredits.de",
+    });
+    const result = await generateSpeech({
+      model: openai.speech("openai/tts-1"),
+      text: cleanedText,
+    });
+    console.log(result);
+    /*const response = await fetch("/api/tts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -174,14 +185,14 @@ export const getTTS = async (
         ttsModel: settings.value.ttsModel,
         shopApiKey: settings.value.universalApiKey,
       }),
-    });
+    });*/
 
-    if (!response.ok) {
+    /*if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    }*/
 
-    const audioData = await response.arrayBuffer();
-    const audioBlob = new Blob([audioData], { type: "audio/wav" });
+    //const audioData = await response.arrayBuffer();
+    const audioBlob = new Blob([result.audio.uint8Array], { type: result.audio.mimeType });
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
 

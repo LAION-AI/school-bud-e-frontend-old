@@ -3,6 +3,8 @@ import { IS_BROWSER } from "fresh/runtime";
 import type { JSX } from "preact";
 import { IconMicrophone } from "@tabler/icons-preact";
 import { addMessage, settings } from "../../../components/chat/store.ts";
+import { experimental_transcribe } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   lang: string;
@@ -139,22 +141,45 @@ function VoiceRecordButton({
     formData.append("shopApiKey", shopApiKey);
 
     try {
-      const response = await fetch("/api/stt", {
-        method: "POST",
-        body: formData,
+      const openai = createOpenAI({
+        apiKey: settings.peek().apiKey,
+        baseURL: "https://server.budecredits.de",
       });
+      // Convert the Blob to a DataURL as a Uint8Array base64 string for compatibility
+      const blobToBase64 = (blob: Blob): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            // Remove the data:...;base64, prefix to get only the base64 string
+            const dataUrl = reader.result as string;
+            const base64 = dataUrl.split(',')[1];
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      };
 
-      if (response.ok) {
+      const audioBase64 = await blobToBase64(audioBlob);
+
+      const formDataAudio = formData.get("audio") as File;
+      const arrayBuffer = await formDataAudio.arrayBuffer()
+      const audio = new Uint8Array(arrayBuffer)
+      const result = await experimental_transcribe({
+        model: openai.transcription("openai/whisper-1"),
+        audio: audio,
+      });
+      console.log(result);
+
+      if (result.text) {
         console.log("Audio uploaded successfully");
-        const text = await response.text();
-        console.log("Text from VoiceRecordButton:", text);
-        onFinishRecording(text);
+        console.log("Text from VoiceRecordButton:", result.text);
+        onFinishRecording(result.text);
       } else {
-        console.error("Failed to upload audio");
-        const errorMessage = await response.text();
+        console.error("Failed to upload audio", result.warnings);
         addMessage({
           role: "assistant",
-          content: `❌ **Error**: ${errorMessage}`,
+          content: `❌ **Error**: ${result.warnings}`,
         });
       }
     } catch (error) {

@@ -121,19 +121,15 @@ interface Window {
 }
 
 interface Image {
-  type: "image_url" | "pdf_url";
+  type: "image_url" | "pdf";
   image_url?: {
     url: string;
     detail: string;
     size?: number;
     transcription?: string;
   };
-  pdf_url?: {
-    url: string;
-    detail: string;
-    size?: number;
-    isTranscribing?: boolean;
-    transcription?: string;
+  file?: {
+    file_data: string;
   };
   preview?: string;
 }
@@ -175,4 +171,17 @@ interface InternalizationContent {
   [key: string]: {
     [key: string]: string;
   };
+}
+
+// Allow custom web components in JSX (like <ai-wallet />)
+interface AiWalletElement extends HTMLElement {
+  open?: boolean;
+}
+
+declare namespace preact {
+  namespace JSX {
+    interface IntrinsicElements {
+      'ai-wallet': HTMLAttributes<AiWalletElement> & { open?: boolean };
+    }
+  }
 }

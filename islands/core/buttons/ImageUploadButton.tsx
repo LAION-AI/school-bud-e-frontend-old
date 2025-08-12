@@ -1,6 +1,9 @@
 import { useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "fresh/runtime";
 import { IconLoader2, IconPhoto } from "@tabler/icons-preact";
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { settings } from "../../../components/chat/store.ts";
 
 export interface Image {
   type: string;
@@ -99,23 +102,37 @@ export function ImageUploadButton({
         onImagesUploaded([pdfObject]);
         return;
       }
-
-      const response = await fetch("/api/transcribe-pdf", {
-        method: "POST",
-        body: formData,
+      const openai = createOpenAI({
+        apiKey: settings.value.apiKey,
+        baseURL: settings.value.apiUrl
       });
+      const result = await generateText({
+        model: openai("openai/gpt-4o"),
+        messages: [
+          {
+            role: "user",
+            content: [
+                { type: "text", text: "Extract the text from the following PDF file. Return the text only, no other text or formatting." },
+                {
+                  type: "file",
+                  mimeType: "application/pdf",
+                  data: pdfObject.pdf_url.url,
+                }
+            ]
+          }
+        ]
+      })
+      console.log(result)
 
-      console.log("[Upload] Transcription response status:", response.status);
 
-      if (response.ok) {
-        const result = await response.json();
+      if (result.text) {
         console.log("[Upload] Transcription result:", result);
 
         // Update the PDF object with the transcription
-        if (result.markdown) {
-          pdfObject.pdf_url.transcription = result.markdown;
-        } else if (result.transcription) {
-          pdfObject.pdf_url.transcription = result.transcription;
+        if (result.text) {
+          pdfObject.pdf_url.transcription = result.text;
+        } else if (result.text) {
+          pdfObject.pdf_url.transcription = result.text;
         } else {
           pdfObject.pdf_url.transcription = "No text content found in PDF";
         }
@@ -126,19 +143,12 @@ export function ImageUploadButton({
         // Notify parent component of the updated PDF object
         onImagesUploaded([pdfObject]);
       } else {
-        let errorData: { error?: string; details?: string } = {};
-        try {
-          errorData = await response.json();
-        } catch (e) {
-          errorData = { error: await response.text() };
-        }
-
-        console.error("[Upload] PDF transcription failed:", errorData);
+        console.error("[Upload] PDF transcription failed:", result);
         pdfObject.pdf_url.isTranscribing = false;
 
         // Add error message to the PDF object
         pdfObject.pdf_url.transcription = `Transcription failed: ${
-          errorData.error || errorData.details || "Unknown error"
+          result.error || result.error?.details || "Unknown error"
         }`;
 
         onImagesUploaded([pdfObject]);

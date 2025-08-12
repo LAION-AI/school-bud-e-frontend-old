@@ -1,16 +1,13 @@
 import { useComputed, useSignal } from "@preact/signals";
-import { useEffect } from "preact/hooks";
-import { IconInfoCircleFilled, IconExternalLink } from "@tabler/icons-preact";
+import { useEffect, useRef } from "preact/hooks";
+import { IconInfoCircleFilled } from "@tabler/icons-preact";
 import type { JSX } from "preact";
 import { settings } from "../../components/chat/store.ts";
-import Capabilities from "./Capabilities.tsx";
 import ModelManager from "./ModelManager.tsx";
 import TokenUsage from "./TokenUsage.tsx";
 import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
-import Input from "../../components/core/Input.tsx";
 import Textarea from "../../components/core/Textarea.tsx";
-import { EncryptedSyncSettings } from "../../components/chat/EncryptedSyncSettings.tsx";
 
 interface Model {
   id: string;
@@ -31,7 +28,6 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
   const newSettings = useSignal({
     ...settings.peek(),
   });
-  
 
   const activeTab = useSignal("general");
   const models = useSignal<Model[]>([]);
@@ -179,7 +175,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
 
   function handleUpdateModel(model: Model) {
     const updatedModels = models.value.map((m) =>
-      m.id === model.id ? model : m
+      m.id === model.id ? model : m,
     );
     models.value = updatedModels;
     updateSettingsFromModels();
@@ -190,11 +186,9 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
     models.value = models.value.filter((m) => m.id !== modelId);
     // Remove any selected model references
     const updatedSelectedModels = { ...selectedModels.value };
-    for (
-      const [capability, selectedId] of Object.entries(
-        updatedSelectedModels,
-      )
-    ) {
+    for (const [capability, selectedId] of Object.entries(
+      updatedSelectedModels,
+    )) {
       if (selectedId === modelId) {
         delete updatedSelectedModels[capability];
       }
@@ -295,30 +289,34 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
     const explanations = {
       chat: {
         title: lang === "de" ? "Text-Chat" : "Text Chat",
-        description: lang === "de"
-          ? "Bud-E kann mit dir über Text kommunizieren."
-          : "Bud-E can communicate with you through text.",
+        description:
+          lang === "de"
+            ? "Bud-E kann mit dir über Text kommunizieren."
+            : "Bud-E can communicate with you through text.",
         icon: "💬",
       },
       vision: {
         title: lang === "de" ? "Bild-Verständnis" : "Image Understanding",
-        description: lang === "de"
-          ? "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
-          : "Bud-E can see and understand images you upload.",
+        description:
+          lang === "de"
+            ? "Bud-E kann Bilder sehen und verstehen, die du hochlädst."
+            : "Bud-E can see and understand images you upload.",
         icon: "👁️",
       },
       speak: {
         title: lang === "de" ? "Sprachausgabe" : "Voice Output",
-        description: lang === "de"
-          ? "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
-          : "Bud-E can speak to you and convert text to speech.",
+        description:
+          lang === "de"
+            ? "Bud-E kann mit dir sprechen und Text in gesprochene Sprache umwandeln."
+            : "Bud-E can speak to you and convert text to speech.",
         icon: "🔊",
       },
       listen: {
         title: lang === "de" ? "Spracherkennung" : "Voice Recognition",
-        description: lang === "de"
-          ? "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
-          : "Bud-E can listen and understand your spoken words.",
+        description:
+          lang === "de"
+            ? "Bud-E kann zuhören und deine gesprochene Sprache verstehen."
+            : "Bud-E can listen and understand your spoken words.",
         icon: "🎤",
       },
     };
@@ -331,6 +329,32 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
       }
     );
   }
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    console.log("effect");
+    if (ref.current) {
+      console.log("adding event listener");
+      ref.current.addEventListener("configChanged", (config) => {
+        settings.value = {
+          ...settings.value,
+          apiKey: config.detail.apiKey,
+          apiUrl: config.detail.endpoint,
+          apiModel: config.detail.llm
+        }
+      });
+      ref.current.getConfiguration().then((capabilities) => {
+        console.log("capabilities", capabilities);
+        settings.value = {
+          ...settings.value,
+          apiKey: capabilities.apiKey,
+          apiUrl: capabilities.endpoint,
+          apiModel: capabilities.llm,
+        };
+      });
+    }
+  }, [ref]);
 
   const handleEnableCapability = (capabilityId: string) => {
     preselectedCapability.value = capabilityId;
@@ -411,14 +435,19 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               <h3 className="text-lg font-medium text-gray-800 mb-4">
                 {t.availableCapabilities}
               </h3>
-              <Capabilities
+              <ai-wallet ref={ref} open={true}></ai-wallet>
+              <script
+                type="module"
+                src="/ai-wallet/stencil-component-example.esm.js"
+              ></script>
+              {/*<Capabilities
                 enabledCapabilities={enabledCapabilities.value}
                 models={models.value}
                 selectedModels={selectedModels.value}
                 onSelectModel={handleSelectModel}
                 onEnableCapability={handleEnableCapability}
                 lang={lang}
-              />
+              />*/}
             </div>
 
             {/* Model Manager */}
@@ -432,32 +461,6 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
               preselectedCapability={preselectedCapability}
               lang={lang}
             />
-
-            {/* Universal API Key */}
-            <div className="mt-8">
-              <label
-                htmlFor="universalApiKey"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                <a 
-                  href="https://shop.schoolbude.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary-600 hover:text-primary-800 underline inline-flex items-center gap-1"
-                >
-                  Bud-E Shop Key
-                  <IconExternalLink class="w-4 h-4" />
-                </a>
-              </label>
-              <Input
-                type={showPassword.value ? "text" : "password"}
-                id="universalApiKey"
-                name="universalApiKey"
-                value={newSettings.value.universalApiKey}
-                onChange={handleChange}
-                className="focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              />
-            </div>
 
             {/* System Prompt */}
             <div className="mt-8">
@@ -487,8 +490,9 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
         {/* Token Usage Tab */}
         {activeTab.value === "token-usage" && <TokenUsage lang={lang} />}
 
-        {/* Chat Sync Tab */}
+        {/* Chat Sync Tab
         {activeTab.value === "sync" && <EncryptedSyncSettings />}
+        */}
       </div>
     </div>
   );

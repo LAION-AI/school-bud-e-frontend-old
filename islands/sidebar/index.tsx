@@ -2,33 +2,10 @@ import { useEffect, useState } from "preact/hooks";
 import { deleteChat } from "../../components/chat/store.ts";
 
 import ChatList from "./ChatList.tsx";
-import GraphsSection from "./GraphsSection.tsx";
-import PresentationsSection from "./PresentationsSection.tsx";
 import SidebarHeader from "./SidebarHeader.tsx";
-import TestsSection from "./TestsSection.tsx";
 import UserProfileSection from "./UserProfileSection.tsx";
-import VideoNovelLink from "./VideoNovelLink.tsx";
 import ChatSyncInitializer from "../chat/ChatSyncInitializer.tsx";
 import translations from "./sidebar.translations.json" with { type: "json" };
-// 1. Import the toolbar
-import { initToolbar } from '@stagewise/toolbar';
-
-// 2. Define your toolbar configuration
-const stagewiseConfig = {
-  plugins: [],
-};
-
-// 3. Initialize the toolbar when your app starts
-// Framework-agnostic approach - call this when your app initializes
-function setupStagewise() {
-  // Only initialize once and only in development mode
-  if (process.env.NODE_ENV === 'development') {
-    initToolbar(stagewiseConfig);
-  }
-}
-
-// Call the setup function when appropriate for your framework
-setupStagewise();
 
 interface SidebarProps {
   currentChatSuffix: string;
@@ -51,7 +28,7 @@ export default function Sidebar({
   };
 
   // State to manage which section is highlighted
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [_selectedSection, setSelectedSection] = useState<string | null>(null);
 
   // Event listener to handle link clicks in the sidebar
   const handleLinkClick = (e: MouseEvent) => {
@@ -126,8 +103,8 @@ export default function Sidebar({
             onDeleteChat={deleteChat}
             translations={t}
           />
-          <TestsSection
-            highlight={selectedSection === "tests"}
+          {/*<TestsSection
+            highlight={_selectedSection === "tests"}
             lang={lang}
             translations={t}
           />
@@ -142,20 +119,19 @@ export default function Sidebar({
             /*
           <GamesSection
             isCollapsed={isCollapsed}
-            highlight={selectedSection === "games"}
+            highlight={_selectedSection === "games"}
           />
           */
           }
         </nav>
       </div>
 
-      <div class="p-3 pt-0">
+      {/* Footer area - relative for wallet anchoring */}
+      <div class="p-3 pt-0 relative">
         <div class="mb-3">
           <ChatSyncInitializer lang={lang} />
         </div>
-        <UserProfileSection
-          lang={lang}
-        />
+        <UserProfileSection lang={lang} />
       </div>
     </div>
   );
