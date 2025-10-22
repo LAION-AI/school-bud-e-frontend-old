@@ -3,6 +3,7 @@ import { lang, messages, settings, chatSuffix } from "./store.ts";
 import { getStreamingTTS, stopStreamingTTS, isStreamingTTSActive } from "./streaming-tts.ts";
 import { experimental_generateSpeech as generateSpeech } from "ai"
 import { createOpenAI } from "@ai-sdk/openai";
+import { decodeMiddlewareBaseFromUniversalKey } from "../../utils/universalApiKey.ts";
 
 // Chat-aware audio cache: chatId -> messageIndex -> audioIndex -> AudioItem
 export const audioFileDict = signal<
@@ -162,9 +163,25 @@ export const getTTS = async (
   }
 
   try {
+    // Determine the API endpoint and key
+    let apiUrl = settings.value.ttsUrl || settings.value.apiUrl;
+    let apiKey = settings.value.ttsKey || settings.value.apiKey;
+
+    // If universal API key is set, decode it to get the endpoint
+    if (settings.value.universalApiKey) {
+      const decodedEndpoint = decodeMiddlewareBaseFromUniversalKey(settings.value.universalApiKey);
+      if (decodedEndpoint) {
+        apiUrl = decodedEndpoint;
+        apiKey = settings.value.universalApiKey;
+        console.log("[TTS] Using decoded endpoint from universal API key:", apiUrl);
+      } else {
+        console.warn("[TTS] Failed to decode universal API key, falling back to manual settings");
+      }
+    }
+
     const openai = createOpenAI({
-      apiKey: settings.value.apiKey,
-      baseURL: "https://server.budecredits.de",
+      apiKey: apiKey,
+      baseURL: apiUrl,
     });
     const result = await generateSpeech({
       model: openai.speech("openai/tts-1"),

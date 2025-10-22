@@ -15,6 +15,7 @@ import {
 } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
 import { generateText, streamText } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
+import { decodeMiddlewareBaseFromUniversalKey } from "../../utils/universalApiKey.ts";
 
 
 class RetriableError extends Error {}
@@ -134,9 +135,25 @@ export const startStream = async (
     const assistantMessage = { role: "assistant", content: "" };
     addMessage(assistantMessage);
 
+    // Determine the API endpoint and key
+    let apiUrl = settings.value.apiUrl;
+    let apiKey = settings.value.apiKey;
+
+    // If universal API key is set, decode it to get the endpoint
+    if (settings.value.universalApiKey) {
+      const decodedEndpoint = decodeMiddlewareBaseFromUniversalKey(settings.value.universalApiKey);
+      if (decodedEndpoint) {
+        apiUrl = `${decodedEndpoint}/v1`;
+        apiKey = settings.value.universalApiKey;
+        console.log("[Stream] Using decoded endpoint from universal API key:", apiUrl);
+      } else {
+        console.warn("[Stream] Failed to decode universal API key, falling back to manual settings");
+      }
+    }
+
     const openai = createOpenAI({
-      apiKey: settings.value.apiKey,
-      baseURL: settings.value.apiUrl
+      apiKey: apiKey,
+      baseURL: apiUrl
     });
 
     /*
@@ -200,10 +217,10 @@ export const startStream = async (
         }
       },
     });*/
-    console.log(settings.value)
+    console.log("[Stream] Using settings:", { apiUrl, apiKey: apiKey?.substring(0, 10) + "...", model: settings.value.apiModel });
+
     const stream = streamText({
-      model: openai("groq/deepseek-r1-distill-llama-70b"),
-      // model: openai(settings.value.apiModel),
+      model: openai(settings.value.apiModel || "groq/deepseek-r1-distill-llama-70b"),
       messages: messages.value.map(msg => ({
         role: msg.role as "user" | "assistant" | "system",
         content: (typeof msg.content === "string" ? msg.content : "")

@@ -367,6 +367,28 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
       <div className="bg-white rounded-lg p-6">
         {/* General Settings - Always Visible */}
         <>
+            {/* Universal API Key Input */}
+            <div className="mb-6">
+              <label
+                htmlFor="universalApiKey"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                {t.universalApiKey}
+              </label>
+              <input
+                type="password"
+                id="universalApiKey"
+                name="universalApiKey"
+                value={newSettings.value.universalApiKey}
+                onChange={handleChange}
+                className="focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                placeholder={t.universalApiKeyPlaceholder}
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                {t.universalApiKeyDescription}
+              </p>
+            </div>
+
             {/* Add a highlight box for model configuration */}
             <div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
               <div className="flex">

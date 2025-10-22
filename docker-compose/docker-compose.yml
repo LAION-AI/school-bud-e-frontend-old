@@ -8,35 +8,34 @@ services:
       - .env
     restart: unless-stopped
     depends_on:
-      - keydb
       - task-server
     networks:
       - caddy_network
 
   # Used for synchronization between school-bud-e-frontend clients
-  p2p-signaling-server:
-    image: liquidibrium/signaling-server
-    container_name: next_p2p-signaling-server
-    command:
-      - deno run --allow-net --allow-env ./p2p-signaling-server/main.ts
-    ports:
-      - "4444:4444"
-    networks:
-      - caddy_network
+  #p2p-signaling-server:
+  #  image: liquidibrium/signaling-server
+  #  container_name: next_p2p-signaling-server
+  #  command:
+  #    - deno run --allow-net --allow-env ./p2p-signaling-server/main.ts
+  #  ports:
+  #    - "4444:4444"
+  #  networks:
+  #    - caddy_network
 
-  task-server:
-    build:
-      context: ../ai-tasks-server
-      dockerfile: Dockerfile
-    container_name: next_task-server
-    expose:
-      - "8083"
-    env_file:
-      - .env
-    restart: unless-stopped
-    # command: sh -c "apt-get update && apt-get install -y git && mkdir -p /school-bud-e-frontend/ai-task-server && git config --global --add safe.directory /school-bud-e-frontend/ai-task-server && cd /school-bud-e-frontend/ai-task-server && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && pip install --no-cache-dir -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8083 --reload --log-level debug"
-    networks:
-      - caddy_network
+  #task-server:
+  #  build:
+  #    context: ../ai-tasks-server
+  #    dockerfile: Dockerfile
+  #  container_name: next_task-server
+  #  expose:
+  #    - "8083"
+  #  env_file:
+  #    - .env
+  #  restart: unless-stopped
+  #  # command: sh -c "apt-get update && apt-get install -y git && mkdir -p /school-bud-e-frontend/ai-task-server && git config --global --add safe.directory /school-bud-e-frontend/ai-task-server && cd /school-bud-e-frontend/ai-task-server && (git rev-parse --git-dir || git init) && if [ -d '.git' ]; then git remote add origin https://github.com/LAION-AI/school-bud-e-frontend.git || true && git fetch origin && git checkout -B main origin/next -f; else git clone -b main https://github.com/LAION-AI/school-bud-e-frontend.git .; fi && pip install --no-cache-dir -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8083 --reload --log-level debug"
+  #  networks:
+  #    - caddy_network
 
   caddy:
     image: caddy:latest
@@ -54,62 +53,62 @@ services:
     networks:
       - caddy_network
 
-  umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
-    container_name: next_umami
-    expose:
-      - "3000"
-    environment:
-      - DATABASE_URL=postgresql://umami:umami@db:5432/umami
-      - DATABASE_TYPE=postgresql
-      - HASH_SALT=random-string
-      - JWT_SECRET=random-string
-    depends_on:
-      - db
-    restart: unless-stopped
-    networks:
-      - caddy_network
+  #umami:
+  #  image: ghcr.io/umami-software/umami:postgresql-latest
+  #  container_name: next_umami
+  #  expose:
+  #    - "3000"
+  #  environment:
+  #    - DATABASE_URL=postgresql://umami:umami@db:5432/umami
+  #    - DATABASE_TYPE=postgresql
+  #    - HASH_SALT=random-string
+  #    - JWT_SECRET=random-string
+  #  depends_on:
+  #    - db
+  #  restart: unless-stopped
+  #  networks:
+  #    - caddy_network
 
-  db:
-    image: postgres:15-alpine
-    container_name: next_umami-db
-    environment:
-      - POSTGRES_USER=umami
-      - POSTGRES_PASSWORD=umami
-      - POSTGRES_DB=umami
-    volumes:
-      - umami-db-data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - caddy_network
+  #db:
+  #  image: postgres:15-alpine
+  #  container_name: next_umami-db
+  #  environment:
+  #    - POSTGRES_USER=umami
+  #    - POSTGRES_PASSWORD=umami
+  #    - POSTGRES_DB=umami
+  #  volumes:
+  #    - umami-db-data:/var/lib/postgresql/data
+  #  restart: unless-stopped
+  #  networks:
+  #    - caddy_network
 
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    container_name: next_uptime-kuma
-    expose:
-      - "3001"
-    volumes:
-      - uptime-kuma-data:/app/data
-    restart: unless-stopped
-    networks:
-      - caddy_network
+  #uptime-kuma:
+  #  image: louislam/uptime-kuma:latest
+  #  container_name: next_uptime-kuma
+  #  expose:
+  #    - "3001"
+  #  volumes:
+  #    - uptime-kuma-data:/app/data
+  #  restart: unless-stopped
+  #  networks:
+  #    - caddy_network
 
-  keydb:
-    image: eqalpha/keydb:latest
-    container_name: next_keydb
-    expose:
-      - "6379"
-    volumes:
-      - keydb-data:/data
-    command: keydb-server --appendonly yes
-    restart: unless-stopped
-    networks:
-      - caddy_network
+  #keydb:
+  #  image: eqalpha/keydb:latest
+  #  container_name: next_keydb
+  #  expose:
+  #    - "6379"
+  #  volumes:
+  #    - keydb-data:/data
+  #  command: keydb-server --appendonly yes
+  #  restart: unless-stopped
+  #  networks:
+  #    - caddy_network
 
-volumes:
-  umami-db-data:
-  uptime-kuma-data:
-  keydb-data:
+#volumes:
+  #umami-db-data:
+  #uptime-kuma-data:
+  #keydb-data:
 
 networks:
   caddy_network:

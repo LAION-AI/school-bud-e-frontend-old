@@ -2,6 +2,9 @@
   "en": {
     "general": "General",
     "tokenUsage": "Token Usage",
+    "universalApiKey": "Universal API Key",
+    "universalApiKeyPlaceholder": "Enter your universal API key",
+    "universalApiKeyDescription": "A single key that configures all AI services. Contact your administrator for your universal API key.",
     "configureAiModels": "Configure AI Models",
     "configureAiModelsDescription": "Add AI models and assign their capabilities. Then select which model to use for each capability.",
     "availableCapabilities": "Available Capabilities",
@@ -32,6 +35,9 @@
   "de": {
     "general": "Allgemein",
     "tokenUsage": "Token-Nutzung",
+    "universalApiKey": "Universeller API-Schlüssel",
+    "universalApiKeyPlaceholder": "Gib deinen universellen API-Schlüssel ein",
+    "universalApiKeyDescription": "Ein einzelner Schlüssel, der alle KI-Dienste konfiguriert. Kontaktiere deinen Administrator für deinen universellen API-Schlüssel.",
     "configureAiModels": "KI-Modelle konfigurieren",
     "configureAiModelsDescription": "Füge KI-Modelle hinzu und weise ihnen Fähigkeiten zu. Wähle dann für jede Fähigkeit das gewünschte Modell aus.",
     "availableCapabilities": "Verfügbare Funktionen",
