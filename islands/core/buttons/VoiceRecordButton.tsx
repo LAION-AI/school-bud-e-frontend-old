@@ -218,8 +218,10 @@ function VoiceRecordButton({
     <button
       onClick={toggleRecording}
       disabled={!IS_BROWSER}
-      class={`border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${
-        isRecording ? "animate-pulse bg-red-600" : ""
+      class={`transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-full p-2 ${
+        isRecording
+          ? "bg-red-500 animate-pulse shadow-lg shadow-red-500/50"
+          : "border border-gray-200 hover:bg-gray-100"
       }`}
       type="button"
       aria-label={isRecording ? "Stop recording" : "Start recording"}

@@ -10,9 +10,9 @@ import * as chatDB from "./chatDB.ts";
 let initialSuffix = "0";
 if (typeof window !== "undefined") {
   // First check for route parameter in the path
-  const pathMatch = window.location.pathname.match(/\/chat\/(\d+)/);
+  const pathMatch = window.location.pathname.match(/\/chat\/(\w+)/);
   if (pathMatch) {
-    initialSuffix = pathMatch[1];
+    initialSuffix = pathMatch[1]; // Can be "new" or a number
   } else {
     // Fall back to search params for backward compatibility
     initialSuffix = new URL(window.location.href).searchParams.get("chat") ||

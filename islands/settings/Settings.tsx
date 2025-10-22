@@ -364,55 +364,9 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-          <button
-            type="button"
-            onClick={() => {
-              activeTab.value = "general";
-            }}
-            className={`${
-              activeTab.value === "general"
-                ? "border-primary-500 text-primary-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-          >
-            {t.general}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              activeTab.value = "token-usage";
-            }}
-            className={`${
-              activeTab.value === "token-usage"
-                ? "border-primary-500 text-primary-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-          >
-            {t.tokenUsage}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              activeTab.value = "sync";
-            }}
-            className={`${
-              activeTab.value === "sync"
-                ? "border-primary-500 text-primary-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-          >
-            Chat Sync
-          </button>
-        </nav>
-      </div>
-
       <div className="bg-white rounded-lg p-6">
-        {/* General Settings Tab */}
-        {activeTab.value === "general" && (
-          <>
+        {/* General Settings - Always Visible */}
+        <>
             {/* Add a highlight box for model configuration */}
             <div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
               <div className="flex">
@@ -484,15 +438,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
                 {t.systemPromptDescription}
               </p>
             </div>
-          </>
-        )}
-
-        {/* Token Usage Tab */}
-        {activeTab.value === "token-usage" && <TokenUsage lang={lang} />}
-
-        {/* Chat Sync Tab
-        {activeTab.value === "sync" && <EncryptedSyncSettings />}
-        */}
+        </>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ export default function Layout(
   { Component }: { Component: ComponentType<unknown> },
 ) {
   return (
-    <div class="md:min-h-screen">
+    <div class="md:min-h-dvh">
       <TourGuideInitializer />
       <Component />
     </div>

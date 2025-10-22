@@ -3,7 +3,7 @@ import { Partial } from "fresh/runtime";
 
 export default function App({ Component }: PageProps) {
   const chatSignalingServerUrl = Deno.env.get("CHAT_SIGNALING_SERVER_URL") || "wss://next.bud-e.ai:4444";
-  
+
   return (
     <html lang="en">
       <head>
@@ -15,7 +15,7 @@ export default function App({ Component }: PageProps) {
         <link rel="stylesheet" href="/katex.min.css" />
       </head>
       <body f-client-nav>
-        <Partial name="content">
+        <Partial name="body">
           <Component />
         </Partial>
       </body>

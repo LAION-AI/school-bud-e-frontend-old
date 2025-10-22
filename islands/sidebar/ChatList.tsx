@@ -59,7 +59,11 @@ export default function ChatList({
                   </span>
                   <button
                     type="button"
-                    onClick={onDownloadChat}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDownloadChat();
+                    }}
                     class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.downloadChat}
                   >
@@ -67,7 +71,11 @@ export default function ChatList({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onDeleteChat(suffix)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDeleteChat(suffix);
+                    }}
                     class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.deleteChat}
                   >

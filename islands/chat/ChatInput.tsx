@@ -223,7 +223,7 @@ export default function ChatInput() {
 
   return (
     <>
-      <div class="max-w-4xl w-full mx-auto relative">
+      <div class="max-w-4xl w-full mx-auto relative px-4">
         {files.value.length > 0 && (
           <div class="flex justify-center">
             <div class="p-2 flex flex-wrap max-w-xs gap-8">
@@ -338,16 +338,6 @@ export default function ChatInput() {
                 data-tour="image-upload"
               />
 
-              <VoiceRecordButton
-                shopApiKey={settings.value.universalApiKey}
-                resetTranscript={resetTranscript.value}
-                onFinishRecording={handleStartStream}
-                onInterimTranscript={(interimTranscript) => {
-                  query.value = `${query.value} ${interimTranscript}`;
-                }}
-                data-tour="voice-record"
-              />
-
               {/* Mode selector component */}
               <ChatModeSelector
                 selectedMode={selectedMode.value}
@@ -357,22 +347,35 @@ export default function ChatInput() {
               />
             </div>
 
-            <button
-              type="form"
-              onClick={() => handleStartStream()}
-              disabled={!query.value ||
-                !isApiConfigured.value ||
-                isThinking.value ||
-                isTranscribing.value ||
-                files.value.some((file) =>
-                  "pdf_url" in file && file.pdf_url?.isTranscribing
-                )}
-              class="p-2 rounded-full transition-colors flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-primary-500 text-white hover:bg-primary-600"
-              data-tour="chat-submit"
-              aria-label="Send message"
-            >
-              <IconSend />
-            </button>
+            {/* Show microphone when no text, send button when there is text */}
+            {!query.value ? (
+              <VoiceRecordButton
+                shopApiKey={settings.value.universalApiKey}
+                resetTranscript={resetTranscript.value}
+                onFinishRecording={handleStartStream}
+                onInterimTranscript={(interimTranscript) => {
+                  query.value = `${query.value} ${interimTranscript}`;
+                }}
+                data-tour="voice-record"
+              />
+            ) : (
+              <button
+                type="form"
+                onClick={() => handleStartStream()}
+                disabled={!query.value ||
+                  !isApiConfigured.value ||
+                  isThinking.value ||
+                  isTranscribing.value ||
+                  files.value.some((file) =>
+                    "pdf_url" in file && file.pdf_url?.isTranscribing
+                  )}
+                class="p-2 rounded-full transition-colors flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-primary-500 text-white hover:bg-primary-600"
+                data-tour="chat-submit"
+                aria-label="Send message"
+              >
+                <IconSend />
+              </button>
+            )}
           </div>
         </div>
       </div>

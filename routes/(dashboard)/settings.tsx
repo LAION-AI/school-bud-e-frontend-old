@@ -14,15 +14,20 @@ export default function SettingsPage(ctx: FreshContext) {
   }
 
   return (
-    <div class="max-h-screen overflow-y-auto">
-      <div class="container mx-auto py-8 px-4 max-w-5xl">
-        <h1 class="text-3xl font-bold mb-6">
-          {lang === "de" ? "Einstellungen" : "Settings"}
-        </h1>
-        <div class="rounded-lg">
-          <Settings lang={lang} />
+    <>
+      <head>
+        <title>{lang === "de" ? "Einstellungen" : "Settings"} - School Bud-E</title>
+      </head>
+      <div class="h-full overflow-y-auto">
+        <div class="container mx-auto py-8 px-4 max-w-5xl pb-20">
+          <h1 class="text-3xl font-bold mb-6">
+            {lang === "de" ? "Einstellungen" : "Settings"}
+          </h1>
+          <div class="rounded-lg">
+            <Settings lang={lang} />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

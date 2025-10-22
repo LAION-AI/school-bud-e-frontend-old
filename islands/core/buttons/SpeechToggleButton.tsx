@@ -12,9 +12,9 @@ export default function SpeechToggleButton({ lang = "de" }: SpeechToggleButtonPr
 
   const getText = () => {
     if (readAlways.value) {
-      return lang === "en" ? "Disable Audio" : "Ton deaktivieren";
+      return lang === "en" ? "Disable Audio" : "Ton an";
     } else {
-      return lang === "en" ? "Enable Audio" : "Ton aktivieren";
+      return lang === "en" ? "Enable Audio" : "Ton aus";
     }
   };
 

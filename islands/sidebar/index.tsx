@@ -10,11 +10,13 @@ import translations from "./sidebar.translations.json" with { type: "json" };
 interface SidebarProps {
   currentChatSuffix: string;
   lang?: string;
+  enableP2PSync?: boolean;
 }
 
 export default function Sidebar({
   currentChatSuffix,
   lang = "en",
+  enableP2PSync = false,
 }: SidebarProps) {
   const t = translations[lang as keyof typeof translations];
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -76,7 +78,7 @@ export default function Sidebar({
 
   return (
     <div
-      class={`sidebar border-r border-gray-200 bg-white h-full flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
+      class={`sidebar border-r border-gray-200 bg-white h-screen flex-col transition-all duration-300 ease-in-out relative hidden md:flex ${
         isCollapsed ? "w-0 overflow-hidden" : "w-[21rem]"
       }`}
     >
@@ -128,9 +130,11 @@ export default function Sidebar({
 
       {/* Footer area - relative for wallet anchoring */}
       <div class="p-3 pt-0 relative">
-        <div class="mb-3">
-          <ChatSyncInitializer lang={lang} />
-        </div>
+        {enableP2PSync && (
+          <div class="mb-3">
+            <ChatSyncInitializer lang={lang} />
+          </div>
+        )}
         <UserProfileSection lang={lang} />
       </div>
     </div>

@@ -108,15 +108,15 @@ function ChatTemplate({
   }, []); // Also run when autoScroll changes
 
   return (
-    <div class="flex w-full">
-      <div class="flex-grow flex flex-col min-h-full">
+    <div class="flex w-full h-full relative">
+      <div class="flex-grow flex flex-col h-full overflow-hidden">
         <div
           class={messages.value?.length === 0
-            ? "bg-transparent"
-            : "chat-history flex flex-col w-full overflow-auto flex-grow pt-20"}
+            ? "bg-transparent overflow-auto"
+            : "chat-history flex flex-col w-full overflow-auto pt-20"}
           ref={chatRef}
         >
-          <div class="h-full px-4 max-w-4xl mx-auto w-full">
+          <div class="px-4 max-w-4xl mx-auto w-full" style={{ paddingBottom: "120px" }}>
             {messages.value?.map((item, groupIndex) => (
               <Message
                 key={`message-${groupIndex}`}
@@ -138,9 +138,12 @@ function ChatTemplate({
             onStartTour={onStartTour}
           />
         )}
+      </div>
 
+      <div class="absolute bottom-0 left-0 right-0 pb-4 z-10 bg-gradient-to-b from-transparent to-white pt-8">
         <ChatInput />
       </div>
+
       {sidebarData.length > 0 && <RightSidebar data={sidebarData} />}
     </div>
   );

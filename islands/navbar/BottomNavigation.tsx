@@ -1,9 +1,5 @@
 import {
-  IconBook,
-  IconListCheck,
-  IconMessageCircle,
-  IconPresentation,
-  IconVideo,
+  IconSettings,
 } from "@tabler/icons-preact";
 import translations from "../sidebar/sidebar.translations.json" with {
   type: "json",
@@ -19,10 +15,16 @@ export default function BottomNavigation(
   const t = translations[lang as keyof typeof translations];
   const path = globalThis.location?.pathname || "";
 
-  const isActive = (route: string) => path.startsWith(route);
+  const isActive = (route: string) => {
+    // For bottom nav, check exact match or if it's a chat sub-page
+    if (route === "/chat") {
+      return path === "/chat" || path.startsWith("/chat/");
+    }
+    return path === route;
+  };
 
   return (
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
       <div class="flex justify-around items-center h-16">
         <a
           href="/chat"
@@ -122,40 +124,13 @@ export default function BottomNavigation(
           </div>
         </a>
         <a
-          href="/tests"
+          href="/settings"
           class={`flex flex-col items-center justify-center w-full h-full ${
-            isActive("/tests") ? "text-red-600" : "text-gray-600"
+            isActive("/settings") ? "text-primary-600" : "text-gray-600"
           }`}
         >
-          <IconListCheck size={24} />
-          <span class="text-xs mt-1">{t.navigation.tests}</span>
-        </a>
-        <a
-          href="/graph/list"
-          class={`flex flex-col items-center justify-center w-full h-full ${
-            isActive("/graph") ? "text-green-600" : "text-gray-600"
-          }`}
-        >
-          <IconBook size={24} />
-          <span class="text-xs mt-1">{t.navigation.graphs}</span>
-        </a>
-        <a
-          href="/presentations"
-          class={`flex flex-col items-center justify-center w-full h-full ${
-            isActive("/presentations") ? "text-primary-600" : "text-gray-600"
-          }`}
-        >
-          <IconPresentation size={24} />
-          <span class="text-xs mt-1">{t.navigation.presentations}</span>
-        </a>
-        <a
-          href="/video-novel"
-          class={`flex flex-col items-center justify-center w-full h-full ${
-            isActive("/video-novel") ? "text-amber-600" : "text-gray-600"
-          }`}
-        >
-          <IconVideo size={24} />
-          <span class="text-xs mt-1">{t.navigation.videoNovel}</span>
+          <IconSettings size={24} />
+          <span class="text-xs mt-1">{t.navigation.settings || "Settings"}</span>
         </a>
       </div>
     </nav>
