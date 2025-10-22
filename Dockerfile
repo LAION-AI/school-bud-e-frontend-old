@@ -16,9 +16,11 @@ RUN git clone -b ${BRANCH} https://github.com/LAION-AI/school-bud-e-frontend-old
 
 RUN deno --version
 
+RUN rm -f deno.lock
+
 # Build the application
 RUN deno task build
 
 EXPOSE 8000
 
-CMD ["deno", "task", "preview"] 
+CMD ["deno", "task", "start", "--reload"] 
