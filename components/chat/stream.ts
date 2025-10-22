@@ -13,9 +13,6 @@ import {
   type EventSourceMessage,
   fetchEventSource,
 } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
-import { generateText, streamText } from "ai"
-import { createOpenAI } from "@ai-sdk/openai"
-import { decodeMiddlewareBaseFromUniversalKey } from "../../utils/universalApiKey.ts";
 
 
 class RetriableError extends Error {}
@@ -135,28 +132,7 @@ export const startStream = async (
     const assistantMessage = { role: "assistant", content: "" };
     addMessage(assistantMessage);
 
-    // Determine the API endpoint and key
-    let apiUrl = settings.value.apiUrl;
-    let apiKey = settings.value.apiKey;
-
-    // If universal API key is set, decode it to get the endpoint
-    if (settings.value.universalApiKey) {
-      const decodedEndpoint = decodeMiddlewareBaseFromUniversalKey(settings.value.universalApiKey);
-      if (decodedEndpoint) {
-        apiUrl = `${decodedEndpoint}/v1`;
-        apiKey = settings.value.universalApiKey;
-        console.log("[Stream] Using decoded endpoint from universal API key:", apiUrl);
-      } else {
-        console.warn("[Stream] Failed to decode universal API key, falling back to manual settings");
-      }
-    }
-
-    const openai = createOpenAI({
-      apiKey: apiKey,
-      baseURL: apiUrl
-    });
-
-    /*
+    // Always use the backend /api/chat endpoint to avoid CORS issues
     await fetchEventSource("/api/chat", {
       method: "POST",
       headers: {
@@ -216,41 +192,7 @@ export const startStream = async (
           throw err;
         }
       },
-    });*/
-    console.log("[Stream] Using settings:", { apiUrl, apiKey: apiKey?.substring(0, 10) + "...", model: settings.value.apiModel });
-
-    const stream = streamText({
-      model: openai(settings.value.apiModel || "groq/deepseek-r1-distill-llama-70b"),
-      messages: messages.value.map(msg => ({
-        role: msg.role as "user" | "assistant" | "system",
-        content: (typeof msg.content === "string" ? msg.content : "")
-    })),
-  })
-
-  console.log(stream)
-  let firstChunk = true
-  for await (const text of stream.textStream) {
-
-        const lastMessage = messages.value[messages.value.length - 1];
-        if (typeof lastMessage.content === "string") {
-          lastMessage.content += text;
-        } else {
-          lastMessage.content.push(text);
-        }
-
-        editMessage(messages.value.length - 1, {
-          role: "assistant",
-          content: lastMessage.content,
-        });
-  }
-  console.log("Stream closed");
-  streamComplete.value = true;
-  query.value = "";
-
-  const finalText = ongoingStream.join("");
-  if (finalText.trim()) {
-    getTTS(finalText, messages.value.length - 1, "stream1");
-  }
+    });
   }
 };
 
