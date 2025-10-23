@@ -14,13 +14,7 @@ import {
 } from "../tests/store.ts";
 import NodeTestGenerator from "../tests/NodeTestGenerator.tsx";
 import AIFloatingButton from "../../islands/AIFloatingButton.tsx";
-import {
-  IconFileText,
-  IconLayoutGrid,
-  IconMaximize,
-  IconMessageCircle,
-  IconX,
-} from "@tabler/icons-preact";
+import { FileText, LayoutGrid, Maximize, MessageCircle, X } from "lucide-preact";
 
 interface InteractiveGraphProps {
   isRoot?: boolean;
@@ -1360,7 +1354,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-primary-500 hover:bg-primary-600 transition-colors flex items-center space-x-1 text-white"
                     title="Generate connections"
                   >
-                    <IconMessageCircle size={16} />
+                    <MessageCircle size={16} />
                     <span class="text-xs font-medium mr-1">Generate</span>
                   </button>
                   <button
@@ -1372,7 +1366,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
                     title="Cancel"
                   >
-                    <IconX size={16} />
+                    <X size={16} />
                   </button>
                 </div>
               </div>
@@ -1402,7 +1396,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center space-x-1 text-white"
                     title="Generate test"
                   >
-                    <IconFileText size={16} />
+                    <FileText size={16} />
                     <span class="text-xs font-medium mr-1">Generate</span>
                   </button>
                   <button
@@ -1414,7 +1408,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 ml-1"
                     title="Cancel"
                   >
-                    <IconX size={16} />
+                    <X size={16} />
                   </button>
                 </div>
               </div>
@@ -1430,7 +1424,7 @@ export function InteractiveGraph({
                   class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
                   title="Spread all nodes for better visibility"
                 >
-                  <IconLayoutGrid size={16} />
+                  <LayoutGrid size={16} />
                   <span class="text-xs font-medium">Spread</span>
                 </button>
 
@@ -1441,7 +1435,7 @@ export function InteractiveGraph({
                   class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
                   title="Restore fixed node positions"
                 >
-                  <IconMaximize size={16} />
+                  <Maximize size={16} />
                   <span class="text-xs font-medium">Fix</span>
                 </button>
 
@@ -1452,7 +1446,7 @@ export function InteractiveGraph({
                   class="p-2 rounded-full hover:bg-gray-100 transition-colors flex items-center space-x-1 text-gray-700 border border-transparent hover:border-gray-200"
                   title="Reset view"
                 >
-                  <IconX size={16} />
+                  <X size={16} />
                   <span class="text-xs font-medium">Reset</span>
                 </button>
 
@@ -1467,7 +1461,7 @@ export function InteractiveGraph({
                   }`}
                   title={isChatOpen ? "Close chat" : "Open chat"}
                 >
-                  <IconMessageCircle size={16} />
+                  <MessageCircle size={16} />
                   <span class="text-xs font-medium">Chat</span>
                 </button>
 
@@ -1484,7 +1478,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-primary-50 hover:bg-primary-100 transition-colors flex items-center space-x-1 text-primary-700 border border-primary-200"
                     title="Generate AI connections between selected nodes"
                   >
-                    <IconMessageCircle size={16} />
+                    <MessageCircle size={16} />
                     <span class="text-xs font-medium">
                       {isGeneratingConnections ? "Generating..." : "Connect AI"}
                     </span>
@@ -1499,7 +1493,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-orange-50 hover:bg-orange-100 transition-colors flex items-center space-x-1 text-orange-700 border border-orange-200"
                     title="Remove selected connection"
                   >
-                    <IconX size={16} />
+                    <X size={16} />
                     <span class="text-xs font-medium">
                       Remove Edge
                     </span>
@@ -1514,7 +1508,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors flex items-center space-x-1 text-green-700 border border-green-200"
                     title="Generate test for this node"
                   >
-                    <IconFileText size={16} />
+                    <FileText size={16} />
                     <span class="text-xs font-medium">
                       Generate Test
                     </span>
@@ -1529,7 +1523,7 @@ export function InteractiveGraph({
                     class="p-2 rounded-full bg-red-50 hover:bg-red-100 transition-colors flex items-center space-x-1 text-red-700 border border-red-200"
                     title="Delete selected nodes"
                   >
-                    <IconX size={16} />
+                    <X size={16} />
                     <span class="text-xs font-medium">
                       Delete {selectedNodes.length > 1
                         ? `(${selectedNodes.length})`

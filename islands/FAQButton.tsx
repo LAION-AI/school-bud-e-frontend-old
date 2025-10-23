@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { IconQuestionMark } from "@tabler/icons-preact";
+import { HelpCircle } from "lucide-preact";
 import Modal from "../islands/Modal.tsx";
 
 export default function FAQButton() {
@@ -12,7 +12,7 @@ export default function FAQButton() {
         class="fixed bottom-4 right-4 bg-primary-500 text-white p-3 rounded-full shadow-lg hover:bg-primary-600 transition-colors w-10 h-10 border"
         aria-label="FAQ"
       >
-        <IconQuestionMark />
+        <HelpCircle />
       </button>
 
       <Modal

@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import { IconCheck, IconLoader } from "@tabler/icons-preact";
+import { Check, Loader } from "lucide-preact";
 
 interface GraphLoadingStateProps {
   isLoading: boolean;
@@ -28,13 +28,13 @@ export function GraphLoadingState(
     <div class="flex items-center justify-center p-4 my-3 space-x-2 border border-gray-200 rounded-md bg-white">
       {isLoading && !isComplete && (
         <>
-          <IconLoader class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent" />
+          <Loader class="animate-spin rounded-full h-4 w-4 border-2 border-gray-900 border-t-transparent" />
           <span class="text-gray-700">Generating {subject}...</span>
         </>
       )}
       {!isLoading && isComplete && (
         <>
-          <IconCheck />
+          <Check />
           <span class="text-gray-700">{subject} generated successfully</span>
         </>
       )}

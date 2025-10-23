@@ -1,9 +1,4 @@
-import {
-  IconMouse,
-  IconMouseOff,
-  IconVolume,
-  IconVolumeOff,
-} from "@tabler/icons-preact";
+import { Mouse, MouseOff, Volume2, VolumeX } from "lucide-preact";
 import { chatTemplateContent } from "../internalization/content.ts";
 
 interface ChatControlsProps {
@@ -31,7 +26,7 @@ export function ChatControls({
           : chatTemplateContent[lang].silent}
         type="button"
       >
-        {readAlways ? <IconVolume /> : <IconVolumeOff />}
+        {readAlways ? <Volume2 /> : <VolumeX />}
       </button>
       <button
         class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-700/50 transition-all backdrop-blur-sm bg-gray-800/30"
@@ -41,7 +36,7 @@ export function ChatControls({
           : chatTemplateContent[lang].autoScrollOff}
         type="button"
       >
-        {autoScroll ? <IconMouse /> : <IconMouseOff />}
+        {autoScroll ? <Mouse /> : <MouseOff />}
       </button>
     </div>
   );

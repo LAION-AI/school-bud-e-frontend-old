@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { IconList, IconVideo } from "@tabler/icons-preact";
+import { List, Video } from "lucide-preact";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 
 export default function VideoNovelLink(
@@ -13,7 +13,7 @@ export default function VideoNovelLink(
 
   return (
     <CollapsibleSection
-      icon={<IconVideo class={`${isCollapsed ? "" : "mr-2"}`} />}
+      icon={<Video class={`${isCollapsed ? "" : "mr-2"}`} />}
       title={lang === "de" ? "Video Roman" : "Video Novel"}
       isCollapsed={isCollapsed}
       isExpanded={expanded}
@@ -29,7 +29,7 @@ export default function VideoNovelLink(
             : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
         }`}
       >
-        <IconList
+        <List
           size={16}
           class={currentPath === "/graph/list"
             ? "text-amber-800"

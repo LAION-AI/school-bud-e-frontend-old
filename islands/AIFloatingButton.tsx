@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { useSignal, useSignalEffect } from "@preact/signals";
-import {
-  IconArrowRight,
-  IconLoader2,
-  IconMessageCircle,
-  IconMicrophone,
-  IconPlus,
-  IconVolume,
-  IconX,
-} from "@tabler/icons-preact";
+import { ArrowRight, Loader2, MessageCircle, Mic, Plus, Volume2, X } from "lucide-preact";
 import { settings } from "../components/chat/store.ts";
 import { getLLMResponse } from "./chat/getLLMResponse.ts";
 import ChatHistory from "../components/chat/ChatHistory.tsx";
@@ -213,22 +205,22 @@ export default function AIFloatingButton() {
   const getButtonContent = () => {
     switch (buttonState) {
       case "idle":
-        return <IconMessageCircle size={24} />;
+        return <MessageCircle size={24} />;
       case "mode_select":
-        return <IconX size={24} />;
+        return <X size={24} />;
       case "listening":
-        return <IconMicrophone size={24} />;
+        return <Mic size={24} />;
       case "processing":
         return (
-          <IconLoader2
+          <Loader2
             size={24}
             style={{ animation: "spin 1s linear infinite" }}
           />
         );
       case "responding":
-        return <IconVolume size={24} />;
+        return <Volume2 size={24} />;
       case "chat":
-        return <IconX size={24} />;
+        return <X size={24} />;
     }
   };
 
@@ -258,7 +250,7 @@ export default function AIFloatingButton() {
           <div class="absolute bottom-[80px] md:bottom-[80px] right-0 bg-white rounded-lg shadow-xl w-[calc(100vw-32px)] md:w-96 h-[60vh] md:h-[500px] flex flex-col overflow-hidden border border-gray-300">
             <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-medium text-gray-800 flex items-center gap-2">
-                <IconMessageCircle size={18} className="text-primary-500" />
+                <MessageCircle size={18} className="text-primary-500" />
                 Chat Assistant
               </h3>
               <button
@@ -268,7 +260,7 @@ export default function AIFloatingButton() {
                 aria-label="Start new chat"
                 title="Start new chat"
               >
-                <IconPlus size={16} />
+                <Plus size={16} />
               </button>
             </div>
 
@@ -304,7 +296,7 @@ export default function AIFloatingButton() {
                   }`}
                   aria-label="Send message"
                 >
-                  <IconArrowRight size={20} />
+                  <ArrowRight size={20} />
                 </button>
               </div>
             </div>

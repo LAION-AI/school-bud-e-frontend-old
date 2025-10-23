@@ -1,10 +1,5 @@
 import { useSignal } from "@preact/signals";
-import {
-  IconBrain,
-  IconChevronDown,
-  IconKey,
-  IconLink,
-} from "@tabler/icons-preact";
+import { Brain, ChevronDown, Key, Link } from "lucide-preact";
 import type { Translations } from "./settings.translations.d.ts";
 import translations from "./settings.translations.json" with { type: "json" };
 
@@ -237,7 +232,7 @@ export default function Capabilities({
                         ? models.find((m) => m.id === selectedModel)?.name
                         : t.selectModel}
                     </span>
-                    <IconChevronDown className="h-4 w-4 ml-auto" />
+                    <ChevronDown className="h-4 w-4 ml-auto" />
                   </button>
 
                   {showModelSelector.value === capability.id && (

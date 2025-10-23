@@ -1,4 +1,4 @@
-import { IconVolume, IconVolumeOff } from "@tabler/icons-preact";
+import { Volume2, VolumeX } from "lucide-preact";
 import { readAlways, toggleReadAlways } from "../../../components/chat/speech.ts";
 
 interface SpeechToggleButtonProps {
@@ -39,9 +39,9 @@ export default function SpeechToggleButton({ lang = "de" }: SpeechToggleButtonPr
       title={getAriaLabel()}
     >
       {readAlways.value ? (
-        <IconVolume size={20} />
+        <Volume2 size={20} />
       ) : (
-        <IconVolumeOff size={20} />
+        <VolumeX size={20} />
       )}
       <span class="text-sm font-medium">{getText()}</span>
     </button>

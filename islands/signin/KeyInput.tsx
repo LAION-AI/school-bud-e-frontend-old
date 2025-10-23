@@ -1,5 +1,5 @@
 import { Signal } from "@preact/signals";
-import { IconEye, IconEyeCancel } from "@tabler/icons-preact";
+import { Eye, EyeOff } from "lucide-preact";
 import { useRef } from "preact/hooks";
 import Input from "../../components/core/Input.tsx";
 
@@ -52,7 +52,7 @@ export function KeyInput(
         onClick={togglePasswordVisibility}
         class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
       >
-        {showPassword.value ? <IconEyeCancel /> : <IconEye />}
+        {showPassword.value ? <EyeOff /> : <Eye />}
       </button>
     </div>
   );

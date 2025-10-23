@@ -1,6 +1,6 @@
 import { useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "fresh/runtime";
-import { IconLoader2, IconPhoto } from "@tabler/icons-preact";
+import { Loader2, Image } from "lucide-preact";
 import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { settings } from "../../../components/chat/store.ts";
@@ -301,8 +301,8 @@ export function ImageUploadButton({
         aria-label="Upload image or PDF"
       >
         {transcribingFiles.size > 0
-          ? <IconLoader2 class="animate-spin h-5 w-5" />
-          : <IconPhoto class="h-5 w-5" />}
+          ? <Loader2 class="animate-spin h-5 w-5" />
+          : <Image class="h-5 w-5" />}
         {transcribingFiles.size > 0 && (
           <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             {transcribingFiles.size}

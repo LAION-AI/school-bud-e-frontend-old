@@ -1,4 +1,4 @@
-import { IconArrowLeft } from "@tabler/icons-preact";
+import { ArrowLeft } from "lucide-preact";
 
 interface TopAppBarProps {
   title: string;
@@ -25,7 +25,7 @@ export default function TopAppBar({ title, onBack, backUrl }: TopAppBarProps) {
           class="flex items-center justify-center w-10 h-10 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
           aria-label="Go back"
         >
-          <IconArrowLeft size={24} />
+          <ArrowLeft size={24} />
         </button>
         <h1 class="flex-1 text-lg font-semibold text-gray-900 text-center pr-8">
           {title}

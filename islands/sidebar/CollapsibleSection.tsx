@@ -1,9 +1,9 @@
-import { IconChevronDown } from "@tabler/icons-preact";
+import { ChevronDown } from "lucide-preact";
 
 import type { ComponentChildren, VNode } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
 
-const SafeChevronDown = (props: any): VNode => <IconChevronDown {...props} />;
+const SafeChevronDown = (props: any): VNode => <ChevronDown {...props} />;
 
 interface CollapsibleSectionProps {
   icon: ComponentChildren;

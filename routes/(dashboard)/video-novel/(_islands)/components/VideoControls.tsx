@@ -1,9 +1,4 @@
-import {
-  IconEdit,
-  IconGavel,
-  IconPlayerPlay,
-  IconPlus,
-} from "@tabler/icons-preact";
+import { Edit, Gavel, Play, Plus } from "lucide-preact";
 import { Button } from "../../../../../components/Button.tsx";
 
 interface VideoControlsProps {
@@ -15,26 +10,26 @@ export default function VideoControls({ onCreateNew }: VideoControlsProps) {
     <div className="backdrop-blur-sm rounded-xl p-4 border border-gray-200">
       <div className="flex flex-wrap gap-3">
         <Button variant="primary">
-          <IconPlayerPlay />
+          <Play />
           Play
         </Button>
         <Button
           variant="secondary"
           onClick={onCreateNew}
         >
-          <IconPlus />
+          <Plus />
           Create New
         </Button>
         <Button variant="secondary">
-          <IconEdit />
+          <Edit />
           Edit
         </Button>
         <Button variant="secondary">
-          <IconGavel />
+          <Gavel />
           Save
         </Button>
         <Button variant="secondary">
-          <IconEdit />
+          <Edit />
           Edit
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import type { JSX } from "preact";
 import { MessageContent } from "./MessageContent.tsx";
-import { IconEdit, IconRefresh, IconVolume } from "@tabler/icons-preact";
+import { Edit, RefreshCw, Volume2 } from "lucide-preact";
 
 interface AudioItem {
   audio: HTMLAudioElement;
@@ -53,7 +53,7 @@ export function Message({
                 : "hover:bg-gray-100 text-gray-600"
             }`}
           >
-            <IconEdit size={20} />
+            <Edit size={20} />
           </button>
         )}
 
@@ -63,7 +63,7 @@ export function Message({
             type="button" 
             className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-600"
           >
-            <IconRefresh size={20} />
+            <RefreshCw size={20} />
           </button>
         )}
         
@@ -80,7 +80,7 @@ export function Message({
                 : "hover:bg-gray-100 text-gray-600"
             }`}
           >
-            <IconVolume size={20} />
+            <Volume2 size={20} />
           </button>
         )}
       </div>

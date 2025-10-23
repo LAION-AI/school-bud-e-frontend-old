@@ -12,7 +12,7 @@ import { getTTS, resetTranscript } from "./speech.ts";
 import {
   type EventSourceMessage,
   fetchEventSource,
-} from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
+} from "@microsoft/fetch-event-source";
 
 
 class RetriableError extends Error {}

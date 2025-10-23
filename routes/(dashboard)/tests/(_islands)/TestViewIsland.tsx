@@ -3,7 +3,7 @@ import { Button } from "../../../../components/Button.tsx";
 import type { Test, TestQuestion } from "../../../../components/tests/store.ts";
 import { startStream } from "../../../../components/chat/stream.ts";
 import { addMessage, messages } from "../../../../components/chat/store.ts";
-import { IconArrowLeft, IconEye, IconTrash, IconX, IconExclamationCircle } from "@tabler/icons-preact";
+import { ArrowLeft, Eye, Trash2, X, AlertCircle } from "lucide-preact";
 
 interface TestViewIslandProps {
   testId: string;
@@ -688,7 +688,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
           href="/tests"
           class="inline-flex items-center text-primary-600 hover:text-primary-800"
         >
-          <IconArrowLeft class="w-5 h-5 mr-2" />
+          <ArrowLeft class="w-5 h-5 mr-2" />
           Back to all tests
         </a>
       </div>
@@ -706,7 +706,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 aria-label="View submissions"
                 type="button"
               >
-                <IconEye class="w-5 h-5 mr-1" />
+                <Eye class="w-5 h-5 mr-1" />
                 <span>View Submissions</span>
               </button>
             )}
@@ -719,7 +719,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                   aria-label="Delete test"
                   type="button"
                 >
-                  <IconTrash class="w-5 h-5 mr-1" />
+                  <Trash2 class="w-5 h-5 mr-1" />
                   <span>Delete Test</span>
                 </button>
               )
@@ -759,7 +759,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
                 onClick={() => setShowResults(false)}
                 class="text-gray-600 hover:text-gray-800"
               >
-                <IconX class="w-6 h-6" />
+                <X class="w-6 h-6" />
               </button>
             </div>
 
@@ -936,7 +936,7 @@ export default function TestViewIsland({ testId }: TestViewIslandProps) {
             {submissionError && (
               <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div class="flex items-start">
-                  <IconExclamationCircle class="w-5 h-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <AlertCircle class="w-5 h-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
                   <div>
                     <h3 class="text-sm font-medium text-red-800 mb-1">Test Submission Error</h3>
                     <p class="text-sm text-red-700">{submissionError}</p>

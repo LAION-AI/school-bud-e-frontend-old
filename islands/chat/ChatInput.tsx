@@ -12,7 +12,7 @@ import { startStream } from "../../components/chat/stream.ts";
 import ImageUploadButton from "../core/buttons/ImageUploadButton.tsx";
 import VoiceRecordButton from "../core/buttons/VoiceRecordButton.tsx";
 import { resetTranscript } from "../../components/chat/speech.ts";
-import { IconLoader2, IconPdf, IconSend, IconX } from "@tabler/icons-preact";
+import { Loader2, FileText, Send, X } from "lucide-preact";
 import ChatModeSelector, {
   CHAT_MODES,
   type ChatMode,
@@ -248,7 +248,7 @@ export default function ChatInput() {
                       class="w-full h-full object-cover"
                     />
                     <div class="bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
-                      <IconX />
+                      <X />
                     </div>
                   </button>
                 ))}
@@ -274,11 +274,11 @@ export default function ChatInput() {
                       }`}
                       aria-label="PDF document, click to remove"
                     >
-                      <IconPdf />
+                      <FileText />
                       {isPdfTranscribing && (
                         <div class="absolute inset-0 bg-white/70 flex items-center justify-center">
                           <div class="flex flex-col items-center">
-                            <IconLoader2
+                            <Loader2
                               class="animate-spin text-primary-500 mb-1"
                               size={28}
                             />
@@ -289,7 +289,7 @@ export default function ChatInput() {
                         </div>
                       )}
                       <div class="absolute top-0 right-0 bg-red-500/0 group-hover:bg-red-500/50 flex items-center justify-center transition-colors">
-                        <IconX />
+                        <X />
                       </div>
                     </button>
                   );
@@ -373,7 +373,7 @@ export default function ChatInput() {
                 data-tour="chat-submit"
                 aria-label="Send message"
               >
-                <IconSend />
+                <Send />
               </button>
             )}
           </div>

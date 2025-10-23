@@ -1,12 +1,4 @@
-import {
-  IconBook,
-  IconCalendar,
-  IconEdit,
-  IconFileExport,
-  IconPlayerPlay,
-  IconPlus,
-  IconTag,
-} from "@tabler/icons-preact";
+import { Book, Calendar, Edit, FileDown, Play, Plus, Tag } from "lucide-preact";
 import { useEffect, useState } from "preact/hooks";
 import * as graphStore from "../../../../components/graph/store.ts";
 import type { Test } from "../../../../components/tests/store.ts";
@@ -626,7 +618,7 @@ export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
               {getCreateNewTestText()}
             </p>
             <Button variant="primary" onClick={handleCreateTest}>
-              <IconPlus class="w-5 h-5 mr-2" />
+              <Plus class="w-5 h-5 mr-2" />
               {getCreateTestText()}
             </Button>
           </div>
@@ -658,12 +650,12 @@ export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
                     </div>
                     <div class="mt-1 flex items-center gap-4 text-sm text-gray-500">
                       <span class="flex items-center gap-1">
-                        <IconCalendar class="w-4 h-4" />
+                        <Calendar class="w-4 h-4" />
                         {formatDate(test.createdAt)}
                       </span>
                       {test.nodeId && (
                         <span class="flex items-center gap-1">
-                          <IconTag class="w-4 h-4" />
+                          <Tag class="w-4 h-4" />
                           {nodesMap[test.nodeId] || test.nodeId}
                         </span>
                       )}
@@ -678,7 +670,7 @@ export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
                       onClick={(e) => handleExportToDocument(e, test)}
                       aria-label="View Test Document"
                     >
-                      <IconFileExport class="w-5 h-5" />
+                      <FileDown class="w-5 h-5" />
                     </button>
 
                     <a
@@ -687,7 +679,7 @@ export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
                       href={`/tests/compose/${test.id}${lang !== "en" ? `?lang=${lang}` : ""}`}
                       aria-label="Edit Test"
                     >
-                      <IconEdit class="w-5 h-5" />
+                      <Edit class="w-5 h-5" />
                     </a>
 
                     <button
@@ -699,7 +691,7 @@ export default function TestsListIsland({ lang = "en" }: TestsListIslandProps) {
                         handleStartTest(test.id);
                       }}
                     >
-                      <IconPlayerPlay class="w-5 h-5" />
+                      <Play class="w-5 h-5" />
                     </button>
                   </div>
                 </div>

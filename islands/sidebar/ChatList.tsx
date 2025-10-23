@@ -1,4 +1,4 @@
-import { IconDownload, IconMessageCircle, IconX } from "@tabler/icons-preact";
+import { Download, MessageCircle, X } from "lucide-preact";
 import { useMemo, useState } from "preact/hooks";
 import { chats } from "../../components/chat/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
@@ -27,7 +27,7 @@ export default function ChatList({
 
   return (
     <CollapsibleSection
-      icon={<IconMessageCircle size={20} />}
+      icon={<MessageCircle size={20} />}
       title={t.navigation.chats}
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
@@ -67,7 +67,7 @@ export default function ChatList({
                     class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.downloadChat}
                   >
-                    <IconDownload class="h-5 w-5" aria-hidden="true" />
+                    <Download class="h-5 w-5" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
@@ -79,7 +79,7 @@ export default function ChatList({
                     class="group-hover:text-gray-400 text-transparent px-2"
                     aria-label={t.actions.deleteChat}
                   >
-                    <IconX size={24} aria-hidden="true" />
+                    <X size={24} aria-hidden="true" />
                   </button>
                 </SidebarLink>
               );

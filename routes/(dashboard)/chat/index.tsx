@@ -1,5 +1,5 @@
 import ChatList from "./(_islands)/ChatList.tsx";
-import { IconMessagePlus } from "@tabler/icons-preact";
+import { MessageSquarePlus } from "lucide-preact";
 import translations from "../../../islands/sidebar/sidebar.translations.json" with {
   type: "json",
 };
@@ -23,7 +23,7 @@ export default function ChatListPage({ lang = "en" }: ChatListPageProps) {
             href="/chat/new"
             class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
-            <IconMessagePlus size={20} />
+            <MessageSquarePlus size={20} />
             <span>{t.actions.newChat}</span>
           </a>
         </div>

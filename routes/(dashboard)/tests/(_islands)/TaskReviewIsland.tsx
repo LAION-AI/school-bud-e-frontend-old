@@ -1,14 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import {
-  IconArrowLeft,
-  IconUpload,
-  IconEye,
-  IconAdjustmentsHorizontal,
-  IconCheck,
-  IconX,
-  IconUsers,
-  IconFileText,
-} from "@tabler/icons-preact";
+import { ArrowLeft, Upload, Eye, SlidersHorizontal, Check, X, Users, FileText } from "lucide-preact";
 import { Button } from "../../../../components/Button.tsx";
 import * as reviewStore from "../../../../components/tests/review-store.ts";
 import type { ReviewSession, StudentResponse, TaskIdentification } from "../../../../components/tests/review-store.ts";
@@ -125,7 +116,7 @@ export default function TaskReviewIsland() {
   const renderUploadSection = () => (
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 class="text-2xl font-bold mb-4 flex items-center">
-        <IconUpload class="w-6 h-6 mr-2 text-primary-600" />
+        <Upload class="w-6 h-6 mr-2 text-primary-600" />
         Aufgaben hochladen
       </h2>
       
@@ -206,7 +197,7 @@ export default function TaskReviewIsland() {
                     }}
                     class="text-red-500 hover:text-red-700"
                   >
-                    <IconX class="w-4 h-4" />
+                    <X class="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -223,7 +214,7 @@ export default function TaskReviewIsland() {
     return (
       <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 class="text-xl font-bold mb-4 flex items-center">
-          <IconUsers class="w-5 h-5 mr-2" />
+          <Users class="w-5 h-5 mr-2" />
           Schüler ({currentSession.students.length})
         </h2>
         
@@ -278,7 +269,7 @@ export default function TaskReviewIsland() {
     return (
       <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold mb-4 flex items-center">
-          <IconFileText class="w-5 h-5 mr-2" />
+          <FileText class="w-5 h-5 mr-2" />
           Bewertung: {selectedStudent.student_name}
         </h2>
 
@@ -437,7 +428,7 @@ export default function TaskReviewIsland() {
           href="/tests"
           class="inline-flex items-center text-primary-600 hover:text-primary-800"
         >
-          <IconArrowLeft class="w-5 h-5 mr-2" />
+          <ArrowLeft class="w-5 h-5 mr-2" />
           Zurück zu Tests
         </a>
       </div>

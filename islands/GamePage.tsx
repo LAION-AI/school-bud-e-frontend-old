@@ -1,6 +1,6 @@
 import { Game as GameComponent } from "./Game.tsx";
 import type { Game as GameType } from "../types/formats.ts";
-import { IconEdit, IconTrash } from "@tabler/icons-preact";
+import { Edit, Trash2 } from "lucide-preact";
 import { Button } from "../components/Button.tsx";
 
 interface GamePageProps {
@@ -37,7 +37,7 @@ export default function GamePage({ game }: GamePageProps) {
                 }
               }}
             >
-              <IconEdit />
+              <Edit />
               <span>Rename</span>
             </Button>
             <Button
@@ -58,7 +58,7 @@ export default function GamePage({ game }: GamePageProps) {
               }}
               variant="danger"
             >
-              <IconTrash />
+              <Trash2 />
               <span>Delete</span>
             </Button>
           </div>

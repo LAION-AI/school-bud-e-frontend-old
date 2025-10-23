@@ -1,7 +1,4 @@
-import {
-  IconSettings,
-  IconMessageCircle,
-} from "@tabler/icons-preact";
+import { Settings, MessageCircle } from "lucide-preact";
 import translations from "../sidebar/sidebar.translations.json" with {
   type: "json",
 };
@@ -33,7 +30,7 @@ export default function BottomNavigation(
             isActive("/chat") ? "text-primary-600" : "text-gray-600"
           }`}
         >
-          <IconMessageCircle size={24} />
+          <MessageCircle size={24} />
           <span class="text-xs mt-1">{t.navigation.chats || "Chat"}</span>
         </a>
         <a
@@ -42,7 +39,7 @@ export default function BottomNavigation(
             isActive("/settings") ? "text-primary-600" : "text-gray-600"
           }`}
         >
-          <IconSettings size={24} />
+          <Settings size={24} />
           <span class="text-xs mt-1">{t.navigation.settings || "Settings"}</span>
         </a>
       </div>

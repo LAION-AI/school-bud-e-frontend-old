@@ -1,7 +1,7 @@
 import { GraphLoadingState } from "./GraphLoadingState.tsx";
-import { IconLoader2 } from "@tabler/icons-preact";
-import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.mjs";
+import { Loader2 } from "lucide-preact";
+import { marked } from "marked";
+import katex from "katex";
 
 // Configure marked to handle LaTeX
 const renderLatex = (text: string) => {
@@ -246,7 +246,7 @@ export function MessageContent({ content }: MessageContentProps) {
               return (
                 <div key={contentIndex} className="pdf-container w-full my-3">
                   <div className="pdf-info text-sm text-gray-500 mb-2 flex items-center">
-                    <IconLoader2 className="animate-spin mr-2" size={16} />
+                    <Loader2 className="animate-spin mr-2" size={16} />
                     <span>Transcribing PDF... Please wait</span>
                   </div>
                   <object

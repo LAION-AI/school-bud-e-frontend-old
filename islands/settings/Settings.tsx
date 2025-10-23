@@ -1,6 +1,6 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { useEffect, useRef } from "preact/hooks";
-import { IconInfoCircleFilled } from "@tabler/icons-preact";
+import { Info } from "lucide-preact";
 import type { JSX } from "preact";
 import { settings } from "../../components/chat/store.ts";
 import ModelManager from "./ModelManager.tsx";
@@ -393,7 +393,7 @@ export default function Settings({ lang = "en" }: { lang?: string }) {
             <div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <IconInfoCircleFilled class="h-5 w-5 text-primary-500" />
+                  <Info class="h-5 w-5 text-primary-500" />
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-primary-800">

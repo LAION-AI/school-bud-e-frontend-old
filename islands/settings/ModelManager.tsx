@@ -1,5 +1,5 @@
 import { useSignalEffect } from "@preact/signals";
-import { IconBrain, IconPlus, IconTrash } from "@tabler/icons-preact";
+import { Brain, Plus, Trash2 } from "lucide-preact";
 import type { JSX } from "preact";
 import Input from "../../components/core/Input.tsx";
 import { Button } from "../../components/Button.tsx";
@@ -130,7 +130,7 @@ export default function ModelManager({
           }}
           variant="primary"
         >
-          <IconPlus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-1" />
           {lang === "de" ? "Neues Modell" : "New Model"}
         </Button>
       </div>
@@ -158,14 +158,14 @@ export default function ModelManager({
                   }}
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <IconBrain className="h-5 w-5" />
+                  <Brain className="h-5 w-5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => onDeleteModel(model.id)}
                   className="text-gray-400 hover:text-red-500"
                 >
-                  <IconTrash className="h-5 w-5" />
+                  <Trash2 className="h-5 w-5" />
                 </button>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { IS_BROWSER } from "fresh/runtime";
 import type { JSX } from "preact";
-import { IconMicrophone } from "@tabler/icons-preact";
+import { Mic } from "lucide-preact";
 import { addMessage, settings } from "../../../components/chat/store.ts";
 import { experimental_transcribe } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
@@ -226,7 +226,7 @@ function VoiceRecordButton({
       type="button"
       aria-label={isRecording ? "Stop recording" : "Start recording"}
     >
-      <IconMicrophone
+      <Mic
         class={`icon w-5 h-5 ${isRecording ? "text-white" : "text-gray-500"}`}
       />
     </button>

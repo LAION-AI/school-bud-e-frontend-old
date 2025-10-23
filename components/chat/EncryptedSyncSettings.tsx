@@ -1,6 +1,6 @@
 import { useSignal, useComputed } from '@preact/signals';
 import { useEffect } from 'preact/hooks';
-import { IconInfoCircleFilled, IconCopy, IconQrcode, IconKey, IconUsers, IconShield, IconLoader2 } from '@tabler/icons-preact';
+import { Info, IconCopy, IconQrcode, Key, Users, IconShield, Loader2 } from "lucide-preact";
 import { useChatSync } from '../../lib/sync/useChatSync.ts';
 import Input from '../core/Input.tsx';
 import { Button } from '../Button.tsx';
@@ -183,7 +183,7 @@ export function EncryptedSyncSettings() {
           {/* User Settings */}
           <div>
             <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
-              <IconUsers className="inline h-4 w-4 mr-1" />
+              <Users className="inline h-4 w-4 mr-1" />
               Display Name
             </label>
             <Input
@@ -202,7 +202,7 @@ export function EncryptedSyncSettings() {
           {/* Your Public Key */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              <IconKey className="inline h-4 w-4 mr-1" />
+              <Key className="inline h-4 w-4 mr-1" />
               Your Public Key
             </label>
             {publicKey.value ? (
@@ -289,7 +289,7 @@ export function EncryptedSyncSettings() {
                 {/* Key skeleton with spinner */}
                 <div className="bg-gray-50 p-3 rounded-md border">
                   <div className="flex items-center space-x-2">
-                    <IconLoader2 className="h-4 w-4 animate-spin text-gray-400" />
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
                     <div className="text-sm text-gray-500">Generating secure key pair...</div>
                   </div>
                   <div className="mt-2 bg-gray-200 rounded h-12 animate-pulse"></div>

@@ -1,5 +1,5 @@
 import { useComputed } from "@preact/signals";
-import { IconDeviceGamepad2, IconList, IconX } from "@tabler/icons-preact";
+import { Gamepad2, List, X } from "lucide-preact";
 import type { VNode } from "preact";
 import { useState } from "preact/hooks";
 import { deleteGame, savedGames } from "../../components/games/store.ts";
@@ -7,9 +7,9 @@ import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
 
 // @ts-ignore: Suppressing linter error for List not being a valid JSX component
-const SafeListIcon = (props: LucideProps): VNode => <IconList {...props} />;
+const SafeListIcon = (props: LucideProps): VNode => <List {...props} />;
 // @ts-ignore: Suppressing linter error for X not being a valid JSX component
-const SafeXIcon = (props: LucideProps): VNode => <IconX {...props} />;
+const SafeXIcon = (props: LucideProps): VNode => <X {...props} />;
 
 export default function GamesSection({
   isCollapsed,
@@ -36,7 +36,7 @@ export default function GamesSection({
 
   return (
     <CollapsibleSection
-      icon={<IconDeviceGamepad2 />}
+      icon={<Gamepad2 />}
       title="Games"
       isCollapsed={isCollapsed}
       isExpanded={expanded}

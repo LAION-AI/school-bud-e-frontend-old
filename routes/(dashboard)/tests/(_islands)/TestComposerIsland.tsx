@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import {
-  IconArrowLeft,
-  IconImageInPicture,
-  IconMessageCircle,
-  IconPhoto,
-  IconPlus,
-  IconTrash,
-} from "@tabler/icons-preact";
+import { ArrowLeft, PictureInPicture, MessageCircle, Image, Plus, Trash2 } from "lucide-preact";
 import type { VNode } from "preact";
 import type { Test, TestQuestion } from "../../../components/tests/store.ts";
 import * as testStore from "../../../../components/tests/store.ts";
@@ -738,7 +731,7 @@ Format your response as a JSON object with the following structure:
           href="/tests"
           class="inline-flex items-center text-primary-600 hover:text-primary-800"
         >
-          <IconArrowLeft class="w-5 h-5 mr-2" />
+          <ArrowLeft class="w-5 h-5 mr-2" />
           Back to Tests
         </a>
       </div>
@@ -911,7 +904,7 @@ Format your response as a JSON object with the following structure:
                 <div class="text-center py-8 bg-gray-50 rounded-lg">
                   <p class="text-gray-500 mb-4">No questions added yet</p>
                   <Button variant="primary" onClick={addQuestion}>
-                    <IconPlus class="w-4 h-4 mr-2" />
+                    <Plus class="w-4 h-4 mr-2" />
                     Add First Question
                   </Button>
                 </div>
@@ -933,7 +926,7 @@ Format your response as a JSON object with the following structure:
                           class="text-red-500 hover:text-red-700"
                           aria-label={`Remove question ${questionIndex + 1}`}
                         >
-                          <IconTrash class="w-5 h-5" />
+                          <Trash2 class="w-5 h-5" />
                         </button>
                       </div>
 
@@ -1014,7 +1007,7 @@ Format your response as a JSON object with the following structure:
                                   triggerImageUpload(questionIndex)}
                                 class="w-full flex items-center justify-center py-3 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-100 transition-colors"
                               >
-                                <IconPhoto class="w-5 h-5 mr-2 text-gray-400" />
+                                <Image class="w-5 h-5 mr-2 text-gray-400" />
                                 <span class="text-gray-500">
                                   Click to upload an image
                                 </span>
@@ -1100,7 +1093,7 @@ Format your response as a JSON object with the following structure:
                                       optionIndex + 1
                                     }`}
                                   >
-                                    <IconTrash class="w-4 h-4" />
+                                    <Trash2 class="w-4 h-4" />
                                   </button>
                                 )}
                               </div>
@@ -1111,7 +1104,7 @@ Format your response as a JSON object with the following structure:
                               onClick={() => addOption(questionIndex)}
                               class="mt-2 inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
                             >
-                              <IconPlus class="w-4 h-4 mr-1" />
+                              <Plus class="w-4 h-4 mr-1" />
                               Add Option
                             </button>
                           </div>
@@ -1191,7 +1184,7 @@ Format your response as a JSON object with the following structure:
                     onClick={addQuestion}
                     class="w-full py-3 border-2 border-gray-300 border-dashed rounded-lg text-gray-600 hover:bg-gray-100 transition-colors flex items-center justify-center"
                   >
-                    <IconPlus class="w-5 h-5 mr-2" />
+                    <Plus class="w-5 h-5 mr-2" />
                     Add Another Question
                   </button>
                 </div>
@@ -1220,7 +1213,7 @@ Format your response as a JSON object with the following structure:
               {/* Chat Header */}
               <div class="p-3 bg-white border-b border-gray-200 flex justify-between items-center">
                 <h3 class="font-medium text-gray-800 flex items-center gap-2">
-                  <IconMessageCircle size={18} class="text-primary-500" />
+                  <MessageCircle size={18} class="text-primary-500" />
                   Test Assistant
                 </h3>
                 <button
@@ -1307,7 +1300,7 @@ Format your response as a JSON object with the following structure:
               class="bg-primary-500 hover:bg-primary-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-300"
               aria-label="Open chat"
             >
-              <IconMessageCircle size={24} />
+              <MessageCircle size={24} />
             </button>
           )}
       </div>

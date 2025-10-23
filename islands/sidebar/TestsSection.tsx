@@ -1,4 +1,4 @@
-import { IconListCheck } from "@tabler/icons-preact";
+import { ListChecks } from "lucide-preact";
 import { useState } from "preact/hooks";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import translations from "./sidebar.translations.json" with { type: "json" };
@@ -17,7 +17,7 @@ export default function TestsSection({
 
   return (
     <CollapsibleSection
-      icon={<IconListCheck />}
+      icon={<ListChecks />}
       title={translations.actions.test}
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}

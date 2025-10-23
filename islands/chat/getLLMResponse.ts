@@ -8,7 +8,7 @@ import {
   messages as chatMessages,
   settings,
 } from "../../components/chat/store.ts";
-import { fetchEventSource } from "https://esm.sh/@microsoft/fetch-event-source@2.0.1";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 export async function getLLMResponse(prompt: string): Promise<string> {
   // Add the user message to the global message store

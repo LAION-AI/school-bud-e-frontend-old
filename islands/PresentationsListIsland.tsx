@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { IS_BROWSER } from "fresh/runtime";
-import { IconEye, IconTrash, IconPlus } from "@tabler/icons-preact";
+import { Eye, Trash2, Plus } from "lucide-preact";
 import { Button } from "../components/Button.tsx";
 import Modal from "./Modal.tsx";
 import { apiWarningMessage, settings } from "../components/chat/store.ts";
@@ -169,7 +169,7 @@ export default function PresentationsListIsland() {
           Create a new presentation to get started
         </p>
         <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-          <IconPlus class="w-5 h-5 mr-2" />
+          <Plus class="w-5 h-5 mr-2" />
           Create Presentation
         </Button>
       <Modal
@@ -275,7 +275,7 @@ export default function PresentationsListIsland() {
                   aria-label="View presentation"
                 >
                   <span class="sr-only">View presentation</span>
-                  <IconEye />
+                  <Eye />
                 </a>
                 <button
                   type="button"
@@ -285,7 +285,7 @@ export default function PresentationsListIsland() {
                   aria-label="Delete presentation"
                 >
                   <span class="sr-only">Delete presentation</span>
-                  <IconTrash />
+                  <Trash2 />
                 </button>
               </div>
             </div>

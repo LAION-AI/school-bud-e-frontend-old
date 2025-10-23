@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import SpeechToggleButton from "../core/buttons/SpeechToggleButton.tsx";
-import { IconSettings } from "@tabler/icons-preact";
+import { Settings } from "lucide-preact";
 
 export default function UserProfileSection({ lang = "en" }: { lang?: string }) {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -15,7 +15,7 @@ export default function UserProfileSection({ lang = "en" }: { lang?: string }) {
         aria-label={isWalletOpen ? (lang === "de" ? "AI Wallet schließen" : "Close AI Wallet") : (lang === "de" ? "AI Wallet öffnen" : "Open AI Wallet")}
         title={isWalletOpen ? (lang === "de" ? "AI Wallet schließen" : "Close AI Wallet") : (lang === "de" ? "AI Wallet öffnen" : "Open AI Wallet")}
       >
-        <IconSettings />
+        <Settings />
         <span class="text-sm">Settings</span>
       </button>
       <SpeechToggleButton lang={lang} />

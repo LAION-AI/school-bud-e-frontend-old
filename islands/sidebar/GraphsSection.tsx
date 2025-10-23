@@ -1,5 +1,5 @@
 import { useComputed } from "@preact/signals";
-import { IconBook, IconList, IconX } from "@tabler/icons-preact";
+import { Book, List, X } from "lucide-preact";
 import { useState } from "preact/hooks";
 import { deleteGraph, graphs } from "../../components/graph/store.ts";
 import CollapsibleSection from "./CollapsibleSection.tsx";
@@ -20,7 +20,7 @@ export default function GraphsSection() {
 
   return (
     <CollapsibleSection
-      icon={<IconBook />}
+      icon={<Book />}
       title="Graphs"
       isExpanded={expanded}
       onToggle={() => setExpanded(!expanded)}
@@ -34,7 +34,7 @@ export default function GraphsSection() {
             className="flex items-center group"
           >
             <span className="flex items-center flex-1">
-              <IconList
+              <List
                 size={16}
                 class={activeRoute === "/graph/list"
                   ? `text-primary-800`
@@ -68,7 +68,7 @@ export default function GraphsSection() {
                         graphs.value.get(graphId)?.name || graphId
                       }`}
                     >
-                      <IconX size={24} aria-hidden="true" />
+                      <X size={24} aria-hidden="true" />
                     </button>
                   </SidebarLink>
                 ))}

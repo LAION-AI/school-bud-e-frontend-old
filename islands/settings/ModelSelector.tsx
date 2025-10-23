@@ -1,4 +1,4 @@
-import { IconBrain, IconKey, IconLink } from "@tabler/icons-preact";
+import { Brain, Key, Link } from "lucide-preact";
 import type { JSX } from "preact";
 
 interface ModelConfig {
@@ -43,7 +43,7 @@ export default function ModelSelector({
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
       <div className="flex items-center space-x-2 mb-4">
-        <IconBrain className="h-5 w-5 text-gray-500" />
+        <Brain className="h-5 w-5 text-gray-500" />
         <h3 className="text-sm font-medium text-gray-900">{title}</h3>
       </div>
 
@@ -51,7 +51,7 @@ export default function ModelSelector({
         {/* API Key Input */}
         <div>
           <label className="flex items-center text-sm text-gray-600 mb-1">
-            <IconKey className="h-4 w-4 mr-1" />
+            <Key className="h-4 w-4 mr-1" />
             {lang === "de" ? "API-Schlüssel" : "API Key"}
           </label>
           <input
@@ -69,7 +69,7 @@ export default function ModelSelector({
         {/* Model Selection */}
         <div>
           <label className="flex items-center text-sm text-gray-600 mb-1">
-            <IconBrain className="h-4 w-4 mr-1" />
+            <Brain className="h-4 w-4 mr-1" />
             {lang === "de" ? "Modell" : "Model"}
           </label>
           <input
@@ -85,7 +85,7 @@ export default function ModelSelector({
         {/* URL Input */}
         <div>
           <label className="flex items-center text-sm text-gray-600 mb-1">
-            <IconLink className="h-4 w-4 mr-1" />
+            <Link className="h-4 w-4 mr-1" />
             {lang === "de" ? "API-Endpunkt" : "API Endpoint"}
           </label>
           <input

@@ -1,4 +1,4 @@
-import { IconPresentation } from "@tabler/icons-preact";
+import { Presentation } from "lucide-preact";
 import { useState } from "preact/hooks";
 import CollapsibleSection from "./CollapsibleSection.tsx";
 import SidebarLink from "./SidebarLink.tsx";
@@ -20,7 +20,7 @@ export default function PresentationsSection({
   return (
     <CollapsibleSection
       title="Presentation Generator"
-      icon={<IconPresentation />}
+      icon={<Presentation />}
       isCollapsed={isCollapsed}
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
